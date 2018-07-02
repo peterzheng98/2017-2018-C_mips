@@ -258,10 +258,10 @@ public:
                         lastExe.prog.push_back(s1);
                     }
                     if (result == NOP) {
-
+                        lastExe.prog.push_back(s1);
                     }
                     if (result == SYSCALL) {
-
+                        lastExe.prog.push_back(s1);
                     }
                     if (result == MUL || result == MULU || result == DIV || result == DIVU) {
                         string arg1, arg2;
@@ -336,7 +336,8 @@ public:
                     s[2] = tmp.argv[2];
                     break;
             }
-
+            _DWORD tmp2;
+            int nextExe;
             switch (tmp.type) {
                 case ADD:
                     regNum[a[0]].s = (f[2] ? regNum[a[2]].s : a[2]) + regNum[a[1]].s;
@@ -355,16 +356,16 @@ public:
                     break;
                 case MUL:
                     if(tmp.argv.size() == 2){
-                        _DWORD tmp((long long) (f[2] ? regNum[a[2]].s : a[2]) * (long long) regNum[a[1]].s);
-                        regNum[HIREGISTER] = _WORD(tmp.core.u1, tmp.core.u2, tmp.core.u3, tmp.core.u4);
-                        regNum[LOREGISTER] = _WORD(tmp.core.u5, tmp.core.u6, tmp.core.u7, tmp.core.u8);
+                        tmp2 = (long long) (f[2] ? regNum[a[2]].s : a[2]) * (long long) regNum[a[1]].s;
+                        regNum[HIREGISTER] = _WORD(tmp2.core.u1, tmp2.core.u2, tmp2.core.u3, tmp2.core.u4);
+                        regNum[LOREGISTER] = _WORD(tmp2.core.u5, tmp2.core.u6, tmp2.core.u7, tmp2.core.u8);
                     } else regNum[a[0]].s = (f[2] ? regNum[a[2]].s : a[2]) * regNum[a[1]].s;
                     break;
                 case MULU:
                     if(tmp.argv.size() == 2){
-                        _DWORD tmp((unsigned long long) (f[2] ? regNum[a[2]].us : a[2]) * (unsigned long long) regNum[a[1]].us);
-                        regNum[HIREGISTER] = _WORD(tmp.core.u1, tmp.core.u2, tmp.core.u3, tmp.core.u4);
-                        regNum[LOREGISTER] = _WORD(tmp.core.u5, tmp.core.u6, tmp.core.u7, tmp.core.u8);
+                        tmp2 = (unsigned long long) (f[2] ? regNum[a[2]].us : a[2]) * (unsigned long long) regNum[a[1]].us;
+                        regNum[HIREGISTER] = _WORD(tmp2.core.u1, tmp2.core.u2, tmp2.core.u3, tmp2.core.u4);
+                        regNum[LOREGISTER] = _WORD(tmp2.core.u5, tmp2.core.u6, tmp2.core.u7, tmp2.core.u8);
                     } else regNum[a[0]].us = (f[2] ? regNum[a[2]].us : a[2]) * regNum[a[1]].us;
                     break;
                 case DIVU:
@@ -420,78 +421,78 @@ public:
                     break;
                 case J:
                 case B:
-                    int nextExe = executionMap[s[0]];
+                    nextExe = executionMap[s[0]];
                     recursionRun_RR(program[nextExe]);
                     break;
                 case BEQ:
                     if(regNum[a[0]].s == (f[1] ? regNum[a[1]].s : a[1])){
-                        int nextExe = executionMap[s[2]];
+                        nextExe = executionMap[s[2]];
                         recursionRun_RR(program[nextExe]);
                     }
                     break;
                 case BNE:
                     if(regNum[a[0]].s != (f[1] ? regNum[a[1]].s : a[1])){
-                        int nextExe = executionMap[s[2]];
+                        nextExe = executionMap[s[2]];
                         recursionRun_RR(program[nextExe]);
                     }
                     break;
                 case BGE:
                     if(regNum[a[0]].s >= (f[1] ? regNum[a[1]].s : a[1])){
-                        int nextExe = executionMap[s[2]];
+                        nextExe = executionMap[s[2]];
                         recursionRun_RR(program[nextExe]);
                     }
                     break;
                 case BLE:
                     if(regNum[a[0]].s <= (f[1] ? regNum[a[1]].s : a[1])){
-                        int nextExe = executionMap[s[2]];
+                        nextExe = executionMap[s[2]];
                         recursionRun_RR(program[nextExe]);
                     }
                     break;
                 case BGT:
                     if(regNum[a[0]].s > (f[1] ? regNum[a[1]].s : a[1])){
-                        int nextExe = executionMap[s[2]];
+                        nextExe = executionMap[s[2]];
                         recursionRun_RR(program[nextExe]);
                     }
                     break;
                 case BLT:
                     if(regNum[a[0]].s < (f[1] ? regNum[a[1]].s : a[1])){
-                        int nextExe = executionMap[s[2]];
+                        nextExe = executionMap[s[2]];
                         recursionRun_RR(program[nextExe]);
                     }
                     break;
                 case BEQZ:
                     if(regNum[a[0]].s == 0){
-                        int nextExe = executionMap[s[1]];
+                        nextExe = executionMap[s[1]];
                         recursionRun_RR(program[nextExe]);
                     }
                     break;
                 case BNEZ:
                     if(regNum[a[0]].s != 0){
-                        int nextExe = executionMap[s[1]];
+                        nextExe = executionMap[s[1]];
                         recursionRun_RR(program[nextExe]);
                     }
                     break;
                 case BLEZ:
                     if(regNum[a[0]].s <= 0){
-                        int nextExe = executionMap[s[1]];
+                        nextExe = executionMap[s[1]];
                         recursionRun_RR(program[nextExe]);
                     }
                     break;
                 case BGEZ:
                     if(regNum[a[0]].s >= 0){
-                        int nextExe = executionMap[s[1]];
+                        nextExe = executionMap[s[1]];
                         recursionRun_RR(program[nextExe]);
                     }
                     break;
                 case BGTZ:
                     if(regNum[a[0]].s > 0){
-                        int nextExe = executionMap[s[1]];
+                        nextExe = executionMap[s[1]];
                         recursionRun_RR(program[nextExe]);
                     }
                     break;
                 case BLTZ:
                     if(regNum[a[0]].s < 0){
-                        int nextExe = executionMap[s[1]];
+                        nextExe = executionMap[s[1]];
                         recursionRun_RR(program[nextExe]);
                     }
                     break;
@@ -526,19 +527,51 @@ public:
 
                     break;
                 case MOVE:
-
+                    regNum[a[0]].s = regNum[a[1]].s;
                     break;
                 case MFHI:
-
+                    regNum[a[0]].s = regNum[HIREGISTER].s;
                     break;
                 case MFLO:
-
+                    regNum[a[0]].s = regNum[LOREGISTER].s;
                     break;
                 case NOP:
 
                     break;
                 case SYSCALL:
-
+                    int optionCode = regNum[2].s;
+                    int i;
+                    int start;
+                    int a;
+                    int t;
+                    string str;
+                    switch(optionCode){
+                        case 1: cout << regNum[4].s;
+                            break;
+                        case 4:
+                            start = regNum[4].s;
+                            for(i = start;;++i){
+                                if(mem[i] == 0) break;
+                                cout << (char) mem[i];
+                            }
+                            break;
+                        case 5:
+                            cin >> t;
+                            regNum[4].s = t;
+                            break;
+                        case 8:
+                            cin >> str;
+                            break;
+                        case 9:
+                            a = regNum[4].s;
+                            regNum[2].s = memHead;
+                            memHead += a;
+                            break;
+                        case 10:
+                            exit(0);
+                        case 17:
+                            exit(regNum[4].s);
+                    }
                     break;
             }
         }
@@ -550,7 +583,7 @@ public:
 //        execution();
 //        memoryAccess();
 //        writeBack();
-        directlyRun_DR();
+//        directlyRun_DR();
     }
 
 
