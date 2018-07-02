@@ -3,4 +3,4 @@ project(MIPS)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable(MIPS main.cpp Base.h utilities.h mips_main.h stdc++.h parser.h)
+add_executable(MIPS main.cpp Base.h utilities.h mips_main.h stdc++.h parser.h executedInstruction.h)

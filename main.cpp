@@ -4,13 +4,11 @@
 
 #include "stdc++.h"
 #include "mips_main.h"
+#include "utilities.h"
 using namespace std;
 extern bool controlDebug;
 extern mips Kernel;
 
-void debugMess(const string &rhs, const string &topic, int newLine = 0){
-    cout << "Debug:[" << topic << "]" << (newLine == 1 ? "\n" : "" )<< rhs << endl;
-}
 
 int main(int argc, char* argv[]){
     if(argc < 2){
@@ -34,6 +32,7 @@ int main(int argc, char* argv[]){
     buf << File.rdbuf();
     string data = buf.str();
     if(controlDebug) debugMess(data, "Receive Message From File", 1);
-    //TODO : mips core
+    Kernel.setInstruction(data);
+    Kernel.run();
     if(controlDebug) debugMess("Execute Finish.", "General");
 }

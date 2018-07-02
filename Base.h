@@ -8,6 +8,7 @@
 class Base {
 public:
     virtual unsigned short getSize() = 0;
+
     ~Base() {}
 };
 
@@ -45,10 +46,10 @@ public:
     }
 
     ~UINT16() {
-        if(Byte != nullptr) delete Byte;
+        if (Byte != nullptr) delete Byte;
     }
 
-    unsigned short getSize(){
+    unsigned short getSize() {
         return sizeT;
     }
 };
@@ -89,10 +90,10 @@ public:
     }
 
     ~UINT32() {
-        if(Byte != nullptr) delete Byte;
+        if (Byte != nullptr) delete Byte;
     }
 
-    unsigned short getSize(){
+    unsigned short getSize() {
         return sizeT;
     }
 };
@@ -138,11 +139,63 @@ public:
     }
 
     ~DWORD() {
-        if(Byte != nullptr) delete Byte;
+        if (Byte != nullptr) delete Byte;
     }
 
     unsigned short getSize() {
         return sizeT;
+    }
+};
+
+union _HALF {
+    short s;
+    unsigned short us;
+    struct{
+        unsigned char u1, u2;
+    }core;
+
+    _HALF() {
+        s = 0;
+    }
+
+    _HALF(short _s) {
+        s = _s;
+    }
+
+    _HALF(unsigned short _us) {
+        us = _us;
+    }
+
+    _HALF(unsigned char _u1, unsigned char _u2) {
+        core.u1 = _u1;
+        core.u2 = _u2;
+    }
+};
+
+union _WORD {
+    int s;
+    unsigned int us;
+    struct{
+        unsigned char u1, u2, u3, u4;
+    }core;
+
+    _WORD() {
+        s = 0;
+    }
+
+    _WORD(int _s) {
+        s = _s;
+    }
+
+    _WORD(unsigned int _us) {
+        us = _us;
+    }
+
+    _WORD(unsigned char _u1, unsigned char _u2, unsigned char _u3, unsigned char _u4) {
+        core.u1 = _u1;
+        core.u2 = _u2;
+        core.u3 = _u3;
+        core.u4 = _u4;
     }
 };
 
