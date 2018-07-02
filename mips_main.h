@@ -91,12 +91,14 @@ public:
                 dataField = true;
                 textField = false;
                 if (controlDebug) debugMess("In Section: Data Started.", "Parser");
+                haveLabel = false;
                 continue;
             }
             if (token == ".text") {
                 dataField = false;
                 textField = true;
                 if (controlDebug) debugMess("In Section: Text Started.", "Parser");
+                haveLabel = false;
                 continue;
             }
 
@@ -192,10 +194,12 @@ public:
                     if (haveLabel) {
                         next = NextToken;
                         haveLabel = false;
-                    } else ss >> next;
+                    }// else ss >> next;
+                    else next = token;
                     deleteCertainChar(next, ':');
                     if (controlDebug) cout << "Variable:" << next << "|\n" << endl;
                     Parser.labelMap[next] = memHead;
+                    haveLabel = false;
                 } else if (controlDebug) debugMess("In OTHER", "Parser - Data Field");
             }
             if (textField) {
@@ -271,7 +275,9 @@ public:
 
                         s1.argv.push_back(arg1);
                         s1.argv.push_back(arg2);
-                        string ss3 = ss.str();
+                        streampos save = ss.tellg();
+                        string ss3;
+                        ss >> ss3;
                         short code = -1;
                         for (int i = 0; i < ss3.length(); ++i) {
                             if (ss3[i] == '\n') {
@@ -283,6 +289,7 @@ public:
                                 break;
                             }
                         }
+                        ss.seekg(save);
                         if (code == 52) {
                             string s3;
                             ss >> s3;
