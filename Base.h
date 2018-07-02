@@ -199,4 +199,37 @@ union _WORD {
     }
 };
 
+union _DWORD {
+    long long s;
+    unsigned long long us;
+    struct{
+        unsigned char u1, u2, u3, u4, u5, u6, u7, u8;
+    }core;
+
+    _DWORD() {
+        s = 0;
+    }
+
+    _DWORD(long long _s) {
+        s = _s;
+    }
+
+    _DWORD(unsigned long long _us) {
+        us = _us;
+    }
+
+    _DWORD(unsigned char _u1, unsigned char _u2, unsigned char _u3, unsigned char _u4,
+           unsigned char _u5, unsigned char _u6, unsigned char _u7, unsigned char _u8) {
+        core.u1 = _u1;
+        core.u2 = _u2;
+        core.u3 = _u3;
+        core.u4 = _u4;
+
+        core.u5 = _u5;
+        core.u6 = _u6;
+        core.u7 = _u7;
+        core.u8 = _u8;
+    }
+};
+
 #endif //MIPS_BASE_H

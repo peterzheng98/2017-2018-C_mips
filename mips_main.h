@@ -20,7 +20,7 @@ private:
 
     int mainEntryPoint; //the Main Entry Point
 
-    UINT32 regNum[regNUMMAX];
+    _WORD regNum[regNUMMAX];
     DADDR mem[memoryMAX];
 
     string coreData;
@@ -45,7 +45,7 @@ private:
         cout << "=================================================================\n\n\n";
         cout << flush;
     }
-
+    map<string, int> executionMap;
 public:
     mips() {
         for (int i = 0; i < regNUMMAX; i++) regNum[i] = 0;
@@ -210,6 +210,7 @@ public:
                 string mess;
                 if (result == LABEL) {
                     program.push_back(lastExe);
+                    executionMap[lastExe.labelName] = program.size() - 1;
                     if (lastExe.labelName == "main") mainEntryPoint = program.size() - 1;
                     lastExe.clear();
                     deleteCertainChar(token, ':');
@@ -262,7 +263,7 @@ public:
                     if (result == SYSCALL) {
 
                     }
-                    if (result == MUL || result == MULU || result == DIV || result == DIVU){
+                    if (result == MUL || result == MULU || result == DIV || result == DIVU) {
                         string arg1, arg2;
                         ss >> arg1 >> arg2;
                         deleteCertainChar(arg1, ',');
@@ -272,17 +273,17 @@ public:
                         s1.argv.push_back(arg2);
                         string ss3 = ss.str();
                         short code = -1;
-                        for(int i = 0; i < ss3.length(); ++i){
-                            if(ss3[i] == '\n'){
+                        for (int i = 0; i < ss3.length(); ++i) {
+                            if (ss3[i] == '\n') {
                                 code = 10;
                                 break;
                             }
-                            if(ss3[i] <= '9' && ss3[i] >= '0'){
+                            if (ss3[i] <= '9' && ss3[i] >= '0') {
                                 code = 52;
                                 break;
                             }
                         }
-                        if(code == 52){
+                        if (code == 52) {
                             string s3;
                             ss >> s3;
                             deleteCertainChar(s3, ',');
@@ -296,12 +297,260 @@ public:
         }
     }
 
+    void directlyRun_DR() {
+        int current = mainEntryPoint;
+        recursionRun_RR(program[mainEntryPoint]);
+    }
+
+    void recursionRun_RR(const Execution &rhs) {
+        for (int i = 0; i < rhs.prog.size(); ++i) {
+            executionInstruction tmp = rhs.prog[i];
+            int a[3], dist;
+            string s[3];
+            bool f[3];
+            f[0] = f[1] = f[2] = false;
+            int count = tmp.argv.size();
+            switch (tmp.argv.size()) {
+                case 1:
+                    if (tmp.argv[0][0] == '$') f[0] = true;
+                    if (f[0]) a[0] = Parser.RegisterAddr(tmp.argv[0]); else a[0] = string2int(tmp.argv[0]);
+                    s[0] = tmp.argv[0];
+                    break;
+                case 2:
+                    if (tmp.argv[0][0] == '$') f[0] = true;
+                    if (f[0]) a[0] = Parser.RegisterAddr(tmp.argv[0]); else a[0] = string2int(tmp.argv[0]);
+                    if (tmp.argv[1][0] == '$') f[1] = true;
+                    if (f[1]) a[1] = Parser.RegisterAddr(tmp.argv[1]); else a[1] = string2int(tmp.argv[1]);
+                    s[0] = tmp.argv[0];
+                    s[1] = tmp.argv[1];
+                    break;
+                case 3:
+                    if (tmp.argv[0][0] == '$') f[0] = true;
+                    if (f[0]) a[0] = Parser.RegisterAddr(tmp.argv[0]); else a[0] = string2int(tmp.argv[0]);
+                    if (tmp.argv[1][0] == '$') f[1] = true;
+                    if (f[1]) a[1] = Parser.RegisterAddr(tmp.argv[1]); else a[1] = string2int(tmp.argv[1]);
+                    if (tmp.argv[2][0] == '$') f[2] = true;
+                    if (f[2]) a[2] = Parser.RegisterAddr(tmp.argv[2]); else a[2] = string2int(tmp.argv[2]);
+                    s[0] = tmp.argv[0];
+                    s[1] = tmp.argv[1];
+                    s[2] = tmp.argv[2];
+                    break;
+            }
+
+            switch (tmp.type) {
+                case ADD:
+                    regNum[a[0]].s = (f[2] ? regNum[a[2]].s : a[2]) + regNum[a[1]].s;
+                    break;
+                case ADDU:
+                    regNum[a[0]].us = (f[2] ? regNum[a[2]].us : (unsigned int) a[2]) + regNum[a[1]].us;
+                    break;
+                case ADDIU:
+                    regNum[a[0]].us = (f[2] ? regNum[a[2]].us : (unsigned int) a[2]) + regNum[a[1]].us;
+                    break;
+                case SUB:
+                    regNum[a[0]].s = regNum[a[1]].s - (f[2] ? regNum[a[2]].s : a[2]);
+                    break;
+                case SUBU:
+                    regNum[a[0]].us = regNum[a[1]].us - (f[2] ? regNum[a[2]].us : (unsigned int) a[2]);
+                    break;
+                case MUL:
+                    if(tmp.argv.size() == 2){
+                        _DWORD tmp((long long) (f[2] ? regNum[a[2]].s : a[2]) * (long long) regNum[a[1]].s);
+                        regNum[HIREGISTER] = _WORD(tmp.core.u1, tmp.core.u2, tmp.core.u3, tmp.core.u4);
+                        regNum[LOREGISTER] = _WORD(tmp.core.u5, tmp.core.u6, tmp.core.u7, tmp.core.u8);
+                    } else regNum[a[0]].s = (f[2] ? regNum[a[2]].s : a[2]) * regNum[a[1]].s;
+                    break;
+                case MULU:
+                    if(tmp.argv.size() == 2){
+                        _DWORD tmp((unsigned long long) (f[2] ? regNum[a[2]].us : a[2]) * (unsigned long long) regNum[a[1]].us);
+                        regNum[HIREGISTER] = _WORD(tmp.core.u1, tmp.core.u2, tmp.core.u3, tmp.core.u4);
+                        regNum[LOREGISTER] = _WORD(tmp.core.u5, tmp.core.u6, tmp.core.u7, tmp.core.u8);
+                    } else regNum[a[0]].us = (f[2] ? regNum[a[2]].us : a[2]) * regNum[a[1]].us;
+                    break;
+                case DIVU:
+                    if(tmp.argv.size() == 2){
+                        regNum[HIREGISTER] = _WORD(regNum[a[1]].us / (f[2] ? regNum[a[2]].us : a[2]));
+                        regNum[LOREGISTER] = _WORD(regNum[a[1]].us % (f[2] ? regNum[a[2]].us : a[2]));
+                    } else regNum[a[0]].us = regNum[a[1]].us / (f[2] ? regNum[a[2]].us : a[2]);
+                    break;
+                case DIV:
+                    if(tmp.argv.size() == 2){
+                        regNum[HIREGISTER] = _WORD(regNum[a[1]].s / (f[2] ? regNum[a[2]].s : a[2]));
+                        regNum[LOREGISTER] = _WORD(regNum[a[1]].s % (f[2] ? regNum[a[2]].s : a[2]));
+                    } else regNum[a[0]].us = regNum[a[1]].us / (f[2] ? regNum[a[2]].us : a[2]);
+                    break;
+                case XOR:
+                    regNum[a[0]].s = regNum[a[1]].s ^ (f[2] ? regNum[a[2]].s : a[2]);
+                    break;
+                case XORU:
+                    regNum[a[0]].us = regNum[a[1]].us ^ (f[2] ? regNum[a[2]].us : a[2]);
+                    break;
+                case NEG:
+                    regNum[a[0]].s = ~regNum[a[1]].s;
+                    break;
+                case NEGU:
+                    regNum[a[0]].us = ~regNum[a[1]].us;
+                    break;
+                case REM:
+                    regNum[a[0]].s = regNum[a[1]].s % (f[2] ? regNum[a[2]].s : a[2]);
+                    break;
+                case REMU:
+                    regNum[a[0]].us = regNum[a[1]].us % (f[2] ? regNum[a[2]].us : a[2]);
+                    break;
+                case LI:
+                    regNum[a[0]] = _WORD(a[1]);
+                    break;
+                case SEQ:
+                    regNum[a[0]].s = (regNum[a[1]].s == (f[2] ? regNum[a[2]].s : a[2]));
+                    break;
+                case SGE:
+                    regNum[a[0]].s = (regNum[a[1]].s >= (f[2] ? regNum[a[2]].s : a[2]));
+                    break;
+                case SGT:
+                    regNum[a[0]].s = (regNum[a[1]].s > (f[2] ? regNum[a[2]].s : a[2]));
+                    break;
+                case SLE:
+                    regNum[a[0]].s = (regNum[a[1]].s <= (f[2] ? regNum[a[2]].s : a[2]));
+                    break;
+                case SLT:
+                    regNum[a[0]].s = (regNum[a[1]].s < (f[2] ? regNum[a[2]].s : a[2]));
+                    break;
+                case SNE:
+                    regNum[a[0]].s = (regNum[a[1]].s != (f[2] ? regNum[a[2]].s : a[2]));
+                    break;
+                case J:
+                case B:
+                    int nextExe = executionMap[s[0]];
+                    recursionRun_RR(program[nextExe]);
+                    break;
+                case BEQ:
+                    if(regNum[a[0]].s == (f[1] ? regNum[a[1]].s : a[1])){
+                        int nextExe = executionMap[s[2]];
+                        recursionRun_RR(program[nextExe]);
+                    }
+                    break;
+                case BNE:
+                    if(regNum[a[0]].s != (f[1] ? regNum[a[1]].s : a[1])){
+                        int nextExe = executionMap[s[2]];
+                        recursionRun_RR(program[nextExe]);
+                    }
+                    break;
+                case BGE:
+                    if(regNum[a[0]].s >= (f[1] ? regNum[a[1]].s : a[1])){
+                        int nextExe = executionMap[s[2]];
+                        recursionRun_RR(program[nextExe]);
+                    }
+                    break;
+                case BLE:
+                    if(regNum[a[0]].s <= (f[1] ? regNum[a[1]].s : a[1])){
+                        int nextExe = executionMap[s[2]];
+                        recursionRun_RR(program[nextExe]);
+                    }
+                    break;
+                case BGT:
+                    if(regNum[a[0]].s > (f[1] ? regNum[a[1]].s : a[1])){
+                        int nextExe = executionMap[s[2]];
+                        recursionRun_RR(program[nextExe]);
+                    }
+                    break;
+                case BLT:
+                    if(regNum[a[0]].s < (f[1] ? regNum[a[1]].s : a[1])){
+                        int nextExe = executionMap[s[2]];
+                        recursionRun_RR(program[nextExe]);
+                    }
+                    break;
+                case BEQZ:
+                    if(regNum[a[0]].s == 0){
+                        int nextExe = executionMap[s[1]];
+                        recursionRun_RR(program[nextExe]);
+                    }
+                    break;
+                case BNEZ:
+                    if(regNum[a[0]].s != 0){
+                        int nextExe = executionMap[s[1]];
+                        recursionRun_RR(program[nextExe]);
+                    }
+                    break;
+                case BLEZ:
+                    if(regNum[a[0]].s <= 0){
+                        int nextExe = executionMap[s[1]];
+                        recursionRun_RR(program[nextExe]);
+                    }
+                    break;
+                case BGEZ:
+                    if(regNum[a[0]].s >= 0){
+                        int nextExe = executionMap[s[1]];
+                        recursionRun_RR(program[nextExe]);
+                    }
+                    break;
+                case BGTZ:
+                    if(regNum[a[0]].s > 0){
+                        int nextExe = executionMap[s[1]];
+                        recursionRun_RR(program[nextExe]);
+                    }
+                    break;
+                case BLTZ:
+                    if(regNum[a[0]].s < 0){
+                        int nextExe = executionMap[s[1]];
+                        recursionRun_RR(program[nextExe]);
+                    }
+                    break;
+                case JR:
+
+                    break;
+                case JAL:
+
+                    break;
+                case JALR:
+
+                    break;
+                case LA:
+
+                    break;
+                case LB:
+
+                    break;
+                case LH:
+
+                    break;
+                case LW:
+
+                    break;
+                case SB:
+
+                    break;
+                case SH:
+
+                    break;
+                case SW:
+
+                    break;
+                case MOVE:
+
+                    break;
+                case MFHI:
+
+                    break;
+                case MFLO:
+
+                    break;
+                case NOP:
+
+                    break;
+                case SYSCALL:
+
+                    break;
+            }
+        }
+    }
+
     void run() {
-        instructionFetch();
-        instructionDecode();
-        execution();
-        memoryAccess();
-        writeBack();
+//        instructionFetch();
+//        instructionDecode();
+//        execution();
+//        memoryAccess();
+//        writeBack();
+        directlyRun_DR();
     }
 
 
