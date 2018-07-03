@@ -401,10 +401,10 @@ public:
                     regNum[a[0]].us = regNum[a[1]].us ^ (f[2] ? regNum[a[2]].us : a[2]);
                     break;
                 case NEG:
-                    regNum[a[0]].s = ~regNum[a[1]].s;
+                    regNum[a[0]].s = -regNum[a[1]].s;
                     break;
                 case NEGU:
-                    regNum[a[0]].us = ~regNum[a[1]].us;
+                    regNum[a[0]].us = -regNum[a[1]].us;
                     break;
                 case REM:
                     regNum[a[0]].s = regNum[a[1]].s % (f[2] ? regNum[a[2]].s : a[2]);
