@@ -11,12 +11,7 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="dff3ed63-0dd2-43e1-a52f-fd583c52664d" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/executedInstruction.h" beforeDir="false" afterPath="$PROJECT_DIR$/executedInstruction.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mips_main.h" beforeDir="false" afterPath="$PROJECT_DIR$/mips_main.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/stdc++.h" beforeDir="false" afterPath="$PROJECT_DIR$/stdc++.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utilities.h" beforeDir="false" afterPath="$PROJECT_DIR$/utilities.h" afterDir="false" />
-    </list>
+    <list default="true" id="dff3ed63-0dd2-43e1-a52f-fd583c52664d" name="Default" comment="" />
     <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -133,6 +128,7 @@
       <find>executionMap</find>
       <find>la</find>
       <find>a</find>
+      <find>clean</find>
     </findStrings>
     <replaceStrings>
       <replace>instrFind</replace>
@@ -190,6 +186,11 @@
               <item name="MIPS" type="b2602c69:ProjectViewProjectNode" />
               <item name="2017-2018-C_mips" type="462c0819:PsiDirectoryNode" />
             </path>
+            <path>
+              <item name="MIPS" type="b2602c69:ProjectViewProjectNode" />
+              <item name="2017-2018-C_mips" type="462c0819:PsiDirectoryNode" />
+              <item name="cmake-build-debug" type="462c0819:PsiDirectoryNode" />
+            </path>
           </expand>
           <select />
         </subPane>
@@ -243,24 +244,25 @@
       <workItem from="1530519327745" duration="9794000" />
       <workItem from="1530540294184" duration="1718000" />
       <workItem from="1530573987768" duration="1314000" />
-      <workItem from="1530577225484" duration="7325000" />
+      <workItem from="1530577225484" duration="7628000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="57907000" />
+    <option name="totallyTimeSpent" value="58210000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="23" width="1440" height="877" extended-state="6" />
+    <frame x="0" y="23" width="1440" height="822" extended-state="6" />
+    <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.7641026" visible="true" weight="0.25792813" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.7641379" visible="true" weight="0.25792813" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.32885906" />
       <window_info anchor="bottom" id="Messages" order="7" sideWeight="0.49964765" weight="0.42051283" />
       <window_info anchor="bottom" id="CMake" order="8" weight="0.32965517" />
       <window_info anchor="bottom" id="Event Log" order="9" sideWeight="0.5003524" side_tool="true" weight="0.32965517" />
       <window_info anchor="bottom" id="Run" order="2" weight="0.28333333" />
       <window_info anchor="bottom" id="Version Control" order="10" />
-      <window_info id="Structure" order="1" sideWeight="0.23589744" side_tool="true" visible="true" weight="0.25792813" />
+      <window_info id="Structure" order="1" sideWeight="0.23586208" side_tool="true" visible="true" weight="0.25792813" />
       <window_info anchor="bottom" id="Terminal" order="11" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.56153846" />
       <window_info id="Favorites" order="2" sideWeight="0.504698" side_tool="true" weight="0.25" />
@@ -382,13 +384,6 @@
     </expressions>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/executedInstruction.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="391">
-          <caret line="23" column="38" selection-start-line="23" selection-start-column="38" selection-end-line="23" selection-end-column="38" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/stdc++.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="34">
@@ -791,6 +786,13 @@
           <folding>
             <element signature="e#48#67#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cmake-build-debug/Makefile">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-267">
+          <caret line="5" lean-forward="true" selection-start-line="5" selection-end-line="5" />
         </state>
       </provider>
     </entry>
