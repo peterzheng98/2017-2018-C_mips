@@ -97,17 +97,17 @@ clean/fast: clean
 
 # Prepare targets for installation.
 preinstall: all
-	$(MAKE) -f CMakeFiles/Makefile2 preinstall
+	$(MAKE) -f cmake-build-debug/CMakeFiles/Makefile2 preinstall
 .PHONY : preinstall
 
 # Prepare targets for installation.
 preinstall/fast:
-	$(MAKE) -f CMakeFiles/Makefile2 preinstall
+	$(MAKE) -f cmake-build-debug/CMakeFiles/Makefile2 preinstall
 .PHONY : preinstall/fast
 
 # clear depends
 depend:
-	$(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
+	$(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system cmake-build-debug/CMakeFiles/Makefile.cmake 1
 .PHONY : depend
 
 #=============================================================================
@@ -115,12 +115,12 @@ depend:
 
 # Build rule for target.
 MIPS: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 MIPS
+	$(MAKE) -f cmake-build-debug/CMakeFiles/Makefile2 MIPS
 .PHONY : MIPS
 
 # fast build rule for target.
 MIPS/fast:
-	$(MAKE) -f CMakeFiles/MIPS.dir/build.make CMakeFiles/MIPS.dir/build
+	$(MAKE) -f cmake-build-debug/CMakeFiles/MIPS.dir/build.make cmake-build-debug/CMakeFiles/MIPS.dir/build
 .PHONY : MIPS/fast
 
 main.o: main.cpp.o
@@ -129,7 +129,7 @@ main.o: main.cpp.o
 
 # target to build an object file
 main.cpp.o:
-	$(MAKE) -f CMakeFiles/MIPS.dir/build.make CMakeFiles/MIPS.dir/main.cpp.o
+	$(MAKE) -f cmake-build-debug/CMakeFiles/MIPS.dir/build.make cmake-build-debug/CMakeFiles/MIPS.dir/main.cpp.o
 .PHONY : main.cpp.o
 
 main.i: main.cpp.i
@@ -138,7 +138,7 @@ main.i: main.cpp.i
 
 # target to preprocess a source file
 main.cpp.i:
-	$(MAKE) -f CMakeFiles/MIPS.dir/build.make CMakeFiles/MIPS.dir/main.cpp.i
+	$(MAKE) -f cmake-build-debug/CMakeFiles/MIPS.dir/build.make cmake-build-debug/CMakeFiles/MIPS.dir/main.cpp.i
 .PHONY : main.cpp.i
 
 main.s: main.cpp.s
@@ -147,7 +147,7 @@ main.s: main.cpp.s
 
 # target to generate assembly for a file
 main.cpp.s:
-	$(MAKE) -f CMakeFiles/MIPS.dir/build.make CMakeFiles/MIPS.dir/main.cpp.s
+	$(MAKE) -f cmake-build-debug/CMakeFiles/MIPS.dir/build.make cmake-build-debug/CMakeFiles/MIPS.dir/main.cpp.s
 .PHONY : main.cpp.s
 
 # Help Target
@@ -173,6 +173,6 @@ help:
 # No rule that depends on this can have commands that come from listfiles
 # because they might be regenerated.
 cmake_check_build_system:
-	$(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
+	$(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system cmake-build-debug/CMakeFiles/Makefile.cmake 0
 .PHONY : cmake_check_build_system
 
