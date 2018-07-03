@@ -1,0 +1,4 @@
+"/Users/peterzheng/Library/Application Support/JetBrains/Toolbox/apps/CLion/ch-0/181.5087.36/CLion.app/Contents/bin/cmake/bin/cmake" -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" /Users/peterzheng/GitHubProjects/2017-2018-C_mips
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /Users/peterzheng/GitHubProjects/2017-2018-C_mips/cmake-build-debug

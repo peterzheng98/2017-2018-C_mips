@@ -102,4 +102,33 @@ int string2int(const string& rhs){
 }
 
 
+bool haveBrackets(const string &rhs){
+    for(int i = 0;i < rhs.length(); ++i)
+        if(rhs[i] == '(' || rhs[i] == ')') return true;
+    return false;
+}
+
+string splitWithCertainChar(string &rhs, char ch, int k = 1){
+    string string1(rhs);
+    string ret = "";
+    int i = 0;
+    for(i = 0;i < rhs.length(); ++i){
+        if(string1[i] != ch) ret += string1[i];
+        if(string1[i] == ch) break;
+    }
+    rhs = "";
+    for(int j = i + k; j < string1.length(); ++j){
+        rhs += string1[j];
+    }
+    return ret;
+}
+
+bool haveAlpha(const string& rhs){
+    for(int i = 0;i < rhs.length(); ++i) {
+        if (rhs[i] <= 'Z' && rhs[i] >= 'A') return true;
+        if (rhs[i] <= 'z' && rhs[i] >= 'a') return true;
+    }
+    return false;
+}
+
 #endif //MIPS_UTILITIES_H

@@ -26,7 +26,7 @@ private:
     string coreData;
 
     vector<Execution> program;
-
+    vector<executionInstruction> programSentence;
     void debugDataPrint() {
         cout << "=================================================================\n";
         cout << "Debug Data\n";
@@ -85,6 +85,7 @@ public:
         string NextToken = "";
         Execution lastExe;
         bool haveLabel = false;
+        int currentSentence = 0;
         while (haveLabel || ss >> token) {
             if (haveLabel) { token = NextToken; }
             if (token == ".data") {
@@ -213,12 +214,11 @@ public:
                 string next;
                 string mess;
                 if (result == LABEL) {
-                    program.push_back(lastExe);
-                    executionMap[lastExe.labelName] = program.size() - 1;
-                    if (lastExe.labelName == "main") mainEntryPoint = program.size() - 1;
-                    lastExe.clear();
+
                     deleteCertainChar(token, ':');
-                    lastExe.labelName = token;
+                    string labelName = token;
+                    executionMap[labelName] = programSentence.size();
+                    if (labelName == "main") mainEntryPoint = programSentence.size();
                 } else {
                     executionInstruction s1;
                     s1.type = result;
@@ -237,7 +237,7 @@ public:
                         s1.argv.push_back(arg1);
                         s1.argv.push_back(arg2);
                         s1.argv.push_back(arg3);
-                        lastExe.prog.push_back(s1);
+                        programSentence.push_back(s1);
                     }
                     if (result == LI || result == BEQZ || result == BNEZ || result == BLEZ || result == BGEZ ||
                         result == BGTZ || result == BLTZ || result == LA || result == LB || result == LH ||
@@ -250,7 +250,7 @@ public:
 
                         s1.argv.push_back(arg1);
                         s1.argv.push_back(arg2);
-                        lastExe.prog.push_back(s1);
+                        programSentence.push_back(s1);
                     }
                     if (result == B || result == J || result == JR || result == JAL || result == JALR ||
                         result == MFHI || result == MFLO) {
@@ -259,13 +259,13 @@ public:
                         deleteCertainChar(arg1, ',');
 
                         s1.argv.push_back(arg1);
-                        lastExe.prog.push_back(s1);
+                        programSentence.push_back(s1);
                     }
                     if (result == NOP) {
-                        lastExe.prog.push_back(s1);
+                        programSentence.push_back(s1);
                     }
                     if (result == SYSCALL) {
-                        lastExe.prog.push_back(s1);
+                        programSentence.push_back(s1);
                     }
                     if (result == MUL || result == MULU || result == DIV || result == DIVU) {
                         string arg1, arg2;
@@ -296,7 +296,7 @@ public:
                             deleteCertainChar(s3, ',');
                             s1.argv.push_back(s3);
                         }
-                        lastExe.prog.push_back(s1);
+                        programSentence.push_back(s1);
                     }
                 }
 
@@ -306,12 +306,11 @@ public:
 
     void directlyRun_DR() {
         int current = mainEntryPoint;
-        recursionRun_RR(program[mainEntryPoint]);
-    }
-
-    void recursionRun_RR(const Execution &rhs) {
-        for (int i = 0; i < rhs.prog.size(); ++i) {
-            executionInstruction tmp = rhs.prog[i];
+        while(current < programSentence.size()){
+            executionInstruction tmp = programSentence[current];
+            //设置跳转表示符号
+            bool jumpFlag = false;
+            // Read the argument
             int a[3], dist;
             string s[3];
             bool f[3];
@@ -343,8 +342,16 @@ public:
                     s[2] = tmp.argv[2];
                     break;
             }
+
+            //申明Switch语句中可能使用到的变量
             _DWORD tmp2;
             int nextExe;
+            int labelAddress;
+            bool haveBracket;
+            string left, right;
+            int offset = 0;
+            int source;
+            //根据语句类型执行语句
             switch (tmp.type) {
                 case ADD:
                     regNum[a[0]].s = (f[2] ? regNum[a[2]].s : a[2]) + regNum[a[1]].s;
@@ -429,109 +436,198 @@ public:
                 case J:
                 case B:
                     nextExe = executionMap[s[0]];
-                    recursionRun_RR(program[nextExe]);
+                    current = nextExe;
+                    jumpFlag = true;
                     break;
                 case BEQ:
                     if(regNum[a[0]].s == (f[1] ? regNum[a[1]].s : a[1])){
                         nextExe = executionMap[s[2]];
-                        recursionRun_RR(program[nextExe]);
+                        current = nextExe;
+                        jumpFlag = true;
                     }
                     break;
                 case BNE:
                     if(regNum[a[0]].s != (f[1] ? regNum[a[1]].s : a[1])){
                         nextExe = executionMap[s[2]];
-                        recursionRun_RR(program[nextExe]);
+                        current = nextExe;
+                        jumpFlag = true;
                     }
                     break;
                 case BGE:
                     if(regNum[a[0]].s >= (f[1] ? regNum[a[1]].s : a[1])){
                         nextExe = executionMap[s[2]];
-                        recursionRun_RR(program[nextExe]);
+                        current = nextExe;
+                        jumpFlag = true;
                     }
                     break;
                 case BLE:
                     if(regNum[a[0]].s <= (f[1] ? regNum[a[1]].s : a[1])){
                         nextExe = executionMap[s[2]];
-                        recursionRun_RR(program[nextExe]);
+                        current = nextExe;
+                        jumpFlag = true;
                     }
                     break;
                 case BGT:
                     if(regNum[a[0]].s > (f[1] ? regNum[a[1]].s : a[1])){
                         nextExe = executionMap[s[2]];
-                        recursionRun_RR(program[nextExe]);
+                        current = nextExe;
+                        jumpFlag = true;
                     }
                     break;
                 case BLT:
                     if(regNum[a[0]].s < (f[1] ? regNum[a[1]].s : a[1])){
                         nextExe = executionMap[s[2]];
-                        recursionRun_RR(program[nextExe]);
+                        current = nextExe;
+                        jumpFlag = true;
                     }
                     break;
                 case BEQZ:
                     if(regNum[a[0]].s == 0){
                         nextExe = executionMap[s[1]];
-                        recursionRun_RR(program[nextExe]);
+                        current = nextExe;
+                        jumpFlag = true;
                     }
                     break;
                 case BNEZ:
                     if(regNum[a[0]].s != 0){
                         nextExe = executionMap[s[1]];
-                        recursionRun_RR(program[nextExe]);
+                        current = nextExe;
+                        jumpFlag = true;
                     }
                     break;
                 case BLEZ:
                     if(regNum[a[0]].s <= 0){
                         nextExe = executionMap[s[1]];
-                        recursionRun_RR(program[nextExe]);
+                        current = nextExe;
+                        jumpFlag = true;
                     }
                     break;
                 case BGEZ:
                     if(regNum[a[0]].s >= 0){
                         nextExe = executionMap[s[1]];
-                        recursionRun_RR(program[nextExe]);
+                        current = nextExe;
+                        jumpFlag = true;
                     }
                     break;
                 case BGTZ:
                     if(regNum[a[0]].s > 0){
                         nextExe = executionMap[s[1]];
-                        recursionRun_RR(program[nextExe]);
+                        current = nextExe;
+                        jumpFlag = true;
                     }
                     break;
                 case BLTZ:
                     if(regNum[a[0]].s < 0){
                         nextExe = executionMap[s[1]];
-                        recursionRun_RR(program[nextExe]);
+                        current = nextExe;
+                        jumpFlag = true;
                     }
                     break;
                 case JR:
-
+                    current = regNum[a[0]].s;
+                    jumpFlag = true;
                     break;
                 case JAL:
+                    nextExe = executionMap[s[0]];
 
+                    jumpFlag = true;
+                    regNum[31] = current + 1;
+                    current = nextExe;
                     break;
                 case JALR:
 
+                    jumpFlag = true;
+                    regNum[31] = current + 1;
+                    current = regNum[a[0]].s;
                     break;
                 case LA:
-
+                    labelAddress = Parser.labelMap[s[1]];
+                    regNum[a[0]] = labelAddress;
                     break;
                 case LB:
+                    //搜索有没有括号
+                    haveBracket = haveBrackets(s[1]);
+                    if(haveBracket){//如果含有括号
+                        right = s[1];
+                        left = splitWithCertainChar(right, '(');
+                        deleteCertainChar(right, ')');
+                        offset = string2int(left);
+//                        offset /= 4;
+                    }
 
+                    source = (haveAlpha(s[1]) ? Parser.labelMap[s[1]] : a[1]) + offset;
+                    regNum[a[0]] = _WORD(int(mem[source]));
                     break;
                 case LH:
+                    //搜索有没有括号
+                    haveBracket = haveBrackets(s[1]);
+                    if(haveBracket){//如果含有括号
+                        right = s[1];
+                        left = splitWithCertainChar(right, '(');
+                        deleteCertainChar(right, ')');
+                        offset = string2int(left);
+//                        offset /= 4;
+                    }
 
+                    source = (haveAlpha(s[1]) ? Parser.labelMap[s[1]] : a[1]) + offset;
+                    regNum[a[0]] = _WORD((int)(_HALF(mem[source], mem[source] + 1).s));
                     break;
                 case LW:
+                    //搜索有没有括号
+                    haveBracket = haveBrackets(s[1]);
+                    if(haveBracket){//如果含有括号
+                        right = s[1];
+                        left = splitWithCertainChar(right, '(');
+                        deleteCertainChar(right, ')');
+                        offset = string2int(left);
+//                        offset /= 4;
+                    }
 
+                    source = (haveAlpha(s[1]) ? Parser.labelMap[s[1]] : a[1]) + offset;
+                    regNum[a[0]] = _WORD(mem[source], mem[source + 1], mem[source + 2], mem[source + 3]);
                     break;
                 case SB:
+                    haveBracket = haveBrackets(s[1]);
+                    if(haveBracket){//如果含有括号
+                        right = s[1];
+                        left = splitWithCertainChar(right, '(');
+                        deleteCertainChar(right, ')');
+                        offset = string2int(left);
+//                        offset /= 4;
+                    }
 
+                    source = (haveAlpha(s[1]) ? Parser.labelMap[s[1]] : a[1]) + offset;
+                    mem[source] = regNum[a[0]].core.u1;
                     break;
                 case SH:
+                    haveBracket = haveBrackets(s[1]);
+                    if(haveBracket){//如果含有括号
+                        right = s[1];
+                        left = splitWithCertainChar(right, '(');
+                        deleteCertainChar(right, ')');
+                        offset = string2int(left);
+//                        offset /= 4;
+                    }
 
+                    source = (haveAlpha(s[1]) ? Parser.labelMap[s[1]] : a[1]) + offset;
+                    mem[source] = regNum[a[0]].core.u1;
+                    mem[source+1] = regNum[a[0]].core.u2;
                     break;
                 case SW:
+                    haveBracket = haveBrackets(s[1]);
+                    if(haveBracket){//如果含有括号
+                        right = s[1];
+                        left = splitWithCertainChar(right, '(');
+                        deleteCertainChar(right, ')');
+                        offset = string2int(left);
+//                        offset /= 4;
+                    }
 
+                    source = (haveAlpha(s[1]) ? Parser.labelMap[s[1]] : a[1]) + offset;
+                    mem[source] = regNum[a[0]].core.u1;
+                    mem[source + 1] = regNum[a[0]].core.u2;
+                    mem[source + 2] = regNum[a[1]].core.u3;
+                    mem[source + 3] = regNum[a[2]].core.u4;
                     break;
                 case MOVE:
                     regNum[a[0]].s = regNum[a[1]].s;
@@ -581,8 +677,284 @@ public:
                     }
                     break;
             }
+            if(!jumpFlag) current++;
         }
     }
+
+//    void recursionRun_RR(const Execution &rhs) {
+//        for (int i = 0; i < rhs.prog.size(); ++i) {
+//            executionInstruction tmp = rhs.prog[i];
+//            int a[3], dist;
+//            string s[3];
+//            bool f[3];
+//            f[0] = f[1] = f[2] = false;
+//            int count = tmp.argv.size();
+//            switch (tmp.argv.size()) {
+//                case 1:
+//                    if (tmp.argv[0][0] == '$') f[0] = true;
+//                    if (f[0]) a[0] = Parser.RegisterAddr(tmp.argv[0]); else a[0] = string2int(tmp.argv[0]);
+//                    s[0] = tmp.argv[0];
+//                    break;
+//                case 2:
+//                    if (tmp.argv[0][0] == '$') f[0] = true;
+//                    if (f[0]) a[0] = Parser.RegisterAddr(tmp.argv[0]); else a[0] = string2int(tmp.argv[0]);
+//                    if (tmp.argv[1][0] == '$') f[1] = true;
+//                    if (f[1]) a[1] = Parser.RegisterAddr(tmp.argv[1]); else a[1] = string2int(tmp.argv[1]);
+//                    s[0] = tmp.argv[0];
+//                    s[1] = tmp.argv[1];
+//                    break;
+//                case 3:
+//                    if (tmp.argv[0][0] == '$') f[0] = true;
+//                    if (f[0]) a[0] = Parser.RegisterAddr(tmp.argv[0]); else a[0] = string2int(tmp.argv[0]);
+//                    if (tmp.argv[1][0] == '$') f[1] = true;
+//                    if (f[1]) a[1] = Parser.RegisterAddr(tmp.argv[1]); else a[1] = string2int(tmp.argv[1]);
+//                    if (tmp.argv[2][0] == '$') f[2] = true;
+//                    if (f[2]) a[2] = Parser.RegisterAddr(tmp.argv[2]); else a[2] = string2int(tmp.argv[2]);
+//                    s[0] = tmp.argv[0];
+//                    s[1] = tmp.argv[1];
+//                    s[2] = tmp.argv[2];
+//                    break;
+//            }
+//            _DWORD tmp2;
+//            int nextExe;
+//            switch (tmp.type) {
+//                case ADD:
+//                    regNum[a[0]].s = (f[2] ? regNum[a[2]].s : a[2]) + regNum[a[1]].s;
+//                    break;
+//                case ADDU:
+//                    regNum[a[0]].us = (f[2] ? regNum[a[2]].us : (unsigned int) a[2]) + regNum[a[1]].us;
+//                    break;
+//                case ADDIU:
+//                    regNum[a[0]].us = (f[2] ? regNum[a[2]].us : (unsigned int) a[2]) + regNum[a[1]].us;
+//                    break;
+//                case SUB:
+//                    regNum[a[0]].s = regNum[a[1]].s - (f[2] ? regNum[a[2]].s : a[2]);
+//                    break;
+//                case SUBU:
+//                    regNum[a[0]].us = regNum[a[1]].us - (f[2] ? regNum[a[2]].us : (unsigned int) a[2]);
+//                    break;
+//                case MUL:
+//                    if(tmp.argv.size() == 2){
+//                        tmp2 = (long long) (f[2] ? regNum[a[2]].s : a[2]) * (long long) regNum[a[1]].s;
+//                        regNum[HIREGISTER] = _WORD(tmp2.core.u1, tmp2.core.u2, tmp2.core.u3, tmp2.core.u4);
+//                        regNum[LOREGISTER] = _WORD(tmp2.core.u5, tmp2.core.u6, tmp2.core.u7, tmp2.core.u8);
+//                    } else regNum[a[0]].s = (f[2] ? regNum[a[2]].s : a[2]) * regNum[a[1]].s;
+//                    break;
+//                case MULU:
+//                    if(tmp.argv.size() == 2){
+//                        tmp2 = (unsigned long long) (f[2] ? regNum[a[2]].us : a[2]) * (unsigned long long) regNum[a[1]].us;
+//                        regNum[HIREGISTER] = _WORD(tmp2.core.u1, tmp2.core.u2, tmp2.core.u3, tmp2.core.u4);
+//                        regNum[LOREGISTER] = _WORD(tmp2.core.u5, tmp2.core.u6, tmp2.core.u7, tmp2.core.u8);
+//                    } else regNum[a[0]].us = (f[2] ? regNum[a[2]].us : a[2]) * regNum[a[1]].us;
+//                    break;
+//                case DIVU:
+//                    if(tmp.argv.size() == 2){
+//                        regNum[HIREGISTER] = _WORD(regNum[a[1]].us / (f[2] ? regNum[a[2]].us : a[2]));
+//                        regNum[LOREGISTER] = _WORD(regNum[a[1]].us % (f[2] ? regNum[a[2]].us : a[2]));
+//                    } else regNum[a[0]].us = regNum[a[1]].us / (f[2] ? regNum[a[2]].us : a[2]);
+//                    break;
+//                case DIV:
+//                    if(tmp.argv.size() == 2){
+//                        regNum[HIREGISTER] = _WORD(regNum[a[1]].s / (f[2] ? regNum[a[2]].s : a[2]));
+//                        regNum[LOREGISTER] = _WORD(regNum[a[1]].s % (f[2] ? regNum[a[2]].s : a[2]));
+//                    } else regNum[a[0]].us = regNum[a[1]].us / (f[2] ? regNum[a[2]].us : a[2]);
+//                    break;
+//                case XOR:
+//                    regNum[a[0]].s = regNum[a[1]].s ^ (f[2] ? regNum[a[2]].s : a[2]);
+//                    break;
+//                case XORU:
+//                    regNum[a[0]].us = regNum[a[1]].us ^ (f[2] ? regNum[a[2]].us : a[2]);
+//                    break;
+//                case NEG:
+//                    regNum[a[0]].s = ~regNum[a[1]].s;
+//                    break;
+//                case NEGU:
+//                    regNum[a[0]].us = ~regNum[a[1]].us;
+//                    break;
+//                case REM:
+//                    regNum[a[0]].s = regNum[a[1]].s % (f[2] ? regNum[a[2]].s : a[2]);
+//                    break;
+//                case REMU:
+//                    regNum[a[0]].us = regNum[a[1]].us % (f[2] ? regNum[a[2]].us : a[2]);
+//                    break;
+//                case LI:
+//                    regNum[a[0]] = _WORD(a[1]);
+//                    break;
+//                case SEQ:
+//                    regNum[a[0]].s = (regNum[a[1]].s == (f[2] ? regNum[a[2]].s : a[2]));
+//                    break;
+//                case SGE:
+//                    regNum[a[0]].s = (regNum[a[1]].s >= (f[2] ? regNum[a[2]].s : a[2]));
+//                    break;
+//                case SGT:
+//                    regNum[a[0]].s = (regNum[a[1]].s > (f[2] ? regNum[a[2]].s : a[2]));
+//                    break;
+//                case SLE:
+//                    regNum[a[0]].s = (regNum[a[1]].s <= (f[2] ? regNum[a[2]].s : a[2]));
+//                    break;
+//                case SLT:
+//                    regNum[a[0]].s = (regNum[a[1]].s < (f[2] ? regNum[a[2]].s : a[2]));
+//                    break;
+//                case SNE:
+//                    regNum[a[0]].s = (regNum[a[1]].s != (f[2] ? regNum[a[2]].s : a[2]));
+//                    break;
+//                case J:
+//                case B:
+//                    nextExe = executionMap[s[0]];
+//                    recursionRun_RR(program[nextExe]);
+//                    break;
+//                case BEQ:
+//                    if(regNum[a[0]].s == (f[1] ? regNum[a[1]].s : a[1])){
+//                        nextExe = executionMap[s[2]];
+//                        recursionRun_RR(program[nextExe]);
+//                    }
+//                    break;
+//                case BNE:
+//                    if(regNum[a[0]].s != (f[1] ? regNum[a[1]].s : a[1])){
+//                        nextExe = executionMap[s[2]];
+//                        recursionRun_RR(program[nextExe]);
+//                    }
+//                    break;
+//                case BGE:
+//                    if(regNum[a[0]].s >= (f[1] ? regNum[a[1]].s : a[1])){
+//                        nextExe = executionMap[s[2]];
+//                        recursionRun_RR(program[nextExe]);
+//                    }
+//                    break;
+//                case BLE:
+//                    if(regNum[a[0]].s <= (f[1] ? regNum[a[1]].s : a[1])){
+//                        nextExe = executionMap[s[2]];
+//                        recursionRun_RR(program[nextExe]);
+//                    }
+//                    break;
+//                case BGT:
+//                    if(regNum[a[0]].s > (f[1] ? regNum[a[1]].s : a[1])){
+//                        nextExe = executionMap[s[2]];
+//                        recursionRun_RR(program[nextExe]);
+//                    }
+//                    break;
+//                case BLT:
+//                    if(regNum[a[0]].s < (f[1] ? regNum[a[1]].s : a[1])){
+//                        nextExe = executionMap[s[2]];
+//                        recursionRun_RR(program[nextExe]);
+//                    }
+//                    break;
+//                case BEQZ:
+//                    if(regNum[a[0]].s == 0){
+//                        nextExe = executionMap[s[1]];
+//                        recursionRun_RR(program[nextExe]);
+//                    }
+//                    break;
+//                case BNEZ:
+//                    if(regNum[a[0]].s != 0){
+//                        nextExe = executionMap[s[1]];
+//                        recursionRun_RR(program[nextExe]);
+//                    }
+//                    break;
+//                case BLEZ:
+//                    if(regNum[a[0]].s <= 0){
+//                        nextExe = executionMap[s[1]];
+//                        recursionRun_RR(program[nextExe]);
+//                    }
+//                    break;
+//                case BGEZ:
+//                    if(regNum[a[0]].s >= 0){
+//                        nextExe = executionMap[s[1]];
+//                        recursionRun_RR(program[nextExe]);
+//                    }
+//                    break;
+//                case BGTZ:
+//                    if(regNum[a[0]].s > 0){
+//                        nextExe = executionMap[s[1]];
+//                        recursionRun_RR(program[nextExe]);
+//                    }
+//                    break;
+//                case BLTZ:
+//                    if(regNum[a[0]].s < 0){
+//                        nextExe = executionMap[s[1]];
+//                        recursionRun_RR(program[nextExe]);
+//                    }
+//                    break;
+//                case JR:
+//
+//                    break;
+//                case JAL:
+//
+//                    break;
+//                case JALR:
+//
+//                    break;
+//                case LA:
+//
+//                    break;
+//                case LB:
+//
+//                    break;
+//                case LH:
+//
+//                    break;
+//                case LW:
+//
+//                    break;
+//                case SB:
+//
+//                    break;
+//                case SH:
+//
+//                    break;
+//                case SW:
+//
+//                    break;
+//                case MOVE:
+//                    regNum[a[0]].s = regNum[a[1]].s;
+//                    break;
+//                case MFHI:
+//                    regNum[a[0]].s = regNum[HIREGISTER].s;
+//                    break;
+//                case MFLO:
+//                    regNum[a[0]].s = regNum[LOREGISTER].s;
+//                    break;
+//                case NOP:
+//
+//                    break;
+//                case SYSCALL:
+//                    int optionCode = regNum[2].s;
+//                    int i;
+//                    int start;
+//                    int a;
+//                    int t;
+//                    string str;
+//                    switch(optionCode){
+//                        case 1: cout << regNum[4].s;
+//                            break;
+//                        case 4:
+//                            start = regNum[4].s;
+//                            for(i = start;;++i){
+//                                if(mem[i] == 0) break;
+//                                cout << (char) mem[i];
+//                            }
+//                            break;
+//                        case 5:
+//                            cin >> t;
+//                            regNum[4].s = t;
+//                            break;
+//                        case 8:
+//                            cin >> str;
+//                            break;
+//                        case 9:
+//                            a = regNum[4].s;
+//                            regNum[2].s = memHead;
+//                            memHead += a;
+//                            break;
+//                        case 10:
+//                            exit(0);
+//                        case 17:
+//                            exit(regNum[4].s);
+//                    }
+//                    break;
+//            }
+//        }
+//    }
 
     void run() {
 //        instructionFetch();
@@ -590,7 +962,7 @@ public:
 //        execution();
 //        memoryAccess();
 //        writeBack();
-//        directlyRun_DR();
+        directlyRun_DR();
     }
 
 

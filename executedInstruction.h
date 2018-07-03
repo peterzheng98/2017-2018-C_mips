@@ -22,6 +22,7 @@ public:
 class Execution{
 public:
     string labelName;
+    int index;
     vector<executionInstruction> prog;
     void clear(){
         labelName = "";

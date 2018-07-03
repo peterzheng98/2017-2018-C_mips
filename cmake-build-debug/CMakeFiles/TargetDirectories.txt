@@ -1,0 +1,3 @@
+/Users/peterzheng/GitHubProjects/2017-2018-C_mips/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/Users/peterzheng/GitHubProjects/2017-2018-C_mips/cmake-build-debug/CMakeFiles/edit_cache.dir
+/Users/peterzheng/GitHubProjects/2017-2018-C_mips/cmake-build-debug/CMakeFiles/MIPS.dir
