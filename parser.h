@@ -142,17 +142,17 @@ public:
         instrFind["comment"] = COMMENT;
     }
 
-    Instruction Type(const string &rhs) {
+    inline Instruction Type(const string &rhs) {
         if (instrFind.find(rhs) == instrFind.end()) return LABEL;
         return instrFind[rhs];
     }
 
-    int RegisterAddr(const string &rhs) {
+    inline int RegisterAddr(const string &rhs) {
         if (registerMap.find(rhs) == registerMap.end()) return -1;
         return registerMap[rhs];
     }
 
-    int LabelAddr(const string& rhs){
+    inline int LabelAddr(const string& rhs){
         if(labelMap.find(rhs) == labelMap.end()) return -1;
         return labelMap[rhs];
     }

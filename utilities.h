@@ -13,6 +13,12 @@ using namespace std;
 const int regNUMMAX = 35;
 const int memoryMAX = 4 * 1024 * 1024;
 static parser Parser;
+static int reg1 = 0;
+static int reg2 = 0;
+static int reg3 = 0;
+static int reg4 = 0;
+static int reg5 = 0;
+static int reg6 = 0;
 
 unsigned short sizeT(Base &t) {
     return t.getSize();
@@ -27,17 +33,20 @@ T atoi(const string &rhs){
     return ret;
 }
 
-void debugMess(const string &rhs, const string &topic, int newLine = 0){
+inline void debugMess(const string &rhs, const string &topic, int newLine = 0){
     cout << "Debug:[" << topic << "]" << (newLine == 1 ? "\n" : "" )<< rhs << endl;
 }
 
-void deleteCertainChar(string& rhs, char ch){
+inline void deleteCertainChar(string& rhs, char ch){
+    reg1++;
     int pos = 0;
     int posEnd = (int)rhs.length();
     while(pos < (int)rhs.length()) if(rhs[pos] == ch) rhs.erase(pos, 1); else pos++;
 }
 
-string decodeSpecial(const string &rhs) {
+inline string decodeSpecial(const string &rhs) {
+    reg2++;
+
     string ret = "";
     int pos = 0;
     char c;
@@ -91,7 +100,9 @@ string decodeSpecial(const string &rhs) {
     return ret;
 }
 
-int string2int(const string& rhs){
+inline int string2int(const string& rhs){
+    reg3++;
+
     int final = 0;
     bool neg = false;
     if(rhs[0] == '-') neg = true;
@@ -102,13 +113,17 @@ int string2int(const string& rhs){
 }
 
 
-bool haveBrackets(const string &rhs){
+inline bool haveBrackets(const string &rhs){
+    reg4++;
+
     for(int i = 0;i < rhs.length(); ++i)
         if(rhs[i] == '(' || rhs[i] == ')') return true;
     return false;
 }
 
-string splitWithCertainChar(string &rhs, char ch, int k = 1){
+inline string splitWithCertainChar(string &rhs, char ch, int k = 1){
+    reg5++;
+
     string string1(rhs);
     string ret = "";
     int i = 0;
@@ -123,7 +138,8 @@ string splitWithCertainChar(string &rhs, char ch, int k = 1){
     return ret;
 }
 
-bool haveAlpha(const string& rhs){
+inline bool haveAlpha(const string& rhs){
+    reg6++;
     if(Parser.LabelAddr(rhs) != -1) return true;
     if(rhs[0] >'z' || (rhs[0] < 'a' && rhs[0] > 'A') || (rhs[0] < 'A')) return false;
     for(int i = 0;i < rhs.length(); ++i) {

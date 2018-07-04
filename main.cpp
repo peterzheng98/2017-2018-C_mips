@@ -5,12 +5,13 @@
 #include "stdc++.h"
 #include "mips_main.h"
 #include "utilities.h"
+
+
 using namespace std;
 extern bool controlDebug;
 extern mips Kernel;
 
-
-int main(int argc, char* argv[]){
+int main(int argc, char *argv[]) {
     ios::sync_with_stdio(false);
     cin.tie(0);
     cout.tie(0);
@@ -32,11 +33,13 @@ int main(int argc, char* argv[]){
         return 0;
     }
     ifstream File(argv[1]);
+
     stringstream buf;
     buf << File.rdbuf();
     string data = buf.str();
-    if(controlDebug) debugMess(data, "Receive Message From File", 1);
+    if (controlDebug) debugMess(data, "Receive Message From File", 1);
     Kernel.setInstruction(data);
     Kernel.run();
-    if(controlDebug) debugMess("Execute Finish.", "General");
+    if (controlDebug) debugMess("Execute Finish.", "General");
+    printf("\n[%d][%d][%d][%d][%d][%d]\n", reg1, reg2, reg3, reg4, reg5, reg6);
 }

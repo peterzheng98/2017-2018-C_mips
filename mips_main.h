@@ -362,12 +362,12 @@ public:
 
             //申明Switch语句中可能使用到的变量
             _DWORD tmp2;
-            int nextExe;
-            int labelAddress;
-            bool haveBracket;
-            string left, right;
-            int offset = 0;
-            int source;
+            register int nextExe;
+            register int labelAddress;
+            register bool haveBracket;
+            register string left, right;
+            register int offset = 0;
+            register int source;
             //根据语句类型执行语句
             switch (tmp.type) {
                 case ADD:
@@ -775,6 +775,7 @@ public:
                             break;
                         case 5:
                             cin >> t;
+//                            t = 9987;
                             regNum[2].s = t;
                             break;
                         case 8:
@@ -791,9 +792,11 @@ public:
                             memHead += a;
                             break;
                         case 10:
-                            exit(0);
+                            //exit(0);
+                            return;
                         case 17:
-                            exit(regNum[4].s);
+                            //exit(regNum[4].s);
+                            return;
                     }
                     if(controlDebug) cout << __LINE__ << ": Stage: SYSCALL" << endl;
                     break;
