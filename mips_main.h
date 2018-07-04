@@ -779,6 +779,11 @@ public:
                             break;
                         case 8:
                             cin >> str;
+                            for(i = 0; i < str.length(); ++i){
+                                mem[regNum[4].us + i] = (unsigned char) str[i];
+                            }
+                            mem[regNum[4].us + str.length()] = 0;
+                            regNum[5].us = str.length() + 1;
                             break;
                         case 9:
                             a = regNum[4].s;
