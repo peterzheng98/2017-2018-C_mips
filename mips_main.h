@@ -125,7 +125,14 @@ public:
                         cout << "memHead Old:[" << dbg << "] New:[" << memHead << "]" << endl;
                     }
                 } else if (result == ASCIIZ) {
-                    ss >> next;
+                    char ch;
+                    ch = ss.get();
+                    ch = ss.get();
+                    while(ch != '\n') {
+                        next += ch;
+                        ch = ss.get();
+                    }
+//                    ss >> next;
                     deleteCertainChar(next, '\"');
                     next = decodeSpecial(next);
                     if (controlDebug) debugMess("In ASCIIZ", "Parser - Data Field");
