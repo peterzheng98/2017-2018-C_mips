@@ -152,6 +152,11 @@ public:
         return registerMap[rhs];
     }
 
+    int LabelAddr(const string& rhs){
+        if(labelMap.find(rhs) == labelMap.end()) return -1;
+        return labelMap[rhs];
+    }
+
 
 
 };

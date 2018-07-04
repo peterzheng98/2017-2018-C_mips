@@ -15,7 +15,7 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/MIPS.dir/main.cpp.o" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/MIPS.dir/main.cpp.o" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmake-build-debug/MIPS" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/MIPS" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mips_main.h" beforeDir="false" afterPath="$PROJECT_DIR$/mips_main.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/parser.h" beforeDir="false" afterPath="$PROJECT_DIR$/parser.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/utilities.h" beforeDir="false" afterPath="$PROJECT_DIR$/utilities.h" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
@@ -34,8 +34,8 @@
             <file leaf-file-name="array_test1-mahaojun.s" pinned="false" current-in-tab="true">
               <entry file="file://$PROJECT_DIR$/cmake-build-debug/array_test1-mahaojun.s">
                 <provider selected="true" editor-type-id="text-editor">
-                  <state relative-caret-position="818">
-                    <caret line="627" selection-start-line="627" selection-end-line="637" selection-end-column="24" />
+                  <state relative-caret-position="595">
+                    <caret line="35" selection-start-line="35" selection-end-line="35" selection-end-column="16" />
                   </state>
                 </provider>
               </entry>
@@ -118,11 +118,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="utilities.h" pinned="false" current-in-tab="false">
+      <file leaf-file-name="utilities.h" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/utilities.h">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1989">
-              <caret line="119" column="31" selection-start-line="119" selection-start-column="31" selection-end-line="119" selection-end-column="31" />
+            <state relative-caret-position="104">
+              <caret line="126" column="48" selection-start-line="126" selection-start-column="48" selection-end-line="126" selection-end-column="48" />
             </state>
           </provider>
         </entry>
@@ -130,8 +130,8 @@
       <file leaf-file-name="parser.h" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/parser.h">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2533">
-              <caret line="149" column="8" selection-start-line="149" selection-start-column="8" selection-end-line="149" selection-end-column="8" />
+            <state relative-caret-position="321">
+              <caret line="156" column="29" selection-start-line="156" selection-start-column="29" selection-end-line="156" selection-end-column="29" />
             </state>
           </provider>
         </entry>
@@ -166,11 +166,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="mips_main.h" pinned="false" current-in-tab="true">
+      <file leaf-file-name="mips_main.h" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/mips_main.h">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="124">
-              <caret line="407" column="68" selection-start-line="407" selection-start-column="68" selection-end-line="407" selection-end-column="68" />
+            <state relative-caret-position="158">
+              <caret line="721" column="35" selection-start-line="721" selection-start-column="35" selection-end-line="721" selection-end-column="35" />
               <folding>
                 <element signature="e#99#118#0" expanded="true" />
                 <marker date="1530664499141" expanded="false" signature="2938:7691" ph="..." />
@@ -205,9 +205,9 @@
       <find>_end_loop_4</find>
       <find>int a</find>
       <find>div</find>
-      <find>div</find>
       <find>case SYSCA</find>
       <find>case DIV:</find>
+      <find>_static_0</find>
     </findStrings>
     <replaceStrings>
       <replace>instrFind</replace>
@@ -223,14 +223,15 @@
       <list>
         <option value="$PROJECT_DIR$/cmake-build-debug/utilities.h" />
         <option value="$PROJECT_DIR$/allocator.h" />
-        <option value="$PROJECT_DIR$/parser.h" />
         <option value="$PROJECT_DIR$/Base.h" />
         <option value="$PROJECT_DIR$/stdc++.h" />
         <option value="$PROJECT_DIR$/main.cpp" />
         <option value="$PROJECT_DIR$/executedInstruction.h" />
         <option value="$PROJECT_DIR$/CMakeLists.txt" />
-        <option value="$PROJECT_DIR$/utilities.h" />
         <option value="$PROJECT_DIR$/mips_main.h" />
+        <option value="$PROJECT_DIR$/cmake-build-debug/array_test1-mahaojun.s" />
+        <option value="$PROJECT_DIR$/parser.h" />
+        <option value="$PROJECT_DIR$/utilities.h" />
       </list>
     </option>
   </component>
@@ -327,24 +328,24 @@
       <workItem from="1530588188205" duration="4672000" />
       <workItem from="1530601778823" duration="8646000" />
       <workItem from="1530614475117" duration="2140000" />
-      <workItem from="1530662954901" duration="1573000" />
+      <workItem from="1530662954901" duration="4150000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="75874000" />
+    <option name="totallyTimeSpent" value="78451000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="1440" height="822" extended-state="6" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.6333333" visible="true" weight="0.25792813" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.75555557" visible="true" weight="0.25792813" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.32885906" />
       <window_info anchor="bottom" id="Messages" order="7" sideWeight="0.49964765" weight="0.41931033" />
       <window_info anchor="bottom" id="CMake" order="8" weight="0.32965517" />
       <window_info anchor="bottom" id="Event Log" order="9" sideWeight="0.5003524" side_tool="true" weight="0.32965517" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.71034485" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.50344825" />
       <window_info anchor="bottom" id="Version Control" order="10" />
-      <window_info id="Structure" order="1" sideWeight="0.36666667" side_tool="true" visible="true" weight="0.25792813" />
+      <window_info id="Structure" order="1" sideWeight="0.24444444" side_tool="true" visible="true" weight="0.25792813" />
       <window_info anchor="bottom" id="Terminal" order="11" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.28" />
       <window_info id="Favorites" order="2" sideWeight="0.504698" side_tool="true" weight="0.25" />
@@ -453,8 +454,33 @@
           <line>733</line>
           <option name="timeStamp" value="93" />
         </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/mips_main.h</url>
+          <line>721</line>
+          <option name="timeStamp" value="94" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/mips_main.h</url>
+          <line>722</line>
+          <option name="timeStamp" value="95" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/mips_main.h</url>
+          <line>723</line>
+          <option name="timeStamp" value="96" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/mips_main.h</url>
+          <line>725</line>
+          <option name="timeStamp" value="97" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/mips_main.h</url>
+          <line>724</line>
+          <option name="timeStamp" value="98" />
+        </line-breakpoint>
       </breakpoints>
-      <option name="time" value="94" />
+      <option name="time" value="99" />
     </breakpoint-manager>
     <watches-manager>
       <configuration name="CMakeRunConfiguration">
@@ -475,6 +501,8 @@
         <watch expression="regNum[LOREGISTER]" language="ObjectiveC" />
         <watch expression="regNum[2]" language="ObjectiveC" />
         <watch expression="regNum[3]" language="ObjectiveC" />
+        <watch expression="this-&gt;mem" />
+        <watch expression="this-&gt;mem[3]" />
       </configuration>
     </watches-manager>
   </component>
@@ -911,35 +939,35 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/cmake-build-debug/array_test1-mahaojun.s">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="818">
-          <caret line="627" selection-start-line="627" selection-end-line="637" selection-end-column="24" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/utilities.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1989">
-          <caret line="119" column="31" selection-start-line="119" selection-start-column="31" selection-end-line="119" selection-end-column="31" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/parser.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2533">
-          <caret line="149" column="8" selection-start-line="149" selection-start-column="8" selection-end-line="149" selection-end-column="8" />
+        <state relative-caret-position="595">
+          <caret line="35" selection-start-line="35" selection-end-line="35" selection-end-column="16" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/mips_main.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="124">
-          <caret line="407" column="68" selection-start-line="407" selection-start-column="68" selection-end-line="407" selection-end-column="68" />
+        <state relative-caret-position="158">
+          <caret line="721" column="35" selection-start-line="721" selection-start-column="35" selection-end-line="721" selection-end-column="35" />
           <folding>
             <element signature="e#99#118#0" expanded="true" />
             <marker date="1530664499141" expanded="false" signature="2938:7691" ph="..." />
             <marker date="1530664499141" expanded="true" signature="14859:20979" ph="..." />
             <marker date="1530664499141" expanded="true" signature="20996:25523" ph="..." />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/parser.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="321">
+          <caret line="156" column="29" selection-start-line="156" selection-start-column="29" selection-end-line="156" selection-end-column="29" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/utilities.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="104">
+          <caret line="126" column="48" selection-start-line="126" selection-start-column="48" selection-end-line="126" selection-end-column="48" />
         </state>
       </provider>
     </entry>
