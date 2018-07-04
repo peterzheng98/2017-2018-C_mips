@@ -436,7 +436,7 @@ public:
 
                     break;
                 case NEG:
-                    regNum[a[0]].s = ~regNum[a[1]].s;                    if(controlDebug) cout << __LINE__ << ": Stage: NEG" << endl;
+                    regNum[a[0]].s = -regNum[a[1]].s;                    if(controlDebug) cout << __LINE__ << ": Stage: NEG" << endl;
 
                     break;
                 case NEGU:
