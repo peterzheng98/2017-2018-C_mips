@@ -11,6 +11,10 @@ extern mips Kernel;
 
 
 int main(int argc, char* argv[]){
+    ios::sync_with_stdio(false);
+    cin.tie(0);
+    cout.tie(0);
+
     if(argc < 2){
         cout << "MIPS Simulator v0.1\nCopyright to Zheng Wenxin.\n\nPlease entry the Correct Source File.\n";
         return 0;
