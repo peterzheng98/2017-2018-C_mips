@@ -442,7 +442,7 @@ public:
 //                if(Addr == -1) throw 1; // Error: Not found the label;
                 programSentenceNew[i].ARSrc = (Addr == -1 ? 0x3f3f3f3f : Addr);
             }
-            if(programSentenceNew[i].argv[0] != ""){
+            if (programSentenceNew[i].argv[0] != "") {
                 int Addr = Parser.LabelAddr(programSentenceNew[i].argv[0]);
                 programSentenceNew[i].LRSrc = (Addr == -1 ? 0x3f3f3f3f : Addr);
                 programSentenceNew[i].BLRSrc = (Addr == -1 ? false : true);
@@ -454,7 +454,7 @@ public:
 //                if(Addr == -1) throw 1; // Error: Not found the label;
                 programSentenceNew[i].ARdest = (Addr == -1 ? 0x3f3f3f3f : Addr);
             }
-            if(programSentenceNew[i].argv[1] != ""){
+            if (programSentenceNew[i].argv[1] != "") {
                 int Addr = Parser.LabelAddr(programSentenceNew[i].argv[1]);
                 programSentenceNew[i].LRdest = (Addr == -1 ? 0x3f3f3f3f : Addr);
                 programSentenceNew[i].BLRdest = (Addr == -1 ? false : true);
@@ -466,7 +466,7 @@ public:
 //                if(Addr == -1) throw 1; // Error: Not found the label;
                 programSentenceNew[i].ASrc = (Addr == -1 ? 0x3f3f3f3f : Addr);
             }
-            if(programSentenceNew[i].argv[2] != ""){
+            if (programSentenceNew[i].argv[2] != "") {
                 int Addr = Parser.LabelAddr(programSentenceNew[i].argv[2]);
                 programSentenceNew[i].LSrc = (Addr == -1 ? 0x3f3f3f3f : Addr);
                 programSentenceNew[i].BLSrc = (Addr == -1 ? false : true);
@@ -776,50 +776,35 @@ public:
 
                     break;
                 case LB:
-                    //搜索有没有括号
-                    haveBracket = haveBrackets(s[1]);
-                    if (haveBracket) {//如果含有括号
-                        right = s[1];
-                        left = splitWithCertainChar(right, '(');
-                        deleteCertainChar(right, ')');
-                        offset = string2int(left);
-//                        offset /= 4;
-                    }
-                    if (haveBracket && right[0] == '$') a[1] = regNum[Parser.registerMap[right]].s;
-                    source = (haveAlpha(s[1]) ? Parser.labelMap[s[1]] : a[1]) + offset;
+                    source = (tmp.BLRdest ? tmp.LRdest : regNum[a[1]].s) + tmp.offset;
                     regNum[a[0]] = _WORD(int(mem[source]));
                     if (controlDebug) cout << __LINE__ << ": Stage: LB" << endl;
 
                     break;
                 case LH:
-                    //搜索有没有括号
-                    haveBracket = haveBrackets(s[1]);
-                    if (haveBracket) {//如果含有括号
-                        right = s[1];
-                        left = splitWithCertainChar(right, '(');
-                        deleteCertainChar(right, ')');
-                        offset = string2int(left);
-//                        offset /= 4;
-                    }
-                    if (haveBracket && right[0] == '$') a[1] = regNum[Parser.registerMap[right]].s;
-                    source = (haveAlpha(s[1]) ? Parser.labelMap[s[1]] : a[1]) + offset;
+                    source = (tmp.BLRdest ? tmp.LRdest : regNum[a[1]].s) + tmp.offset;
                     regNum[a[0]] = _WORD((int) (_HALF(mem[source], mem[source] + 1).s));
                     if (controlDebug) cout << __LINE__ << ": Stage: LH" << endl;
 
                     break;
                 case LW:
+//                    cout << "Debug a[1] " << a[1] << endl;
                     //搜索有没有括号
-                    haveBracket = haveBrackets(s[1]);
-                    if (haveBracket) {//如果含有括号
-                        right = s[1];
-                        left = splitWithCertainChar(right, '(');
-                        deleteCertainChar(right, ')');
-                        offset = string2int(left);
+                    if (a[1] == 0x3f3f3f3f) {
+                        haveBracket = haveBrackets(s[1]);
+                        if (haveBracket) {//如果含有括号
+                            right = s[1];
+                            left = splitWithCertainChar(right, '(');
+                            deleteCertainChar(right, ')');
+                            offset = string2int(left);
 //                        offset /= 4;
+                        }
+                        if (haveBracket && right[0] == '$') a[1] = regNum[Parser.registerMap[right]].s;
+//                    cout << "a[1] " << a[1] << " " << Parser.registerMap[right] << endl;
+                        source = (haveAlpha(s[1]) ? Parser.labelMap[s[1]] : a[1]) + offset;
+                    } else {
+                        source = (tmp.BLRdest ? tmp.LRdest : regNum[a[1]].s) + tmp.offset;
                     }
-                    if (haveBracket && right[0] == '$') a[1] = regNum[Parser.registerMap[right]].s;
-
-                    source = (haveAlpha(s[1]) ? Parser.labelMap[s[1]] : a[1]) + offset;
                     regNum[a[0]] = _WORD(mem[source], mem[source + 1], mem[source + 2], mem[source + 3]);
                     if (controlDebug) cout << __LINE__ << ": Stage: LW" << endl;
 
@@ -940,11 +925,11 @@ public:
                             memHead += a;
                             break;
                         case 10:
-                            exit(0);
-//                            return;
+//                            exit(0);
+                            return;
                         case 17:
-                            exit(regNum[4].s);
-//                            return;
+//                            exit(regNum[4].s);
+                            return;
                     }
                     if (controlDebug) cout << __LINE__ << ": Stage: SYSCALL" << endl;
                     break;
