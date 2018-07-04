@@ -16,7 +16,7 @@ using namespace std;
 
 class mips {
 private:
-    int memHead;
+    int memHead, stackTop = memoryMAX - 1;
 
     int mainEntryPoint; //the Main Entry Point
 
@@ -305,9 +305,19 @@ public:
     }
 
     void directlyRun_DR() {
+        if(controlDebug){
+            map<string, int>::iterator ite;
+            cout << "Label Table" << endl;
+            for(ite = executionMap.begin(); ite!=executionMap.end(); ite++){
+                cout << "Label:" << ite->first << "  Line:" << ite->second << endl;
+            }
+        }
+
         int current = mainEntryPoint;
+        regNum[29] = stackTop;
         while(current < programSentence.size()){
             executionInstruction tmp = programSentence[current];
+            if(controlDebug) cout << current << "Running:";
             //设置跳转表示符号
             bool jumpFlag = false;
             // Read the argument
@@ -355,89 +365,128 @@ public:
             switch (tmp.type) {
                 case ADD:
                     regNum[a[0]].s = (f[2] ? regNum[a[2]].s : a[2]) + regNum[a[1]].s;
+                    if(controlDebug) cout << __LINE__ << ": Stage: ADD" << endl;
                     break;
                 case ADDU:
                     regNum[a[0]].us = (f[2] ? regNum[a[2]].us : (unsigned int) a[2]) + regNum[a[1]].us;
+                    if(controlDebug) cout << __LINE__ << ": Stage: ADDU" << endl;
                     break;
                 case ADDIU:
                     regNum[a[0]].us = (f[2] ? regNum[a[2]].us : (unsigned int) a[2]) + regNum[a[1]].us;
+                    if(controlDebug) cout << __LINE__ << ": Stage: ADDIU" << endl;
                     break;
                 case SUB:
                     regNum[a[0]].s = regNum[a[1]].s - (f[2] ? regNum[a[2]].s : a[2]);
+                    if(controlDebug) cout << __LINE__ << ": Stage: SUB" << endl;
                     break;
                 case SUBU:
                     regNum[a[0]].us = regNum[a[1]].us - (f[2] ? regNum[a[2]].us : (unsigned int) a[2]);
+                    if(controlDebug) cout << __LINE__ << ": Stage: SUBU" << endl;
+
                     break;
                 case MUL:
                     if(tmp.argv.size() == 2){
-                        tmp2 = (long long) (f[2] ? regNum[a[2]].s : a[2]) * (long long) regNum[a[1]].s;
+                        tmp2 = (long long) (f[1] ? regNum[a[1]].s : a[1]) * (long long) regNum[a[0]].s;
                         regNum[HIREGISTER] = _WORD(tmp2.core.u1, tmp2.core.u2, tmp2.core.u3, tmp2.core.u4);
                         regNum[LOREGISTER] = _WORD(tmp2.core.u5, tmp2.core.u6, tmp2.core.u7, tmp2.core.u8);
                     } else regNum[a[0]].s = (f[2] ? regNum[a[2]].s : a[2]) * regNum[a[1]].s;
+                    if(controlDebug) cout << __LINE__ << ": Stage: MUL" << endl;
+
                     break;
                 case MULU:
                     if(tmp.argv.size() == 2){
-                        tmp2 = (unsigned long long) (f[2] ? regNum[a[2]].us : a[2]) * (unsigned long long) regNum[a[1]].us;
+                        tmp2 = (unsigned long long) (f[1] ? regNum[a[1]].us : a[1]) * (unsigned long long) regNum[a[0]].us;
                         regNum[HIREGISTER] = _WORD(tmp2.core.u1, tmp2.core.u2, tmp2.core.u3, tmp2.core.u4);
                         regNum[LOREGISTER] = _WORD(tmp2.core.u5, tmp2.core.u6, tmp2.core.u7, tmp2.core.u8);
                     } else regNum[a[0]].us = (f[2] ? regNum[a[2]].us : a[2]) * regNum[a[1]].us;
+                    if(controlDebug) cout << __LINE__ << ": Stage: MULU" << endl;
+
                     break;
                 case DIVU:
                     if(tmp.argv.size() == 2){
-                        regNum[HIREGISTER] = _WORD(regNum[a[1]].us / (f[2] ? regNum[a[2]].us : a[2]));
-                        regNum[LOREGISTER] = _WORD(regNum[a[1]].us % (f[2] ? regNum[a[2]].us : a[2]));
+                        regNum[HIREGISTER] = _WORD(regNum[a[0]].us % (f[1] ? regNum[a[1]].us : a[1]));
+                        regNum[LOREGISTER] = _WORD(regNum[a[0]].us / (f[1] ? regNum[a[1]].us : a[1]));
                     } else regNum[a[0]].us = regNum[a[1]].us / (f[2] ? regNum[a[2]].us : a[2]);
+                    if(controlDebug) cout << __LINE__ << ": Stage: DIVU" << endl;
+
                     break;
                 case DIV:
                     if(tmp.argv.size() == 2){
-                        regNum[HIREGISTER] = _WORD(regNum[a[1]].s / (f[2] ? regNum[a[2]].s : a[2]));
-                        regNum[LOREGISTER] = _WORD(regNum[a[1]].s % (f[2] ? regNum[a[2]].s : a[2]));
+                        regNum[HIREGISTER] = _WORD(regNum[a[0]].s % (f[1] ? regNum[a[1]].s : a[1]));
+                        regNum[LOREGISTER] = _WORD(regNum[a[0]].s / (f[1] ? regNum[a[1]].s : a[1]));
                     } else regNum[a[0]].us = regNum[a[1]].us / (f[2] ? regNum[a[2]].us : a[2]);
+                    if(controlDebug) cout << __LINE__ << ": Stage: DIV" << endl;
+
                     break;
                 case XOR:
                     regNum[a[0]].s = regNum[a[1]].s ^ (f[2] ? regNum[a[2]].s : a[2]);
+                    if(controlDebug) cout << __LINE__ << ": Stage: XOR" << endl;
+
                     break;
                 case XORU:
                     regNum[a[0]].us = regNum[a[1]].us ^ (f[2] ? regNum[a[2]].us : a[2]);
+                    if(controlDebug) cout << __LINE__ << ": Stage: XORU" << endl;
+
                     break;
                 case NEG:
-                    regNum[a[0]].s = -regNum[a[1]].s;
+                    regNum[a[0]].s = ~regNum[a[1]].s;                    if(controlDebug) cout << __LINE__ << ": Stage: NEG" << endl;
+
                     break;
                 case NEGU:
-                    regNum[a[0]].us = -regNum[a[1]].us;
+                    regNum[a[0]].us = ~regNum[a[1]].us;                    if(controlDebug) cout << __LINE__ << ": Stage: NEGU" << endl;
+
                     break;
                 case REM:
                     regNum[a[0]].s = regNum[a[1]].s % (f[2] ? regNum[a[2]].s : a[2]);
+                    if(controlDebug) cout << __LINE__ << ": Stage: REM" << endl;
+
                     break;
                 case REMU:
                     regNum[a[0]].us = regNum[a[1]].us % (f[2] ? regNum[a[2]].us : a[2]);
+                    if(controlDebug) cout << __LINE__ << ": Stage: REMU" << endl;
+
                     break;
                 case LI:
                     regNum[a[0]] = _WORD(a[1]);
+                    if(controlDebug) cout << __LINE__ << ": Stage: LI" << endl;
+
                     break;
                 case SEQ:
                     regNum[a[0]].s = (regNum[a[1]].s == (f[2] ? regNum[a[2]].s : a[2]));
+                    if(controlDebug) cout << __LINE__ << ": Stage: SEQ" << endl;
+
                     break;
                 case SGE:
                     regNum[a[0]].s = (regNum[a[1]].s >= (f[2] ? regNum[a[2]].s : a[2]));
+                    if(controlDebug) cout << __LINE__ << ": Stage: SGE" << endl;
+
                     break;
                 case SGT:
                     regNum[a[0]].s = (regNum[a[1]].s > (f[2] ? regNum[a[2]].s : a[2]));
+                    if(controlDebug) cout << __LINE__ << ": Stage: SGT" << endl;
+
                     break;
                 case SLE:
                     regNum[a[0]].s = (regNum[a[1]].s <= (f[2] ? regNum[a[2]].s : a[2]));
+                    if(controlDebug) cout << __LINE__ << ": Stage: SLE" << endl;
+
                     break;
                 case SLT:
                     regNum[a[0]].s = (regNum[a[1]].s < (f[2] ? regNum[a[2]].s : a[2]));
+                    if(controlDebug) cout << __LINE__ << ": Stage: SLT" << endl;
+
                     break;
                 case SNE:
                     regNum[a[0]].s = (regNum[a[1]].s != (f[2] ? regNum[a[2]].s : a[2]));
+                    if(controlDebug) cout << __LINE__ << ": Stage: SNE" << endl;
+
                     break;
                 case J:
                 case B:
                     nextExe = executionMap[s[0]];
                     current = nextExe;
                     jumpFlag = true;
+                    if(controlDebug) cout << __LINE__ << ": Stage: J\B" << endl;
                     break;
                 case BEQ:
                     if(regNum[a[0]].s == (f[1] ? regNum[a[1]].s : a[1])){
@@ -445,6 +494,8 @@ public:
                         current = nextExe;
                         jumpFlag = true;
                     }
+                    if(controlDebug) cout << __LINE__ << ": Stage: BEQ" << endl;
+
                     break;
                 case BNE:
                     if(regNum[a[0]].s != (f[1] ? regNum[a[1]].s : a[1])){
@@ -452,6 +503,8 @@ public:
                         current = nextExe;
                         jumpFlag = true;
                     }
+                    if(controlDebug) cout << __LINE__ << ": Stage: BNE" << endl;
+
                     break;
                 case BGE:
                     if(regNum[a[0]].s >= (f[1] ? regNum[a[1]].s : a[1])){
@@ -459,6 +512,8 @@ public:
                         current = nextExe;
                         jumpFlag = true;
                     }
+                    if(controlDebug) cout << __LINE__ << ": Stage: BGE" << endl;
+
                     break;
                 case BLE:
                     if(regNum[a[0]].s <= (f[1] ? regNum[a[1]].s : a[1])){
@@ -466,6 +521,8 @@ public:
                         current = nextExe;
                         jumpFlag = true;
                     }
+                    if(controlDebug) cout << __LINE__ << ": Stage: BLE" << endl;
+
                     break;
                 case BGT:
                     if(regNum[a[0]].s > (f[1] ? regNum[a[1]].s : a[1])){
@@ -473,6 +530,8 @@ public:
                         current = nextExe;
                         jumpFlag = true;
                     }
+                    if(controlDebug) cout << __LINE__ << ": Stage: BGT" << endl;
+
                     break;
                 case BLT:
                     if(regNum[a[0]].s < (f[1] ? regNum[a[1]].s : a[1])){
@@ -480,6 +539,8 @@ public:
                         current = nextExe;
                         jumpFlag = true;
                     }
+                    if(controlDebug) cout << __LINE__ << ": Stage: BLT" << endl;
+
                     break;
                 case BEQZ:
                     if(regNum[a[0]].s == 0){
@@ -487,6 +548,8 @@ public:
                         current = nextExe;
                         jumpFlag = true;
                     }
+                    if(controlDebug) cout << __LINE__ << ": Stage: BEQZ" << endl;
+
                     break;
                 case BNEZ:
                     if(regNum[a[0]].s != 0){
@@ -494,6 +557,8 @@ public:
                         current = nextExe;
                         jumpFlag = true;
                     }
+                    if(controlDebug) cout << __LINE__ << ": Stage: BNEZ" << endl;
+
                     break;
                 case BLEZ:
                     if(regNum[a[0]].s <= 0){
@@ -501,6 +566,8 @@ public:
                         current = nextExe;
                         jumpFlag = true;
                     }
+                    if(controlDebug) cout << __LINE__ << ": Stage: BLEZ" << endl;
+
                     break;
                 case BGEZ:
                     if(regNum[a[0]].s >= 0){
@@ -508,6 +575,8 @@ public:
                         current = nextExe;
                         jumpFlag = true;
                     }
+                    if(controlDebug) cout << __LINE__ << ": Stage: BGEZ" << endl;
+
                     break;
                 case BGTZ:
                     if(regNum[a[0]].s > 0){
@@ -515,6 +584,8 @@ public:
                         current = nextExe;
                         jumpFlag = true;
                     }
+                    if(controlDebug) cout << __LINE__ << ": Stage: BGTZ" << endl;
+
                     break;
                 case BLTZ:
                     if(regNum[a[0]].s < 0){
@@ -522,10 +593,14 @@ public:
                         current = nextExe;
                         jumpFlag = true;
                     }
+                    if(controlDebug) cout << __LINE__ << ": Stage: BLTZ" << endl;
+
                     break;
                 case JR:
                     current = regNum[a[0]].s;
                     jumpFlag = true;
+                    if(controlDebug) cout << __LINE__ << ": Stage: JR" << endl;
+
                     break;
                 case JAL:
                     nextExe = executionMap[s[0]];
@@ -533,16 +608,22 @@ public:
                     jumpFlag = true;
                     regNum[31] = current + 1;
                     current = nextExe;
+                    if(controlDebug) cout << __LINE__ << ": Stage: JAL" << endl;
+
                     break;
                 case JALR:
 
                     jumpFlag = true;
                     regNum[31] = current + 1;
                     current = regNum[a[0]].s;
+                    if(controlDebug) cout << __LINE__ << ": Stage: JALR" << endl;
+
                     break;
                 case LA:
                     labelAddress = Parser.labelMap[s[1]];
                     regNum[a[0]] = labelAddress;
+                    if(controlDebug) cout << __LINE__ << ": Stage: LA" << endl;
+
                     break;
                 case LB:
                     //搜索有没有括号
@@ -554,9 +635,11 @@ public:
                         offset = string2int(left);
 //                        offset /= 4;
                     }
-
+                    if(haveBracket && right[0] == '$') a[1] = regNum[Parser.registerMap[right]].s;
                     source = (haveAlpha(s[1]) ? Parser.labelMap[s[1]] : a[1]) + offset;
                     regNum[a[0]] = _WORD(int(mem[source]));
+                    if(controlDebug) cout << __LINE__ << ": Stage: LB" << endl;
+
                     break;
                 case LH:
                     //搜索有没有括号
@@ -568,9 +651,11 @@ public:
                         offset = string2int(left);
 //                        offset /= 4;
                     }
-
+                    if(haveBracket && right[0] == '$') a[1] = regNum[Parser.registerMap[right]].s;
                     source = (haveAlpha(s[1]) ? Parser.labelMap[s[1]] : a[1]) + offset;
                     regNum[a[0]] = _WORD((int)(_HALF(mem[source], mem[source] + 1).s));
+                    if(controlDebug) cout << __LINE__ << ": Stage: LH" << endl;
+
                     break;
                 case LW:
                     //搜索有没有括号
@@ -582,9 +667,12 @@ public:
                         offset = string2int(left);
 //                        offset /= 4;
                     }
+                    if(haveBracket && right[0] == '$') a[1] = regNum[Parser.registerMap[right]].s;
 
                     source = (haveAlpha(s[1]) ? Parser.labelMap[s[1]] : a[1]) + offset;
                     regNum[a[0]] = _WORD(mem[source], mem[source + 1], mem[source + 2], mem[source + 3]);
+                    if(controlDebug) cout << __LINE__ << ": Stage: LW" << endl;
+
                     break;
                 case SB:
                     haveBracket = haveBrackets(s[1]);
@@ -595,9 +683,13 @@ public:
                         offset = string2int(left);
 //                        offset /= 4;
                     }
+                    if(haveBracket && right[0] == '$') a[1] = regNum[Parser.registerMap[right]].s;
 
                     source = (haveAlpha(s[1]) ? Parser.labelMap[s[1]] : a[1]) + offset;
                     mem[source] = regNum[a[0]].core.u1;
+                    if(controlDebug) cout << endl << "Stage SB: " << source << " |In Memory: " << (int) mem[source] << endl;
+                    if(controlDebug) cout << __LINE__ <<": Stage: SB" <<  endl;
+
                     break;
                 case SH:
                     haveBracket = haveBrackets(s[1]);
@@ -608,10 +700,14 @@ public:
                         offset = string2int(left);
 //                        offset /= 4;
                     }
+                    if(haveBracket && right[0] == '$') a[1] = regNum[Parser.registerMap[right]].s;
 
                     source = (haveAlpha(s[1]) ? Parser.labelMap[s[1]] : a[1]) + offset;
                     mem[source] = regNum[a[0]].core.u1;
                     mem[source+1] = regNum[a[0]].core.u2;
+                    if(controlDebug) cout << endl << "Stage SH: " << source << " |In Memory: " << (int) mem[source] << endl;
+                    if(controlDebug) cout << __LINE__ << ": Stage: SH" << endl;
+
                     break;
                 case SW:
                     haveBracket = haveBrackets(s[1]);
@@ -622,23 +718,33 @@ public:
                         offset = string2int(left);
 //                        offset /= 4;
                     }
-
+                    if(haveBracket && right[0] == '$') a[1] = regNum[Parser.registerMap[right]].s;
                     source = (haveAlpha(s[1]) ? Parser.labelMap[s[1]] : a[1]) + offset;
                     mem[source] = regNum[a[0]].core.u1;
                     mem[source + 1] = regNum[a[0]].core.u2;
-                    mem[source + 2] = regNum[a[1]].core.u3;
-                    mem[source + 3] = regNum[a[2]].core.u4;
+                    mem[source + 2] = regNum[a[0]].core.u3;
+                    mem[source + 3] = regNum[a[0]].core.u4;
+                    if(controlDebug) cout << endl << "Stage SW: " << source << " |In Memory: " << (int) mem[source] << endl;
+                    if(controlDebug) cout << __LINE__ << ": Stage: SW" << endl;
+
                     break;
                 case MOVE:
+
+                    if(controlDebug) cout << __LINE__ << ": Stage: MOVE[From" << a[0] << "] [To" << a[1] << "]" << endl;
                     regNum[a[0]].s = regNum[a[1]].s;
                     break;
                 case MFHI:
                     regNum[a[0]].s = regNum[HIREGISTER].s;
+                    if(controlDebug) cout << __LINE__ << ": Stage: MHFI" << endl;
+
                     break;
                 case MFLO:
                     regNum[a[0]].s = regNum[LOREGISTER].s;
+                    if(controlDebug) cout << __LINE__ << ": Stage: MFLO" << endl;
+
                     break;
                 case NOP:
+                    if(controlDebug) cout << __LINE__ << ": Stage: NOP" << endl;
 
                     break;
                 case SYSCALL:
@@ -657,17 +763,19 @@ public:
                                 if(mem[i] == 0) break;
                                 cout << (char) mem[i];
                             }
+                            cout << "\0";
+                            cout << flush;
                             break;
                         case 5:
                             cin >> t;
-                            regNum[4].s = t;
+                            regNum[2].s = t;
                             break;
                         case 8:
                             cin >> str;
                             break;
                         case 9:
                             a = regNum[4].s;
-                            regNum[2].s = memHead;
+                            regNum[2].s = memHead + 1;
                             memHead += a;
                             break;
                         case 10:
@@ -675,6 +783,7 @@ public:
                         case 17:
                             exit(regNum[4].s);
                     }
+                    if(controlDebug) cout << __LINE__ << ": Stage: SYSCALL" << endl;
                     break;
             }
             if(!jumpFlag) current++;

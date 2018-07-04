@@ -12,7 +12,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="dff3ed63-0dd2-43e1-a52f-fd583c52664d" name="Default" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/MIPS.dir/main.cpp.o" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/MIPS.dir/main.cpp.o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/MIPS" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/MIPS" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mips_main.h" beforeDir="false" afterPath="$PROJECT_DIR$/mips_main.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utilities.h" beforeDir="false" afterPath="$PROJECT_DIR$/utilities.h" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -22,26 +26,112 @@
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="DockManager">
+    <window id="4">
+      <content type="file-editors">
+        <state>
+          <leaf>
+            <file leaf-file-name="array_test1-mahaojun.s" pinned="false" current-in-tab="true">
+              <entry file="file://$PROJECT_DIR$/cmake-build-debug/array_test1-mahaojun.s">
+                <provider selected="true" editor-type-id="text-editor">
+                  <state relative-caret-position="818">
+                    <caret line="627" selection-start-line="627" selection-end-line="637" selection-end-column="24" />
+                  </state>
+                </provider>
+              </entry>
+            </file>
+          </leaf>
+        </state>
+      </content>
+    </window>
+    <window id="1">
+      <content type="file-editors">
+        <state>
+          <splitter split-orientation="vertical" split-proportion="0.5">
+            <split-first>
+              <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+                <file leaf-file-name="mips_main.h" pinned="false" current-in-tab="true">
+                  <entry file="file://$PROJECT_DIR$/mips_main.h">
+                    <provider selected="true" editor-type-id="text-editor">
+                      <state relative-caret-position="17">
+                        <caret line="414" column="96" selection-start-line="414" selection-start-column="96" selection-end-line="414" selection-end-column="96" />
+                        <folding>
+                          <element signature="e#99#118#0" expanded="true" />
+                          <marker date="1530664499141" expanded="false" signature="2938:7691" ph="..." />
+                          <marker date="1530664499141" expanded="true" signature="14859:20979" ph="..." />
+                          <marker date="1530664499141" expanded="true" signature="20996:25523" ph="..." />
+                        </folding>
+                      </state>
+                    </provider>
+                  </entry>
+                </file>
+                <file leaf-file-name="utilities.h" pinned="false" current-in-tab="false">
+                  <entry file="file://$PROJECT_DIR$/utilities.h">
+                    <provider selected="true" editor-type-id="text-editor">
+                      <state relative-caret-position="2023">
+                        <caret line="119" column="31" selection-start-line="119" selection-start-column="31" selection-end-line="119" selection-end-column="31" />
+                      </state>
+                    </provider>
+                  </entry>
+                </file>
+                <file leaf-file-name="Base.h" pinned="false" current-in-tab="false">
+                  <entry file="file://$PROJECT_DIR$/Base.h">
+                    <provider selected="true" editor-type-id="text-editor">
+                      <state relative-caret-position="2975">
+                        <caret line="175" column="5" selection-start-line="175" selection-start-column="5" selection-end-line="175" selection-end-column="5" />
+                      </state>
+                    </provider>
+                  </entry>
+                </file>
+              </leaf>
+            </split-first>
+            <split-second>
+              <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+                <file leaf-file-name="main.cpp" pinned="false" current-in-tab="true">
+                  <entry file="file://$PROJECT_DIR$/main.cpp">
+                    <provider selected="true" editor-type-id="text-editor">
+                      <state relative-caret-position="292">
+                        <caret line="29" column="3" selection-start-line="29" selection-start-column="3" selection-end-line="29" selection-end-column="3" />
+                        <folding>
+                          <element signature="e#48#67#0" expanded="true" />
+                        </folding>
+                      </state>
+                    </provider>
+                  </entry>
+                </file>
+              </leaf>
+            </split-second>
+          </splitter>
+        </state>
+      </content>
+    </window>
+  </component>
   <component name="ExecutionTargetManager" SELECTED_TARGET="CMakeBuildProfile:Debug" />
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file leaf-file-name="CMakeLists.txt" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/CMakeLists.txt">
           <provider selected="true" editor-type-id="text-editor">
-            <state>
-              <caret column="35" selection-start-column="35" selection-end-column="35" />
+            <state relative-caret-position="51">
+              <caret line="3" column="26" selection-start-line="3" selection-start-column="26" selection-end-line="3" selection-end-column="26" />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="main.cpp" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/main.cpp">
+      <file leaf-file-name="utilities.h" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/utilities.h">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="228">
-              <caret line="34" selection-start-line="34" selection-end-line="34" />
-              <folding>
-                <element signature="e#48#67#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="1989">
+              <caret line="119" column="31" selection-start-line="119" selection-start-column="31" selection-end-line="119" selection-end-column="31" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="parser.h" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/parser.h">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="2533">
+              <caret line="149" column="8" selection-start-line="149" selection-start-column="8" selection-end-line="149" selection-end-column="8" />
             </state>
           </provider>
         </entry>
@@ -49,23 +139,8 @@
       <file leaf-file-name="executedInstruction.h" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/executedInstruction.h">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="255">
+            <state relative-caret-position="306">
               <caret line="18" column="14" selection-start-line="18" selection-start-column="14" selection-end-line="18" selection-end-column="14" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="mips_main.h" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/mips_main.h">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="573">
-              <caret line="406" column="39" selection-start-line="406" selection-start-column="39" selection-end-line="406" selection-end-column="39" />
-              <folding>
-                <element signature="e#99#118#0" expanded="true" />
-                <marker date="1530585883859" expanded="false" signature="2912:7665" ph="..." />
-                <marker date="1530585883859" expanded="true" signature="14443:18757" ph="..." />
-                <marker date="1530585883859" expanded="false" signature="18774:22230" ph="..." />
-              </folding>
             </state>
           </provider>
         </entry>
@@ -73,7 +148,7 @@
       <file leaf-file-name="stdc++.h" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/stdc++.h">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="117">
+            <state relative-caret-position="136">
               <caret line="8" selection-start-line="8" selection-end-line="8" />
               <folding>
                 <element signature="e#106#122#0" expanded="true" />
@@ -82,32 +157,26 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="parser.h" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/parser.h">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="167">
-              <caret line="67" column="52" lean-forward="true" selection-start-line="67" selection-start-column="52" selection-end-line="67" selection-end-column="52" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="utilities.h" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/utilities.h">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1827">
-              <caret line="124" lean-forward="true" selection-start-line="124" selection-end-line="124" />
-              <folding>
-                <element signature="e#99#116#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="Makefile2" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Makefile2">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="380">
-              <caret line="96" column="14" lean-forward="true" selection-start-line="96" selection-start-column="14" selection-end-line="96" selection-end-column="14" />
+            <state relative-caret-position="1632">
+              <caret line="96" column="14" selection-start-line="96" selection-start-column="14" selection-end-line="96" selection-end-column="14" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="mips_main.h" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/mips_main.h">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="124">
+              <caret line="407" column="68" selection-start-line="407" selection-start-column="68" selection-end-line="407" selection-end-column="68" />
+              <folding>
+                <element signature="e#99#118#0" expanded="true" />
+                <marker date="1530664499141" expanded="false" signature="2938:7691" ph="..." />
+                <marker date="1530664499141" expanded="true" signature="14859:20979" ph="..." />
+                <marker date="1530664499141" expanded="true" signature="20996:25523" ph="..." />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -129,8 +198,16 @@
       <find>int nextExe</find>
       <find>executionMap</find>
       <find>la</find>
-      <find>a</find>
       <find>clean</find>
+      <find>a</find>
+      <find>currentSentence</find>
+      <find>sw $v0, -60(</find>
+      <find>_end_loop_4</find>
+      <find>int a</find>
+      <find>div</find>
+      <find>div</find>
+      <find>case SYSCA</find>
+      <find>case DIV:</find>
     </findStrings>
     <replaceStrings>
       <replace>instrFind</replace>
@@ -145,14 +222,14 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/cmake-build-debug/utilities.h" />
-        <option value="$PROJECT_DIR$/CMakeLists.txt" />
         <option value="$PROJECT_DIR$/allocator.h" />
         <option value="$PROJECT_DIR$/parser.h" />
         <option value="$PROJECT_DIR$/Base.h" />
         <option value="$PROJECT_DIR$/stdc++.h" />
-        <option value="$PROJECT_DIR$/utilities.h" />
         <option value="$PROJECT_DIR$/main.cpp" />
         <option value="$PROJECT_DIR$/executedInstruction.h" />
+        <option value="$PROJECT_DIR$/CMakeLists.txt" />
+        <option value="$PROJECT_DIR$/utilities.h" />
         <option value="$PROJECT_DIR$/mips_main.h" />
       </list>
     </option>
@@ -170,7 +247,7 @@
   <component name="ProjectFrameBounds" extendedState="6">
     <option name="y" value="23" />
     <option name="width" value="1440" />
-    <option name="height" value="877" />
+    <option name="height" value="822" />
   </component>
   <component name="ProjectLevelVcsManager">
     <ConfirmationsSetting value="2" id="Add" />
@@ -180,7 +257,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -197,6 +273,7 @@
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -217,7 +294,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Application.Debug MIPS">
+  <component name="RunManager" selected="Application.MIPS">
     <configuration name="Build All" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="MIPS" RUN_TARGET_NAME="MIPS" EXPLICIT_BUILD_TARGET_NAME="all" />
     <configuration name="Debug MIPS" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="array_test1-mahaojun.s -d" PASS_PARENT_ENVS_2="true" PROJECT_NAME="MIPS" TARGET_NAME="MIPS" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="MIPS" RUN_TARGET_NAME="MIPS" />
     <configuration name="MIPS" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="array_test1-mahaojun.s" PASS_PARENT_ENVS_2="true" PROJECT_NAME="MIPS" TARGET_NAME="MIPS" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="MIPS" RUN_TARGET_NAME="MIPS" />
@@ -246,36 +323,39 @@
       <workItem from="1530519327745" duration="9794000" />
       <workItem from="1530540294184" duration="1718000" />
       <workItem from="1530573987768" duration="1314000" />
-      <workItem from="1530577225484" duration="7953000" />
+      <workItem from="1530577225484" duration="8261000" />
+      <workItem from="1530588188205" duration="4672000" />
+      <workItem from="1530601778823" duration="8646000" />
+      <workItem from="1530614475117" duration="2140000" />
+      <workItem from="1530662954901" duration="1573000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="58535000" />
+    <option name="totallyTimeSpent" value="75874000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="1440" height="822" extended-state="6" />
-    <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.7641379" visible="true" weight="0.25792813" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.6333333" visible="true" weight="0.25792813" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.32885906" />
-      <window_info anchor="bottom" id="Messages" order="7" sideWeight="0.49964765" weight="0.42051283" />
+      <window_info anchor="bottom" id="Messages" order="7" sideWeight="0.49964765" weight="0.41931033" />
       <window_info anchor="bottom" id="CMake" order="8" weight="0.32965517" />
       <window_info anchor="bottom" id="Event Log" order="9" sideWeight="0.5003524" side_tool="true" weight="0.32965517" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.28333333" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.71034485" />
       <window_info anchor="bottom" id="Version Control" order="10" />
-      <window_info id="Structure" order="1" sideWeight="0.23586208" side_tool="true" visible="true" weight="0.25792813" />
+      <window_info id="Structure" order="1" sideWeight="0.36666667" side_tool="true" visible="true" weight="0.25792813" />
       <window_info anchor="bottom" id="Terminal" order="11" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.56153846" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.28" />
       <window_info id="Favorites" order="2" sideWeight="0.504698" side_tool="true" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info active="true" anchor="right" id="Data View" order="3" visible="true" weight="0.17453505" />
       <window_info anchor="right" id="Commander" order="0" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
-      <window_info anchor="bottom" id="Message" order="0" />
-      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
-      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Find" order="1" />
+      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info anchor="bottom" id="Message" order="0" />
     </layout>
     <layout-to-restore>
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
@@ -309,17 +389,72 @@
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/main.cpp</url>
-          <line>34</line>
-          <option name="timeStamp" value="13" />
+          <url>file://$PROJECT_DIR$/mips_main.h</url>
+          <line>315</line>
+          <option name="timeStamp" value="55" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
           <url>file://$PROJECT_DIR$/mips_main.h</url>
-          <line>307</line>
-          <option name="timeStamp" value="55" />
+          <line>760</line>
+          <option name="timeStamp" value="78" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/mips_main.h</url>
+          <line>416</line>
+          <option name="timeStamp" value="79" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/mips_main.h</url>
+          <line>415</line>
+          <option name="timeStamp" value="80" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/mips_main.h</url>
+          <line>413</line>
+          <option name="timeStamp" value="82" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/mips_main.h</url>
+          <line>414</line>
+          <option name="timeStamp" value="83" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/mips_main.h</url>
+          <line>320</line>
+          <option name="timeStamp" value="84" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/mips_main.h</url>
+          <line>321</line>
+          <option name="timeStamp" value="85" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/mips_main.h</url>
+          <line>324</line>
+          <option name="timeStamp" value="89" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/mips_main.h</url>
+          <line>323</line>
+          <option name="timeStamp" value="90" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/mips_main.h</url>
+          <line>731</line>
+          <option name="timeStamp" value="91" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/mips_main.h</url>
+          <line>732</line>
+          <option name="timeStamp" value="92" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/mips_main.h</url>
+          <line>733</line>
+          <option name="timeStamp" value="93" />
         </line-breakpoint>
       </breakpoints>
-      <option name="time" value="56" />
+      <option name="time" value="94" />
     </breakpoint-manager>
     <watches-manager>
       <configuration name="CMakeRunConfiguration">
@@ -328,81 +463,80 @@
         <watch expression="mainEntryPoint" language="ObjectiveC" />
         <watch expression="programSentence" language="ObjectiveC" />
         <watch expression="tmp" language="ObjectiveC" />
-        <watch expression="a[0]" language="ObjectiveC" />
         <watch expression="source" language="ObjectiveC" />
-        <watch expression="token" language="ObjectiveC" />
         <watch expression="nextExe" language="ObjectiveC" />
         <watch expression="a" language="ObjectiveC" />
+        <watch expression="s" language="ObjectiveC" />
+        <watch expression="offset" language="ObjectiveC" />
+        <watch expression="left" language="ObjectiveC" />
+        <watch expression="Parser" language="ObjectiveC" />
+        <watch expression="right" language="ObjectiveC" />
+        <watch expression="regNum[HIREGISTER]" language="ObjectiveC" />
+        <watch expression="regNum[LOREGISTER]" language="ObjectiveC" />
+        <watch expression="regNum[2]" language="ObjectiveC" />
+        <watch expression="regNum[3]" language="ObjectiveC" />
       </configuration>
     </watches-manager>
   </component>
   <component name="debuggerHistoryManager">
     <expressions id="watch">
       <expression>
-        <expression-string>a</expression-string>
+        <expression-string>regNum[3]</expression-string>
         <language-id>ObjectiveC</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>a[0]</expression-string>
+        <expression-string>regNum[2]</expression-string>
         <language-id>ObjectiveC</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>nextExe</expression-string>
+        <expression-string>regNum[LOREGISTER]</expression-string>
         <language-id>ObjectiveC</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>token</expression-string>
+        <expression-string>regNum[HIREGISTER]</expression-string>
         <language-id>ObjectiveC</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>mainEntryPoint</expression-string>
+        <expression-string>reg[HIREGISTER]</expression-string>
         <language-id>ObjectiveC</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>source</expression-string>
+        <expression-string>mem[start]</expression-string>
         <language-id>ObjectiveC</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>tmp</expression-string>
+        <expression-string>mem[326]</expression-string>
         <language-id>ObjectiveC</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>programSentence</expression-string>
+        <expression-string>mem[325]</expression-string>
         <language-id>ObjectiveC</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>programSentence[current]</expression-string>
+        <expression-string>mem[324]</expression-string>
+        <language-id>ObjectiveC</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>start</expression-string>
         <language-id>ObjectiveC</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
     </expressions>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/stdc++.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="34">
-          <caret line="2" column="2" selection-start-line="2" selection-start-column="2" selection-end-line="2" selection-end-column="2" />
-          <folding>
-            <element signature="e#106#122#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/utilities.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1734">
           <caret line="102" selection-start-line="102" selection-end-line="102" />
-          <folding>
-            <element signature="e#99#116#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -412,9 +546,9 @@
           <caret line="7" column="9" lean-forward="true" selection-start-line="7" selection-start-column="9" selection-end-line="7" selection-end-column="9" />
           <folding>
             <element signature="e#99#118#0" expanded="true" />
-            <marker date="1530585883859" expanded="false" signature="2912:7665" ph="..." />
-            <marker date="1530585883859" expanded="true" signature="14443:18757" ph="..." />
-            <marker date="1530585883859" expanded="false" signature="18774:22230" ph="..." />
+            <marker date="1530664499141" expanded="false" signature="2938:7691" ph="..." />
+            <marker date="1530664499141" expanded="true" signature="14859:20979" ph="..." />
+            <marker date="1530664499141" expanded="true" signature="20996:25523" ph="..." />
           </folding>
         </state>
       </provider>
@@ -464,9 +598,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1734">
           <caret line="102" lean-forward="true" selection-start-line="102" selection-end-line="102" />
-          <folding>
-            <element signature="e#99#116#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -476,9 +607,9 @@
           <caret line="105" column="39" lean-forward="true" selection-start-line="105" selection-start-column="39" selection-end-line="105" selection-end-column="39" />
           <folding>
             <element signature="e#99#118#0" expanded="true" />
-            <marker date="1530585883859" expanded="false" signature="2912:7665" ph="..." />
-            <marker date="1530585883859" expanded="true" signature="14443:18757" ph="..." />
-            <marker date="1530585883859" expanded="false" signature="18774:22230" ph="..." />
+            <marker date="1530664499141" expanded="false" signature="2938:7691" ph="..." />
+            <marker date="1530664499141" expanded="true" signature="14859:20979" ph="..." />
+            <marker date="1530664499141" expanded="true" signature="20996:25523" ph="..." />
           </folding>
         </state>
       </provider>
@@ -528,9 +659,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="442">
           <caret line="26" selection-start-line="26" selection-end-line="26" />
-          <folding>
-            <element signature="e#99#116#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -540,9 +668,9 @@
           <caret line="52" lean-forward="true" selection-start-line="52" selection-end-line="52" />
           <folding>
             <element signature="e#99#118#0" expanded="true" />
-            <marker date="1530585883859" expanded="false" signature="2912:7665" ph="..." />
-            <marker date="1530585883859" expanded="true" signature="14443:18757" ph="..." />
-            <marker date="1530585883859" expanded="false" signature="18774:22230" ph="..." />
+            <marker date="1530664499141" expanded="false" signature="2938:7691" ph="..." />
+            <marker date="1530664499141" expanded="true" signature="14859:20979" ph="..." />
+            <marker date="1530664499141" expanded="true" signature="20996:25523" ph="..." />
           </folding>
         </state>
       </provider>
@@ -577,9 +705,9 @@
           <caret line="28" column="54" lean-forward="true" selection-start-line="28" selection-start-column="54" selection-end-line="28" selection-end-column="54" />
           <folding>
             <element signature="e#99#118#0" expanded="true" />
-            <marker date="1530585883859" expanded="false" signature="2912:7665" ph="..." />
-            <marker date="1530585883859" expanded="true" signature="14443:18757" ph="..." />
-            <marker date="1530585883859" expanded="false" signature="18774:22230" ph="..." />
+            <marker date="1530664499141" expanded="false" signature="2938:7691" ph="..." />
+            <marker date="1530664499141" expanded="true" signature="14859:20979" ph="..." />
+            <marker date="1530664499141" expanded="true" signature="20996:25523" ph="..." />
           </folding>
         </state>
       </provider>
@@ -628,9 +756,9 @@
           <caret line="17" column="14" lean-forward="true" selection-start-line="17" selection-start-column="14" selection-end-line="17" selection-end-column="14" />
           <folding>
             <element signature="e#99#118#0" expanded="true" />
-            <marker date="1530585883859" expanded="false" signature="2912:7665" ph="..." />
-            <marker date="1530585883859" expanded="true" signature="14443:18757" ph="..." />
-            <marker date="1530585883859" expanded="false" signature="18774:22230" ph="..." />
+            <marker date="1530664499141" expanded="false" signature="2938:7691" ph="..." />
+            <marker date="1530664499141" expanded="true" signature="14859:20979" ph="..." />
+            <marker date="1530664499141" expanded="true" signature="20996:25523" ph="..." />
           </folding>
         </state>
       </provider>
@@ -702,20 +830,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/CMakeLists.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret column="35" selection-start-column="35" selection-end-column="35" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Base.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="224">
-          <caret line="230" column="22" selection-start-line="230" selection-start-column="22" selection-end-line="230" selection-end-column="22" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$USER_HOME$/Downloads/数据 (1)/testsuit-1/array_test1-mahaojun.s">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="141">
@@ -742,52 +856,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Makefile2">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="380">
-          <caret line="96" column="14" lean-forward="true" selection-start-line="96" selection-start-column="14" selection-end-line="96" selection-end-column="14" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/stdc++.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="117">
-          <caret line="8" selection-start-line="8" selection-end-line="8" />
-          <folding>
-            <element signature="e#106#122#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/utilities.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1827">
-          <caret line="124" lean-forward="true" selection-start-line="124" selection-end-line="124" />
-          <folding>
-            <element signature="e#99#116#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/parser.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="167">
-          <caret line="67" column="52" lean-forward="true" selection-start-line="67" selection-start-column="52" selection-end-line="67" selection-end-column="52" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/executedInstruction.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="255">
-          <caret line="18" column="14" selection-start-line="18" selection-start-column="14" selection-end-line="18" selection-end-column="14" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/main.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="228">
-          <caret line="34" selection-start-line="34" selection-end-line="34" />
-          <folding>
-            <element signature="e#48#67#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="1632">
+          <caret line="96" column="14" selection-start-line="96" selection-start-column="14" selection-end-line="96" selection-end-column="14" />
         </state>
       </provider>
     </entry>
@@ -798,15 +868,77 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/executedInstruction.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="306">
+          <caret line="18" column="14" selection-start-line="18" selection-start-column="14" selection-end-line="18" selection-end-column="14" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/stdc++.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="136">
+          <caret line="8" selection-start-line="8" selection-end-line="8" />
+          <folding>
+            <element signature="e#106#122#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/CMakeLists.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="51">
+          <caret line="3" column="26" selection-start-line="3" selection-start-column="26" selection-end-line="3" selection-end-column="26" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Base.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2975">
+          <caret line="175" column="5" selection-start-line="175" selection-start-column="5" selection-end-line="175" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/main.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="292">
+          <caret line="29" column="3" selection-start-line="29" selection-start-column="3" selection-end-line="29" selection-end-column="3" />
+          <folding>
+            <element signature="e#48#67#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cmake-build-debug/array_test1-mahaojun.s">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="818">
+          <caret line="627" selection-start-line="627" selection-end-line="637" selection-end-column="24" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/utilities.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1989">
+          <caret line="119" column="31" selection-start-line="119" selection-start-column="31" selection-end-line="119" selection-end-column="31" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/parser.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2533">
+          <caret line="149" column="8" selection-start-line="149" selection-start-column="8" selection-end-line="149" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/mips_main.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="573">
-          <caret line="406" column="39" selection-start-line="406" selection-start-column="39" selection-end-line="406" selection-end-column="39" />
+        <state relative-caret-position="124">
+          <caret line="407" column="68" selection-start-line="407" selection-start-column="68" selection-end-line="407" selection-end-column="68" />
           <folding>
             <element signature="e#99#118#0" expanded="true" />
-            <marker date="1530585883859" expanded="false" signature="2912:7665" ph="..." />
-            <marker date="1530585883859" expanded="true" signature="14443:18757" ph="..." />
-            <marker date="1530585883859" expanded="false" signature="18774:22230" ph="..." />
+            <marker date="1530664499141" expanded="false" signature="2938:7691" ph="..." />
+            <marker date="1530664499141" expanded="true" signature="14859:20979" ph="..." />
+            <marker date="1530664499141" expanded="true" signature="20996:25523" ph="..." />
           </folding>
         </state>
       </provider>
