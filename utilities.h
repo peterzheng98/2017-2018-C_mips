@@ -149,4 +149,11 @@ inline bool haveAlpha(const string& rhs){
     return false;
 }
 
+
+inline bool allNumber(const string& rhs){
+    for(int i = 0;i < rhs.length(); ++i)
+        if((rhs[i] < '0' || rhs[i] > '9') && (rhs[i] != '-') && (i == 0)) return false;
+
+    return true;
+}
 #endif //MIPS_UTILITIES_H

@@ -38,7 +38,7 @@ int main(int argc, char *argv[]) {
     buf << File.rdbuf();
     string data = buf.str();
     if (controlDebug) debugMess(data, "Receive Message From File", 1);
-    Kernel.setInstruction(data);
+    Kernel.setInstructionNew(data);
     Kernel.run();
     if (controlDebug) debugMess("Execute Finish.", "General");
     printf("\n[%d][%d][%d][%d][%d][%d]\n", reg1, reg2, reg3, reg4, reg5, reg6);

@@ -19,6 +19,15 @@ public:
     int index;
 };
 
+class RBase{
+    virtual void IF() = 0;
+};
+
+class JR : public RBase{
+private:
+    executionInstruction e;
+
+};
 class Execution{
 public:
     string labelName;
@@ -28,6 +37,21 @@ public:
         labelName = "";
         prog.clear();
     }
+};
+
+class executionInstructionNew{
+public:
+    Instruction type;
+    vector<string> argv;
+    int index, argc;
+    int RSrc, Rdest, Src;
+    int offset;
+    string typeName;
+    int ARSrc, ARdest, ASrc;
+    int LRSrc, LRdest, LSrc;
+    bool BLRSrc = false, BLRdest = false, BLSrc = false;
+    executionInstructionNew() : index(0), argc(0), RSrc(0x3f3f3f3f), Rdest(0x3f3f3f3f), Src(0x3f3f3f3f), offset(0x3f3f3f3f),
+    ARSrc(0x3f3f3f3f), ARdest(0x3f3f3f3f), ASrc(0x3f3f3f3f), LRSrc(0x3f3f3f3f), LRdest(0x3f3f3f3f), LSrc(0x3f3f3f3f){ }
 };
 
 #endif //MIPS_EXECUTEDINSTRUCTION_H
