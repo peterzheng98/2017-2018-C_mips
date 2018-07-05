@@ -19,15 +19,6 @@ public:
     int index;
 };
 
-class RBase{
-    virtual void IF() = 0;
-};
-
-class JR : public RBase{
-private:
-    executionInstruction e;
-
-};
 class Execution{
 public:
     string labelName;
@@ -55,5 +46,6 @@ public:
         argv.reserve(5);
         }
 };
+
 
 #endif //MIPS_EXECUTEDINSTRUCTION_H

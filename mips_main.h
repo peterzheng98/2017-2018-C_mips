@@ -793,7 +793,7 @@ public:
                     break;
                 case LW:
 //                    cout << "Debug a[1] " << a[1] << endl;
-                    //搜索有没有括号
+                    /*//搜索有没有括号
                     if (a[1] == 0x3f3f3f3f && !tmp.BLRdest) {
                         arga2++;
                         haveBracket = haveBrackets(s[1]);
@@ -807,9 +807,9 @@ public:
                         if (haveBracket && right[0] == '$') a[1] = regNum[Parser.registerMap[right]].s;
 //                    cout << "a[1] " << a[1] << " " << Parser.registerMap[right] << endl;
                         source = (haveAlpha(s[1]) ? Parser.labelMap[s[1]] : a[1]) + offset;
-                    } else {
+                    } else {*/
                         source = (tmp.BLRdest ? tmp.LRdest : regNum[a[1]].s) + tmp.offset;
-                    }
+                    //}
                     regNum[a[0]] = _WORD(mem[source], mem[source + 1], mem[source + 2], mem[source + 3]);
                     if (controlDebug) cout << __LINE__ << ": Stage: LW" << endl;
 
@@ -863,7 +863,7 @@ public:
 //                    if(tmp.argv[0] == "$v0" && tmp.argv[1] == "-64($fp)") cout << "Debug: sw v0, -64 fp HeapSort" << endl;
 //                    if(tmp.argv[0] == "$v0" && tmp.argv[1] == "-60($fp)") cout << "Debug: sw v0, -60 fp makeHeap" << endl;
 //                    if(tmp.argv[0] == "$v0" && tmp.argv[1] == "-92($fp)") cout << "Debug: sw v0, -92 fp adjustHeap" << endl;
-                    if (!tmp.BLRdest && a[1] == 0x3f3f3f3f) {
+                    /*if (!tmp.BLRdest && a[1] == 0x3f3f3f3f) {
                         arga1++;
                         haveBracket = haveBrackets(s[1]);
                         if (haveBracket) {//如果含有括号
@@ -876,9 +876,9 @@ public:
                         if (haveBracket && right[0] == '$') a[1] = regNum[Parser.registerMap[right]].s;
 //                    cout << "a[1] " << a[1] << " " << Parser.registerMap[right] << endl;
                         source = (haveAlpha(s[1]) ? Parser.labelMap[s[1]] : a[1]) + offset;
-                    } else {
+                    } else {*/
                         source = (tmp.BLRdest ? tmp.LRdest : regNum[a[1]].s) + tmp.offset;
-                    }
+                    //}
                     mem[source] = regNum[a[0]].core.u1;
                     mem[source + 1] = regNum[a[0]].core.u2;
                     mem[source + 2] = regNum[a[0]].core.u3;
