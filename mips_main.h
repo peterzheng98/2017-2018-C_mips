@@ -23,7 +23,7 @@ private:
 
     int mainEntryPoint; //the Main Entry Point
 
-    _WORD regNum[regNUMMAX];
+    register _WORD regNum[regNUMMAX];
     DADDR mem[memoryMAX];
 
     string coreData;
@@ -859,6 +859,9 @@ public:
 
                     break;
                 case SW:
+//                    if(tmp.argv[0] == "$v0" && tmp.argv[1] == "-64($fp)") cout << "Debug: sw v0, -64 fp HeapSort" << endl;
+//                    if(tmp.argv[0] == "$v0" && tmp.argv[1] == "-60($fp)") cout << "Debug: sw v0, -60 fp makeHeap" << endl;
+//                    if(tmp.argv[0] == "$v0" && tmp.argv[1] == "-92($fp)") cout << "Debug: sw v0, -92 fp adjustHeap" << endl;
                     if (!tmp.BLRdest && a[1] == 0x3f3f3f3f) {
                         arga1++;
                         haveBracket = haveBrackets(s[1]);
