@@ -51,7 +51,9 @@ public:
     int LRSrc, LRdest, LSrc;
     bool BLRSrc = false, BLRdest = false, BLSrc = false;
     executionInstructionNew() : index(0), argc(0), RSrc(0x3f3f3f3f), Rdest(0x3f3f3f3f), Src(0x3f3f3f3f), offset(0),
-    ARSrc(0x3f3f3f3f), ARdest(0x3f3f3f3f), ASrc(0x3f3f3f3f), LRSrc(0x3f3f3f3f), LRdest(0x3f3f3f3f), LSrc(0x3f3f3f3f){ }
+    ARSrc(0x3f3f3f3f), ARdest(0x3f3f3f3f), ASrc(0x3f3f3f3f), LRSrc(0x3f3f3f3f), LRdest(0x3f3f3f3f), LSrc(0x3f3f3f3f){
+        argv.reserve(5);
+        }
 };
 
 #endif //MIPS_EXECUTEDINSTRUCTION_H

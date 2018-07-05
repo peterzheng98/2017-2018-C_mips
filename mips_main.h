@@ -475,6 +475,8 @@ public:
                 programSentenceNew[i].BLSrc = (Addr == -1 ? false : true);
             }
         }
+
+        //cout << "Parser \n";
     }
 
     void directlyRun_DR_New() {
@@ -489,7 +491,7 @@ public:
         int current = mainEntryPoint;
         regNum[29] = stackTop;
         while (current < programSentenceNew.size()) {
-            executionInstructionNew tmp = programSentenceNew[current];
+            executionInstructionNew &tmp = programSentenceNew[current];
             if (controlDebug) cout << current << "Running:";
             //设置跳转表示符号
             bool jumpFlag = false;
