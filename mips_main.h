@@ -23,7 +23,7 @@ private:
 
     int mainEntryPoint; //the Main Entry Point
 
-    register _WORD regNum[regNUMMAX];
+    _WORD regNum[regNUMMAX];
     DADDR mem[memoryMAX];
 
     string coreData;
