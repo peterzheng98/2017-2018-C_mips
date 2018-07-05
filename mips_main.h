@@ -28,8 +28,6 @@ private:
 
     string coreData;
 
-    vector<Execution> program;
-    vector<executionInstruction> programSentence;
     vector<executionInstructionNew> programSentenceNew;
 
     void debugDataPrint() {
@@ -63,6 +61,7 @@ public:
         for (int i = 0; i < regNUMMAX; i++) regNum[i] = 0;
         for (int i = 0; i < memoryMAX; i++) mem[i] = 0;
         memHead = 0;
+        programSentenceNew.reserve(10000);
     }
 
     void instructionFetch() {
