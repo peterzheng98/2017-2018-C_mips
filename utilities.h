@@ -141,11 +141,6 @@ inline string splitWithCertainChar(string &rhs, char ch, int k = 1){
 inline bool haveAlpha(const string& rhs){
     reg6++;
     if(Parser.LabelAddr(rhs) != -1) return true;
-    if(rhs[0] >'z' || (rhs[0] < 'a' && rhs[0] > 'A') || (rhs[0] < 'A')) return false;
-    for(int i = 0;i < rhs.length(); ++i) {
-        if (rhs[i] <= 'Z' && rhs[i] >= 'A') return true;
-        if (rhs[i] <= 'z' && rhs[i] >= 'a') return true;
-    }
     return false;
 }
 

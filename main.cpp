@@ -42,4 +42,5 @@ int main(int argc, char *argv[]) {
     Kernel.run();
     if (controlDebug) debugMess("Execute Finish.", "General");
     printf("\n[%d][%d][%d][%d][%d][%d]\n", reg1, reg2, reg3, reg4, reg5, reg6);
+    printf("SW Stage[%d] LW Stage[%d]\n", arga1, arga2);
 }

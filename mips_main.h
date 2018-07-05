@@ -14,6 +14,9 @@
 #define DADDR unsigned char
 using namespace std;
 
+static int arga1 = 0;
+static int arga2 = 0;
+
 class mips {
 private:
     int memHead, stackTop = memoryMAX - 1;
@@ -790,7 +793,8 @@ public:
                 case LW:
 //                    cout << "Debug a[1] " << a[1] << endl;
                     //搜索有没有括号
-                    if (a[1] == 0x3f3f3f3f) {
+                    if (a[1] == 0x3f3f3f3f && !tmp.BLRdest) {
+                        arga2++;
                         haveBracket = haveBrackets(s[1]);
                         if (haveBracket) {//如果含有括号
                             right = s[1];
@@ -810,17 +814,21 @@ public:
 
                     break;
                 case SB:
-                    haveBracket = haveBrackets(s[1]);
-                    if (haveBracket) {//如果含有括号
-                        right = s[1];
-                        left = splitWithCertainChar(right, '(');
-                        deleteCertainChar(right, ')');
-                        offset = string2int(left);
+                    /*if (a[1] == 0x3f3f3f3f) {
+                        haveBracket = haveBrackets(s[1]);
+                        if (haveBracket) {//如果含有括号
+                            right = s[1];
+                            left = splitWithCertainChar(right, '(');
+                            deleteCertainChar(right, ')');
+                            offset = string2int(left);
 //                        offset /= 4;
-                    }
-                    if (haveBracket && right[0] == '$') a[1] = regNum[Parser.registerMap[right]].s;
-
-                    source = (haveAlpha(s[1]) ? Parser.labelMap[s[1]] : a[1]) + offset;
+                        }
+                        if (haveBracket && right[0] == '$') a[1] = regNum[Parser.registerMap[right]].s;
+//                    cout << "a[1] " << a[1] << " " << Parser.registerMap[right] << endl;
+                        source = (haveAlpha(s[1]) ? Parser.labelMap[s[1]] : a[1]) + offset;
+                    } else {*/
+                        source = (tmp.BLRdest ? tmp.LRdest : regNum[a[1]].s) + tmp.offset;
+                    //}
                     mem[source] = regNum[a[0]].core.u1;
                     if (controlDebug)
                         cout << endl << "Stage SB: " << source << " |In Memory: " << (int) mem[source] << endl;
@@ -828,17 +836,21 @@ public:
 
                     break;
                 case SH:
-                    haveBracket = haveBrackets(s[1]);
-                    if (haveBracket) {//如果含有括号
-                        right = s[1];
-                        left = splitWithCertainChar(right, '(');
-                        deleteCertainChar(right, ')');
-                        offset = string2int(left);
+                    /*if (a[1] == 0x3f3f3f3f) {
+                        haveBracket = haveBrackets(s[1]);
+                        if (haveBracket) {//如果含有括号
+                            right = s[1];
+                            left = splitWithCertainChar(right, '(');
+                            deleteCertainChar(right, ')');
+                            offset = string2int(left);
 //                        offset /= 4;
-                    }
-                    if (haveBracket && right[0] == '$') a[1] = regNum[Parser.registerMap[right]].s;
-
-                    source = (haveAlpha(s[1]) ? Parser.labelMap[s[1]] : a[1]) + offset;
+                        }
+                        if (haveBracket && right[0] == '$') a[1] = regNum[Parser.registerMap[right]].s;
+//                    cout << "a[1] " << a[1] << " " << Parser.registerMap[right] << endl;
+                        source = (haveAlpha(s[1]) ? Parser.labelMap[s[1]] : a[1]) + offset;
+                    } else {*/
+                        source = (tmp.BLRdest ? tmp.LRdest : regNum[a[1]].s) + tmp.offset;
+                    //}
                     mem[source] = regNum[a[0]].core.u1;
                     mem[source + 1] = regNum[a[0]].core.u2;
                     if (controlDebug)
@@ -847,16 +859,22 @@ public:
 
                     break;
                 case SW:
-                    haveBracket = haveBrackets(s[1]);
-                    if (haveBracket) {//如果含有括号
-                        right = s[1];
-                        left = splitWithCertainChar(right, '(');
-                        deleteCertainChar(right, ')');
-                        offset = string2int(left);
+                    if (!tmp.BLRdest && a[1] == 0x3f3f3f3f) {
+                        arga1++;
+                        haveBracket = haveBrackets(s[1]);
+                        if (haveBracket) {//如果含有括号
+                            right = s[1];
+                            left = splitWithCertainChar(right, '(');
+                            deleteCertainChar(right, ')');
+                            offset = string2int(left);
 //                        offset /= 4;
+                        }
+                        if (haveBracket && right[0] == '$') a[1] = regNum[Parser.registerMap[right]].s;
+//                    cout << "a[1] " << a[1] << " " << Parser.registerMap[right] << endl;
+                        source = (haveAlpha(s[1]) ? Parser.labelMap[s[1]] : a[1]) + offset;
+                    } else {
+                        source = (tmp.BLRdest ? tmp.LRdest : regNum[a[1]].s) + tmp.offset;
                     }
-                    if (haveBracket && right[0] == '$') a[1] = regNum[Parser.registerMap[right]].s;
-                    source = (haveAlpha(s[1]) ? Parser.labelMap[s[1]] : a[1]) + offset;
                     mem[source] = regNum[a[0]].core.u1;
                     mem[source + 1] = regNum[a[0]].core.u2;
                     mem[source + 2] = regNum[a[0]].core.u3;
@@ -925,11 +943,11 @@ public:
                             memHead += a;
                             break;
                         case 10:
-                            exit(0);
-//                            return;
+//                            exit(0);
+                            return;
                         case 17:
-                            exit(regNum[4].s);
-//                            return;
+//                            exit(regNum[4].s);
+                            return;
                     }
                     if (controlDebug) cout << __LINE__ << ": Stage: SYSCALL" << endl;
                     break;
@@ -938,242 +956,6 @@ public:
         }
     }
 
-//    void setInstruction(const string &rhs) {
-//        coreData = rhs;
-//        stringstream ss;
-//        ss << rhs;
-//        string token;
-//        bool dataField = false;
-//        bool textField = false;
-//        string lastLabel = "";
-//        string NextToken = "";
-//        Execution lastExe;
-//        bool haveLabel = false;
-//        int currentSentence = 0;
-//        while (haveLabel || ss >> token) {
-//            if (haveLabel) { token = NextToken; }
-//            if (token == ".data") {
-//                dataField = true;
-//                textField = false;
-//                if (controlDebug) debugMess("In Section: Data Started.", "Parser");
-//                haveLabel = false;
-//                continue;
-//            }
-//            if (token == ".text") {
-//                dataField = false;
-//                textField = true;
-//                if (controlDebug) debugMess("In Section: Text Started.", "Parser");
-//                haveLabel = false;
-//                continue;
-//            }
-//
-//            if (dataField) {
-//                Instruction result = Parser.Type(token);
-//                if (controlDebug) {
-//                    string str("Found Token [");
-//                    str += (int) result;
-//                    str += "]";
-//                    debugMess(str, "Parser - Data Field");
-//                }
-//                string next;
-//                string mess;
-//                if (result == ALIGN) {
-//                    int n;
-//                    ss >> n;
-//                    // Debug Sect
-//                    int dbg = memHead;
-//                    if ((memHead + 1) % n != 0) memHead = (memHead / (1 << n) + 1) * (1 << n) - 1;
-//                    if (controlDebug) {
-//                        debugMess("", "In Align Section");
-//                        cout << flush;
-//                        cout << "memHead Old:[" << dbg << "] New:[" << memHead << "]" << endl;
-//                    }
-//                } else if (result == ASCIIZ) {
-//                    char ch;
-//                    ch = ss.get();
-//                    ch = ss.get();
-//                    while (ch != '\n') {
-//                        next += ch;
-//                        ch = ss.get();
-//                    }
-////                    ss >> next;
-//                    deleteCertainChar(next, '\"');
-//                    next = decodeSpecial(next);
-//                    if (controlDebug) debugMess("In ASCIIZ", "Parser - Data Field");
-//                    for (int i = 0; i < next.length(); i++) {
-//                        mem[memHead] = (unsigned char) (next[i]);
-//                        memHead++;
-//                    }
-//                    mem[memHead++] = (unsigned char) 0;
-//                    if (controlDebug) debugDataPrint();
-//                } else if (result == ASCII) {
-//                    ss >> next;
-//                    deleteCertainChar(next, '\"');
-//                    next = decodeSpecial(next);
-//                    if (controlDebug) debugMess("In ASCII", "Parser - Data Field");
-//                    for (int i = 0; i < next.length(); i++) {
-//                        mem[memHead] = (unsigned char) (next[i]);
-//                        memHead++;
-//                    }
-//                } else if (result == BYTE) {
-//                    if (controlDebug) debugMess("In BYTE", "Parser - Data Field");
-//                    ss >> next;
-//                    while (next[0] <= '9' && next[0] >= '0') {
-//                        unsigned char final = (unsigned char) string2int(next);
-//                        mem[memHead++] = final;
-//                        ss >> next;
-//                    }
-////                    ss << next;
-//                    haveLabel = true;
-//                    NextToken = next;
-//                    if (controlDebug) debugDataPrint();
-//                } else if (result == HALF) {
-//                    if (controlDebug) debugMess("In HALF", "Parser - Data Field");
-//                    ss >> next;
-//                    while (next[0] <= '9' && next[0] >= '0') {
-//                        _HALF u = _HALF((short) string2int(next));
-//                        mem[memHead++] = u.core.u1;
-//                        mem[memHead++] = u.core.u2;
-//                        ss >> next;
-//                    }
-////                    ss << next;
-//                    haveLabel = true;
-//                    NextToken = next;
-//                    if (controlDebug) debugDataPrint();
-//                } else if (result == WORD) {
-//                    if (controlDebug) debugMess("In WORD", "Parser - Data Field");
-//                    ss >> next;
-//                    while (next[0] <= '9' && next[0] >= '0') {
-//                        _WORD u = _WORD(string2int(next));
-//                        mem[memHead++] = u.core.u1;
-//                        mem[memHead++] = u.core.u2;
-//                        mem[memHead++] = u.core.u3;
-//                        mem[memHead++] = u.core.u4;
-//                        ss >> next;
-//                    }
-//                    //if(controlDebug) cout << "Debug:[" << ss.str() << "]" << endl;
-////                    ss << next;
-//                    haveLabel = true;
-//                    NextToken = next;
-//                } else if (result == SPACE) {
-//                    if (controlDebug) debugMess("In SPACE", "Parser - Data Field");
-//                    int n1;
-//                    ss >> n1;
-//                    memHead += n1;
-//                    if (controlDebug) debugDataPrint();
-//                } else if (result == LABEL) {
-//                    if (controlDebug) debugMess("In LABEL", "Parser - Data Field");
-//                    if (haveLabel) {
-//                        next = NextToken;
-//                        haveLabel = false;
-//                    }// else ss >> next;
-//                    else next = token;
-//                    deleteCertainChar(next, ':');
-//                    if (controlDebug) cout << "Variable:" << next << "|\n" << endl;
-//                    Parser.labelMap[next] = memHead;
-//                    haveLabel = false;
-//                } else if (controlDebug) debugMess("In OTHER", "Parser - Data Field");
-//            }
-//            if (textField) {
-//                Instruction result = Parser.Type(token);
-//                if (controlDebug) {
-//                    string str("Found Token [");
-//                    str += (int) result;
-//                    str += "]";
-//                    debugMess(str, "Parser - Text Field");
-//                }
-//                string next;
-//                string mess;
-//                if (result == LABEL) {
-//
-//                    deleteCertainChar(token, ':');
-//                    string labelName = token;
-//                    executionMap[labelName] = programSentence.size();
-//                    if (labelName == "main") mainEntryPoint = programSentence.size();
-//                } else {
-//                    executionInstruction s1;
-//                    s1.type = result;
-//                    if (result == ADD || result == ADDU || result == ADDIU || result == SUB ||
-//                        result == SUBU || result == XOR || result == XORU || result == REM ||
-//                        result == REMU || result == SEQ || result == SGE || result == SGT ||
-//                        result == SLE || result == SLT || result == SNE || result == BEQ ||
-//                        result == BNE || result == BGE || result == BLE || result == BGT ||
-//                        result == BLT) {
-//                        string arg1, arg2, arg3;
-//                        ss >> arg1 >> arg2 >> arg3;
-//                        deleteCertainChar(arg1, ',');
-//                        deleteCertainChar(arg2, ',');
-//                        deleteCertainChar(arg3, ',');
-//
-//                        s1.argv.push_back(arg1);
-//                        s1.argv.push_back(arg2);
-//                        s1.argv.push_back(arg3);
-//                        programSentence.push_back(s1);
-//                    }
-//                    if (result == LI || result == BEQZ || result == BNEZ || result == BLEZ || result == BGEZ ||
-//                        result == BGTZ || result == BLTZ || result == LA || result == LB || result == LH ||
-//                        result == LW || result == SB || result == SH || result == SW || result == MOVE ||
-//                        result == NEG || result == NEGU) {
-//                        string arg1, arg2;
-//                        ss >> arg1 >> arg2;
-//                        deleteCertainChar(arg1, ',');
-//                        deleteCertainChar(arg2, ',');
-//
-//                        s1.argv.push_back(arg1);
-//                        s1.argv.push_back(arg2);
-//                        programSentence.push_back(s1);
-//                    }
-//                    if (result == B || result == J || result == JR || result == JAL || result == JALR ||
-//                        result == MFHI || result == MFLO) {
-//                        string arg1;
-//                        ss >> arg1;
-//                        deleteCertainChar(arg1, ',');
-//
-//                        s1.argv.push_back(arg1);
-//                        programSentence.push_back(s1);
-//                    }
-//                    if (result == NOP) {
-//                        programSentence.push_back(s1);
-//                    }
-//                    if (result == SYSCALL) {
-//                        programSentence.push_back(s1);
-//                    }
-//                    if (result == MUL || result == MULU || result == DIV || result == DIVU) {
-//                        string arg1, arg2;
-//                        ss >> arg1 >> arg2;
-//                        deleteCertainChar(arg1, ',');
-//                        deleteCertainChar(arg2, ',');
-//
-//                        s1.argv.push_back(arg1);
-//                        s1.argv.push_back(arg2);
-//                        streampos save = ss.tellg();
-//                        string ss3;
-//                        ss >> ss3;
-//                        short code = -1;
-//                        for (int i = 0; i < ss3.length(); ++i) {
-//                            if (ss3[i] == '\n') {
-//                                code = 10;
-//                                break;
-//                            }
-//                            if (ss3[i] <= '9' && ss3[i] >= '0') {
-//                                code = 52;
-//                                break;
-//                            }
-//                        }
-//                        ss.seekg(save);
-//                        if (code == 52) {
-//                            string s3;
-//                            ss >> s3;
-//                            deleteCertainChar(s3, ',');
-//                            s1.argv.push_back(s3);
-//                        }
-//                        programSentence.push_back(s1);
-//                    }
-//                }
-//
-//            }
-//        }
-//    }
 
     void run() {
 //        instructionFetch();
