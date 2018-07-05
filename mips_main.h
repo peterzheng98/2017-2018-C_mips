@@ -943,11 +943,11 @@ public:
                             memHead += a;
                             break;
                         case 10:
-//                            exit(0);
-                            return;
+                            exit(0);
+//                            return;
                         case 17:
-//                            exit(regNum[4].s);
-                            return;
+                            exit(regNum[4].s);
+//                            return;
                     }
                     if (controlDebug) cout << __LINE__ << ": Stage: SYSCALL" << endl;
                     break;
