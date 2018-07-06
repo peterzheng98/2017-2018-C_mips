@@ -264,6 +264,7 @@ public:
     _WORD _Rsrc1, _src2;
     bool result;
     _WORD Reg31;
+
     virtual void ID() {
         switch (type) {
             case BEQ:
@@ -287,10 +288,12 @@ public:
                 break;
             case J:
             case B:
-            case JR:
             case JAL:
-            case JALR:
                 nextExeLine = ARSrc;
+                break;
+            case JR:
+            case JALR:
+                _Rsrc1 = regNum[Rdest];
                 break;
         }
     }
@@ -374,10 +377,20 @@ public:
                 nextLine = nextExeLine;
                 haveJump = true;
                 break;
+            case JR:
+                nextLine = _Rsrc1.s;
+                haveJump = true;
+                break;
             case JAL:
-
-
-
+                Reg31 = nextLine + 1;
+                nextLine = nextExeLine;
+                haveJump = true;
+                break;
+            case JALR:
+                Reg31 = nextLine + 1;
+                nextLine = _Rsrc1.s;
+                haveJump = true;
+                break;
         }
     }
 
@@ -386,7 +399,11 @@ public:
     }
 
     virtual void WB() {
-
+        switch (type){
+            case JAL:
+            case JALR:
+                regNum[31] = Reg31;
+        }
     }
 };
 

@@ -473,7 +473,7 @@ public:
         regNum[29] = stackTop;
         while (current < programSentenceNew.size()) {
             executionInstructionNew &tmp = programSentenceNew[current];
-            printf("Register 2[%d], currentLine[%d]\n", regNum[2], current);
+            //printf("Register 2[%d], currentLine[%d]\n", regNum[2], current);
             if (controlDebug) cout << current << "Running:";
             //设置跳转表示符号
             bool jumpFlag = false;
@@ -757,7 +757,7 @@ public:
 
                     break;
                 case LA:
-                    labelAddress = Parser.labelMap[s[1]];
+                    labelAddress = (tmp.BLRdest ? tmp.LRdest : regNum[a[1]].s);
                     regNum[a[0]] = labelAddress;
                     if (controlDebug) cout << __LINE__ << ": Stage: LA" << endl;
 
@@ -903,13 +903,13 @@ public:
                             cout << regNum[4].s;
                             break;
                         case 4:
-                            cout << "\n[Output: ";
+                            //cout << "\n[Output: ";
                             start = regNum[4].s;
                             for (i = start;; ++i) {
                                 if (mem[i] == 0) break;
                                 cout << (char) mem[i];
                             }
-                            cout << "\0]\n";
+                            //cout << "\0]\n";
                             cout << flush;
                             break;
                         case 5:
