@@ -18,7 +18,7 @@ static int arga2 = 0;
 
 class mips {
 private:
-    int memHead, stackTop = memoryMAX - 1;
+    int stackTop = memoryMAX - 1;
 
     int mainEntryPoint; //the Main Entry Point
 
@@ -770,7 +770,7 @@ public:
                     break;
                 case LH:
                     source = (tmp.BLRdest ? tmp.LRdest : regNum[a[1]].s) + tmp.offset;
-                    regNum[a[0]] = _WORD((int) (_HALF(mem[source], mem[source] + 1).s));
+                    regNum[a[0]] = _WORD((int) (_HALF(mem[source], mem[source + 1]).s));
                     if (controlDebug) cout << __LINE__ << ": Stage: LH" << endl;
 
                     break;

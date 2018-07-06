@@ -21,6 +21,7 @@ static int reg5 = 0;
 static int reg6 = 0;
 static int nextLine = 0;
 static bool haveJump = false;
+static int memHead = 0;
 #define DADDR unsigned char
 _WORD regNum[regNUMMAX];
 DADDR mem[memoryMAX];

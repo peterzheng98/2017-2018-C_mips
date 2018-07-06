@@ -209,13 +209,13 @@ class Li : public executionInstructionNewPipeLine {
 public:
     _WORD Imm;
 
-    virtual void ID() { Imm = _WORD(Rdest); }
+    virtual void ID() { Imm.s = _WORD(Rdest).s; }
 
     virtual void EX() {}
 
     virtual void MEM() {}
 
-    virtual void WB() { regNum[RSrc] = Imm; }
+    virtual void WB() { regNum[RSrc].s = Imm.s; }
 };
 
 class Compare : public executionInstructionNewPipeLine {
@@ -224,8 +224,8 @@ public:
     bool result;
 
     virtual void ID() {
-        _Rsrc1 = regNum[Rdest];
-        _src2 = regNum[Src];
+        _Rsrc1.s = regNum[Rdest].s;
+        _src2.s = regNum[Src].s;
     }
 
     virtual void EX() {
@@ -254,7 +254,7 @@ public:
     virtual void MEM() {}
 
     virtual void WB() {
-        regNum[RSrc] = result;
+        regNum[RSrc].s = result;
     }
 };
 
@@ -273,8 +273,8 @@ public:
             case BLE:
             case BGT:
             case BLT:
-                _Rsrc1 = regNum[RSrc];
-                _src2 = regNum[Rdest];
+                _Rsrc1.s = regNum[RSrc].s;
+                _src2.s = regNum[Rdest].s;
                 nextExeLine = ASrc;
                 break;
             case BEQZ:
@@ -283,7 +283,7 @@ public:
             case BGEZ:
             case BGTZ:
             case BLTZ:
-                _Rsrc1 = regNum[RSrc];
+                _Rsrc1.s = regNum[RSrc].s;
                 nextExeLine = ARdest;
                 break;
             case J:
@@ -293,7 +293,7 @@ public:
                 break;
             case JR:
             case JALR:
-                _Rsrc1 = regNum[Rdest];
+                _Rsrc1.s = regNum[Rdest].s;
                 break;
         }
     }
@@ -399,102 +399,130 @@ public:
     }
 
     virtual void WB() {
-        switch (type){
+        switch (type) {
             case JAL:
             case JALR:
-                regNum[31] = Reg31;
+                regNum[31].s = Reg31.s;
         }
     }
 };
 
-class Load : public executionInstructionNewPipeLine {
-public:
-
-    virtual void ID() {
-
-    }
-
-    virtual void EX() {
-
-    }
-
-    virtual void MEM() {
-
-    }
-
-    virtual void WB() {
-
-    }
-};
-
-class Store : public executionInstructionNewPipeLine {
-public:
-
-    virtual void ID() {
-
-    }
-
-    virtual void EX() {
-
-    }
-
-    virtual void MEM() {
-
-    }
-
-    virtual void WB() {
-
-    }
-
-};
 
 class StoreData : public executionInstructionNewPipeLine {
 public:
+    int source;
+    _WORD tmp, _Rsrc;
 
     virtual void ID() {
-
+        if (BLRdest) tmp.s = LRdest; else tmp.s = regNum[Rdest].s;
+        _Rsrc.s = regNum[RSrc].s;
     }
 
     virtual void EX() {
-
+        source = tmp.us + offset;
     }
 
     virtual void MEM() {
-
+        switch (type) {
+            case SB:
+                mem[source] = _Rsrc.core.u1;
+                break;
+            case SH:
+                mem[source] = _Rsrc.core.u1;
+                mem[source + 1] = _Rsrc.core.u2;
+                break;
+            case SW:
+                mem[source] = _Rsrc.core.u1;
+                mem[source + 1] = _Rsrc.core.u2;
+                mem[source + 2] = _Rsrc.core.u3;
+                mem[source + 3] = _Rsrc.core.u4;
+                break;
+        }
     }
 
-    virtual void WB() {
-
-    }
+    virtual void WB() {}
 };
 
 
-class MoveData : public executionInstructionNewPipeLine {
-
+class LoadData : public executionInstructionNewPipeLine {
 public:
-
+    int labelAddress, source;
+    int _Rdest;
+    _WORD _RSrc;
     virtual void ID() {
-
+        switch (type){
+            case LA:
+                _Rdest = regNum[Rdest].s;
+                break;
+            case LB:
+            case LH:
+            case LW:
+                _Rdest = regNum[Rdest].s;
+                break;
+        }
     }
 
     virtual void EX() {
+        switch (type){
+            case LA:
+                labelAddress = (BLRdest ? LRdest : _Rdest);
+                break;
+            case LB:
+            case LH:
+            case LW:
+                source = (BLRdest ? LRdest : _Rdest) + offset;
+                break;
+        }
 
     }
 
     virtual void MEM() {
-
+        switch (type){
+            case LB:
+                _RSrc = _WORD(int(mem[source]));
+                break;
+            case LH:
+                _RSrc = _WORD((int) (_HALF(mem[source], mem[source + 1]).s));
+                break;
+            case LW:
+                _RSrc = _WORD(mem[source], mem[source + 1], mem[source + 2], mem[source + 3]);
+                break;
+        }
     }
 
     virtual void WB() {
-
+        switch (type){
+            case LB:
+            case LH:
+            case LW:
+                regNum[RSrc] = _RSrc;
+                break;
+            case LA:
+                regNum[RSrc] = labelAddress;
+        }
     }
 };
 
 class Special : public executionInstructionNewPipeLine {
 public:
-
+    int opt;
+    int a0, a1, v0;
+    int i;
+    int t;
+    string str;
     virtual void ID() {
-
+        opt = regNum[2].s;
+        if(type == SYSCALL){
+            switch (opt){
+                case 8:
+                    a1 = regNum[5].us;
+                case 1:
+                case 4:
+                case 9:
+                    a0 = regNum[4].s;
+                    break;
+            }
+        }
     }
 
     virtual void EX() {
@@ -502,11 +530,83 @@ public:
     }
 
     virtual void MEM() {
-
+        if(type == SYSCALL){
+            switch(opt){
+                case 1:
+                    cout << a0;
+                    break;
+                case 4:
+                    for (i = a0;; ++i) {
+                        if (mem[i] == 0) break;
+                        cout << (char) mem[i];
+                    }
+                    //cout << "\0]\n";
+                    cout << flush;
+                    break;
+                case 5:
+                    cin >> t;
+                    break;
+                case 8:
+                    cin >> str;
+                    for (i = 0; i < str.length() && i < a1 - 1; ++i){
+                        mem[a0 + i] = (unsigned char) str[i];
+                    }
+                    mem[a0 + str.length()] = 0;
+                    break;
+                case 9:
+                    v0 = memHead + 1;
+                    memHead += a0;
+                    break;
+                case 17:
+                    a0 = regNum[4].s;
+                    break;
+            }
+        }
     }
 
     virtual void WB() {
+        if(type == SYSCALL){
+            switch(opt){
 
+                case 5:
+                    regNum[2].s = t;
+                    break;
+                case 9:
+                    regNum[2].s = v0;
+                    break;
+                case 10:
+                    exit(0);
+                case 17:
+                    exit(a0);
+            }
+        }
+    }
+};
+
+class MoveData : public executionInstructionNewPipeLine {
+public:
+    int tmp;
+
+    virtual void ID() {
+        switch (type) {
+            case MOVE:
+                tmp = regNum[Rdest].s;
+                break;
+            case MFHI:
+                tmp = regNum[HIREGISTER].s;
+                break;
+            case MFLO:
+                tmp = regNum[LOREGISTER].s;
+                break;
+        }
+    }
+
+    virtual void EX() {}
+
+    virtual void MEM() {}
+
+    virtual void WB() {
+        regNum[RSrc].s = tmp;
     }
 };
 

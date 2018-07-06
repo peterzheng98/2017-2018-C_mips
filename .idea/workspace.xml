@@ -13,6 +13,8 @@
   <component name="ChangeListManager">
     <list default="true" id="dff3ed63-0dd2-43e1-a52f-fd583c52664d" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/executedInstruction.h" beforeDir="false" afterPath="$PROJECT_DIR$/executedInstruction.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mips_main.h" beforeDir="false" afterPath="$PROJECT_DIR$/mips_main.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utilities.h" beforeDir="false" afterPath="$PROJECT_DIR$/utilities.h" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -24,7 +26,7 @@
   </component>
   <component name="ExecutionTargetManager" SELECTED_TARGET="CMakeBuildProfile:Debug" />
   <component name="FileEditorManager">
-    <splitter split-orientation="horizontal" split-proportion="0.37477258">
+    <splitter split-orientation="horizontal" split-proportion="0.41495523">
       <split-first>
         <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
           <file leaf-file-name="CMakeLists.txt" pinned="false" current-in-tab="false">
@@ -60,8 +62,8 @@
           <file leaf-file-name="executedInstruction.h" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/executedInstruction.h">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="655">
-                  <caret line="411" lean-forward="true" selection-start-line="411" selection-end-line="411" />
+                <state relative-caret-position="6426">
+                  <caret line="500" column="44" selection-start-line="500" selection-start-column="44" selection-end-line="500" selection-end-column="44" />
                   <folding>
                     <element signature="e#119#136#0" expanded="true" />
                     <element signature="e#2004#6098#1" />
@@ -87,29 +89,58 @@
         </leaf>
       </split-first>
       <split-second>
-        <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-          <file leaf-file-name="mips_main.h" pinned="false" current-in-tab="true">
-            <entry file="file://$PROJECT_DIR$/mips_main.h">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="520">
-                  <caret line="760" column="48" lean-forward="true" selection-start-line="760" selection-start-column="48" selection-end-line="760" selection-end-column="48" />
-                  <folding>
-                    <element signature="e#99#118#0" expanded="true" />
-                  </folding>
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="utilities.h" pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/utilities.h">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="799">
-                  <caret line="47" column="75" selection-start-line="47" selection-start-column="75" selection-end-line="47" selection-end-column="75" />
-                </state>
-              </provider>
-            </entry>
-          </file>
-        </leaf>
+        <splitter split-orientation="vertical" split-proportion="0.5">
+          <split-first>
+            <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+              <file leaf-file-name="mips_main.h" pinned="false" current-in-tab="true">
+                <entry file="file://$PROJECT_DIR$/mips_main.h">
+                  <provider selected="true" editor-type-id="text-editor">
+                    <state relative-caret-position="315">
+                      <caret line="784" column="63" selection-start-line="784" selection-start-column="63" selection-end-line="784" selection-end-column="63" />
+                      <folding>
+                        <element signature="e#99#118#0" expanded="true" />
+                      </folding>
+                    </state>
+                  </provider>
+                </entry>
+              </file>
+              <file leaf-file-name="utilities.h" pinned="false" current-in-tab="false">
+                <entry file="file://$PROJECT_DIR$/utilities.h">
+                  <provider selected="true" editor-type-id="text-editor">
+                    <state relative-caret-position="285">
+                      <caret line="23" column="23" selection-start-line="23" selection-start-column="23" selection-end-line="23" selection-end-column="23" />
+                    </state>
+                  </provider>
+                </entry>
+              </file>
+              <file leaf-file-name="Makefile" pinned="false" current-in-tab="false">
+                <entry file="file://$PROJECT_DIR$/Makefile">
+                  <provider selected="true" editor-type-id="text-editor">
+                    <state relative-caret-position="85">
+                      <caret line="5" column="30" selection-start-line="5" selection-start-column="30" selection-end-line="5" selection-end-column="30" />
+                    </state>
+                  </provider>
+                </entry>
+              </file>
+            </leaf>
+          </split-first>
+          <split-second>
+            <leaf>
+              <file leaf-file-name="mips_main.h" pinned="false" current-in-tab="true">
+                <entry file="file://$PROJECT_DIR$/mips_main.h">
+                  <provider selected="true" editor-type-id="text-editor">
+                    <state relative-caret-position="15">
+                      <caret line="485" column="44" selection-start-line="485" selection-start-column="44" selection-end-line="485" selection-end-column="44" />
+                      <folding>
+                        <element signature="e#99#118#0" expanded="true" />
+                      </folding>
+                    </state>
+                  </provider>
+                </entry>
+              </file>
+            </leaf>
+          </split-second>
+        </splitter>
       </split-second>
     </splitter>
   </component>
@@ -175,10 +206,10 @@
         <option value="$PROJECT_DIR$/CMakeLists.txt" />
         <option value="$PROJECT_DIR$/cmake-build-debug/43.s" />
         <option value="$PROJECT_DIR$/main.cpp" />
-        <option value="$PROJECT_DIR$/Makefile" />
-        <option value="$PROJECT_DIR$/mips_main.h" />
         <option value="$PROJECT_DIR$/cmake-build-debug/1.s" />
+        <option value="$PROJECT_DIR$/Makefile" />
         <option value="$PROJECT_DIR$/utilities.h" />
+        <option value="$PROJECT_DIR$/mips_main.h" />
         <option value="$PROJECT_DIR$/executedInstruction.h" />
       </list>
     </option>
@@ -291,24 +322,25 @@
       <workItem from="1530792597180" duration="11921000" />
       <workItem from="1530861334932" duration="2385000" />
       <workItem from="1530864106270" duration="188000" />
-      <workItem from="1530864749652" duration="897000" />
+      <workItem from="1530864749652" duration="5351000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="135665000" />
+    <option name="totallyTimeSpent" value="140119000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="1440" y="23" width="1920" height="999" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.5044346" visible="true" weight="0.13164824" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.5044346" weight="0.13164824" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.32885906" />
+      <window_info anchor="bottom" id="Messages" order="7" sideWeight="0.49964765" weight="0.30487806" />
       <window_info anchor="bottom" id="CMake" order="8" weight="0.32965517" />
       <window_info anchor="bottom" id="Event Log" order="9" sideWeight="0.5003524" side_tool="true" weight="0.32965517" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.43681592" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.4368071" />
       <window_info anchor="bottom" id="Version Control" order="10" weight="0.24791667" />
-      <window_info id="Structure" order="1" sideWeight="0.4955654" side_tool="true" visible="true" weight="0.13164824" />
+      <window_info id="Structure" order="1" sideWeight="0.4955654" side_tool="true" weight="0.13164824" />
       <window_info anchor="bottom" id="Terminal" order="11" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.6208955" />
       <window_info id="Favorites" order="2" sideWeight="0.504698" side_tool="true" weight="0.25" />
@@ -317,7 +349,6 @@
       <window_info anchor="right" id="Commander" order="0" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="bottom" id="Message" order="0" />
-      <window_info anchor="bottom" id="Messages" order="7" sideWeight="0.49964765" weight="0.30547264" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Find" order="1" />
@@ -669,13 +700,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Makefile">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="196">
-          <caret line="7" column="16" lean-forward="true" selection-start-line="7" selection-start-column="16" selection-end-line="7" selection-end-column="16" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/cmake-build-debug/3.s">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="340">
@@ -740,30 +764,37 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/utilities.h">
+    <entry file="file://$PROJECT_DIR$/Makefile">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="799">
-          <caret line="47" column="75" selection-start-line="47" selection-start-column="75" selection-end-line="47" selection-end-column="75" />
+        <state relative-caret-position="85">
+          <caret line="5" column="30" selection-start-line="5" selection-start-column="30" selection-end-line="5" selection-end-column="30" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/executedInstruction.h">
+    <entry file="file://$PROJECT_DIR$/utilities.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="655">
-          <caret line="411" lean-forward="true" selection-start-line="411" selection-end-line="411" />
-          <folding>
-            <element signature="e#119#136#0" expanded="true" />
-            <element signature="e#2004#6098#1" />
-          </folding>
+        <state relative-caret-position="285">
+          <caret line="23" column="23" selection-start-line="23" selection-start-column="23" selection-end-line="23" selection-end-column="23" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/mips_main.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="520">
-          <caret line="760" column="48" lean-forward="true" selection-start-line="760" selection-start-column="48" selection-end-line="760" selection-end-column="48" />
+        <state relative-caret-position="315">
+          <caret line="784" column="63" selection-start-line="784" selection-start-column="63" selection-end-line="784" selection-end-column="63" />
           <folding>
             <element signature="e#99#118#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/executedInstruction.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="6426">
+          <caret line="500" column="44" selection-start-line="500" selection-start-column="44" selection-end-line="500" selection-end-column="44" />
+          <folding>
+            <element signature="e#119#136#0" expanded="true" />
+            <element signature="e#2004#6098#1" />
           </folding>
         </state>
       </provider>
