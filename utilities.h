@@ -8,6 +8,7 @@
 #include "Base.h"
 #include "stdc++.h"
 #include "parser.h"
+
 using namespace std;
 
 const int regNUMMAX = 35;
@@ -28,12 +29,9 @@ _WORD regNum[regNUMMAX];
 DADDR mem[memoryMAX];
 static bool registerLock[regNUMMAX] = {false};
 static bool lockFlag = false;//全局锁
-unsigned short sizeT(Base &t) {
-    return t.getSize();
-}
 
-template <class T>
-T atoi(const string &rhs){
+template<class T>
+T atoi(const string &rhs) {
     T ret;
     stringstream ss;
     ss << rhs;
@@ -41,15 +39,15 @@ T atoi(const string &rhs){
     return ret;
 }
 
-inline void debugMess(const string &rhs, const string &topic, int newLine = 0){
-    cout << "Debug:[" << topic << "]" << (newLine == 1 ? "\n" : "" )<< rhs << endl;
+inline void debugMess(const string &rhs, const string &topic, int newLine = 0) {
+    cout << "Debug:[" << topic << "]" << (newLine == 1 ? "\n" : "") << rhs << endl;
 }
 
-inline void deleteCertainChar(string& rhs, char ch){
+inline void deleteCertainChar(string &rhs, char ch) {
     reg1++;
     int pos = 0;
-    int posEnd = (int)rhs.length();
-    while(pos < (int)rhs.length()) if(rhs[pos] == ch) rhs.erase(pos, 1); else pos++;
+    int posEnd = (int) rhs.length();
+    while (pos < (int) rhs.length()) if (rhs[pos] == ch) rhs.erase(pos, 1); else pos++;
 }
 
 inline string decodeSpecial(const string &rhs) {
@@ -108,55 +106,56 @@ inline string decodeSpecial(const string &rhs) {
     return ret;
 }
 
-inline int string2int(const string& rhs){
+inline int string2int(const string &rhs) {
     reg3++;
 
     int final = 0;
     bool neg = false;
-    if(rhs[0] == '-') neg = true;
-    for(int i = 0; i < rhs.length();i++){
-        if(rhs[i] <= '9' && rhs[i] >= '0') final = final * 10 + rhs[i] - '0';
+    if (rhs[0] == '-') neg = true;
+    for (int i = 0; i < rhs.length(); i++) {
+        if (rhs[i] <= '9' && rhs[i] >= '0') final = final * 10 + rhs[i] - '0';
     }
     return neg ? -final : final;
 }
 
 
-inline bool haveBrackets(const string &rhs){
+inline bool haveBrackets(const string &rhs) {
     reg4++;
 
-    for(int i = 0;i < rhs.length(); ++i)
-        if(rhs[i] == '(' || rhs[i] == ')') return true;
+    for (int i = 0; i < rhs.length(); ++i)
+        if (rhs[i] == '(' || rhs[i] == ')') return true;
     return false;
 }
 
-inline string splitWithCertainChar(string &rhs, char ch, int k = 1){
+inline string splitWithCertainChar(string &rhs, char ch, int k = 1) {
     reg5++;
 
     string string1(rhs);
     string ret = "";
     int i = 0;
-    for(i = 0;i < rhs.length(); ++i){
-        if(string1[i] != ch) ret += string1[i];
-        if(string1[i] == ch) break;
+    for (i = 0; i < rhs.length(); ++i) {
+        if (string1[i] != ch) ret += string1[i];
+        if (string1[i] == ch) break;
     }
     rhs = "";
-    for(int j = i + k; j < string1.length(); ++j){
+    for (int j = i + k; j < string1.length(); ++j) {
         rhs += string1[j];
     }
     return ret;
 }
 
-inline bool haveAlpha(const string& rhs){
+inline bool haveAlpha(const string &rhs) {
     reg6++;
-    if(Parser.LabelAddr(rhs) != -1) return true;
+    if (Parser.LabelAddr(rhs) != -1) return true;
     return false;
 }
 
 
-inline bool allNumber(const string& rhs){
-    for(int i = 0;i < rhs.length(); ++i)
-        if((rhs[i] < '0' || rhs[i] > '9') && (rhs[i] != '-') && (i == 0)) return false;
+inline bool allNumber(const string &rhs) {
+    for (int i = 0; i < rhs.length(); ++i)
+        if ((rhs[i] < '0' || rhs[i] > '9') && (rhs[i] != '-') && (i == 0)) return false;
 
     return true;
 }
+
 #endif //MIPS_UTILITIES_H

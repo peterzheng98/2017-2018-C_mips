@@ -89,12 +89,16 @@ public:
     _WORD ansWord, ansWord2;
 
     virtual void ID() {
+        if (lockFlag) return;
         switch (type) {
             case ADDU:
             case ADDIU:
             case SUBU:
             case XORU:
             case REMU:
+                if (registerLock[RSrc]) return;
+                if (registerLock[Rdest]) return;
+                if (f[2] && registerLock[Src]) return;
                 _RSrc = regNum[RSrc].us;
                 _Rdest = regNum[Rdest].us;
                 _Src = f[2] ? regNum[Src].us : (unsigned int) Src;
@@ -104,6 +108,9 @@ public:
             case XOR:
             case NEG:
             case REM:
+                if (registerLock[RSrc]) return;
+                if (registerLock[Rdest]) return;
+                if (f[2] && registerLock[Src]) return;
                 _RSrc = regNum[RSrc].s;
                 _Rdest = regNum[Rdest].s;
                 _Src = f[2] ? regNum[Src].s : (int) Src;
@@ -111,9 +118,14 @@ public:
             case MUL:
             case DIV:
                 if (argv.size() == 2) {
+                    if (registerLock[RSrc]) return;
+                    if (f[1] && registerLock[Rdest]) return;
                     _Rdest = regNum[RSrc].s;
                     _Src = f[1] ? regNum[Rdest].s : Rdest;
                 } else {
+                    if (registerLock[RSrc]) return;
+                    if (registerLock[Rdest]) return;
+                    if (f[2] && registerLock[Src]) return;
                     _RSrc = regNum[RSrc].s;
                     _Rdest = regNum[Rdest].s;
                     _Src = f[2] ? regNum[Src].s : (int) Src;
@@ -122,17 +134,27 @@ public:
             case MULU:
             case DIVU:
                 if (argv.size() == 2) {
+                    if (registerLock[RSrc]) return;
+                    if (f[1] && registerLock[Rdest]) return;
                     _Rdest = regNum[RSrc].us;
                     _Src = f[1] ? regNum[Rdest].us : Rdest;
                 } else {
+                    if (registerLock[RSrc]) return;
+                    if (registerLock[Rdest]) return;
+                    if (f[2] && registerLock[Src]) return;
                     _RSrc = regNum[RSrc].us;
                     _Rdest = regNum[Rdest].us;
                     _Src = f[2] ? regNum[Src].us : (int) Src;
                 }
         }
+
+        if (argv.size() == 2) registerLock[HIREGISTER] = registerLock[LOREGISTER] = true;
+        else registerLock[Rdest] = true;
+        runningStage++;
     }
 
     virtual void EX() {
+        if (lockFlag) return;
         switch (type) {
             case ADDU:
             case ADDIU:
@@ -175,11 +197,16 @@ public:
                 } else ansWord = _WORD(_RSrc.us * _Src.us);
                 break;
         }
+        runningStage++;
     }
 
-    virtual void MEM() {}
+    virtual void MEM() {
+        if (lockFlag) return;
+        runningStage++;
+    }
 
     virtual void WB() {
+        if (lockFlag) return;
         switch (type) {
             case ADDU:
             case ADDIU:
@@ -200,9 +227,11 @@ public:
                 if (argv.size() == 2) {
                     regNum[HIREGISTER] = ansWord;
                     regNum[LOREGISTER] = ansWord2;
-                } else regNum[Rdest] = ansWord;
+                    registerLock[HIREGISTER] = registerLock[LOREGISTER] = false;
+                } else regNum[Rdest] = ansWord, registerLock[Rdest] = false;
                 break;
         }
+        runningStage++;
     }
 };
 
@@ -210,13 +239,29 @@ class Li : public executionInstructionNewPipeLine {
 public:
     _WORD Imm;
 
-    virtual void ID() { Imm.s = _WORD(Rdest).s; }
+    virtual void ID() {
+        if (lockFlag) return;
+        Imm.s = _WORD(Rdest).s;
+        registerLock[RSrc] = true;
+        runningStage++;
+    }
 
-    virtual void EX() {}
+    virtual void EX() {
+        if (lockFlag) return;
+        runningStage++;
+    }
 
-    virtual void MEM() {}
+    virtual void MEM() {
+        if (lockFlag) return;
+        runningStage++;
+    }
 
-    virtual void WB() { regNum[RSrc].s = Imm.s; }
+    virtual void WB() {
+        if (lockFlag) return;
+        regNum[RSrc].s = Imm.s;
+        registerLock[RSrc] = false;
+        runningStage++;
+    }
 };
 
 class Compare : public executionInstructionNewPipeLine {
@@ -225,11 +270,17 @@ public:
     bool result;
 
     virtual void ID() {
+        if (lockFlag) return;
+        if (registerLock[Rdest] || registerLock[Src])
+            return;
         _Rsrc1.s = regNum[Rdest].s;
         _src2.s = regNum[Src].s;
+        registerLock[RSrc] = true;
+        runningStage++;
     }
 
     virtual void EX() {
+        if (lockFlag) return;
         switch (type) {
             case SEQ:
                 result = _Rsrc1.s == _src2.s;
@@ -250,12 +301,19 @@ public:
                 result = _Rsrc1.s != _src2.s;
                 break;
         }
+        runningStage++;
     }
 
-    virtual void MEM() {}
+    virtual void MEM() {
+        if (lockFlag) return;
+        runningStage++;
+    }
 
     virtual void WB() {
+        if (lockFlag) return;
         regNum[RSrc].s = result;
+        registerLock[RSrc] = false;
+        runningStage++;
     }
 };
 
@@ -267,6 +325,7 @@ public:
     _WORD Reg31;
 
     virtual void ID() {
+        if (lockFlag) return;
         lockFlag = true;
         switch (type) {
             case BEQ:
@@ -275,6 +334,8 @@ public:
             case BLE:
             case BGT:
             case BLT:
+                if(registerLock[RSrc] || registerLock[Rdest])
+                    return;
                 _Rsrc1.s = regNum[RSrc].s;
                 _src2.s = regNum[Rdest].s;
                 nextExeLine = ASrc;
@@ -285,6 +346,8 @@ public:
             case BGEZ:
             case BGTZ:
             case BLTZ:
+                if(registerLock[RSrc])
+                    return;
                 _Rsrc1.s = regNum[RSrc].s;
                 nextExeLine = ARdest;
                 break;
@@ -295,12 +358,16 @@ public:
                 break;
             case JR:
             case JALR:
+                if(registerLock[Rdest]) return;
                 _Rsrc1.s = regNum[Rdest].s;
                 break;
         }
+        if(type == JAL ||type == JALR) registerLock[31] = true;
+        runningStage++;
     }
 
     virtual void EX() {
+        if (lockFlag) return;
         switch (type) {
             case BEQ:
                 if (_Rsrc1.us == _src2.us) {
@@ -394,19 +461,24 @@ public:
                 haveJump = true;
                 break;
         }
+        runningStage++;
     }
 
     virtual void MEM() {
-
+        if (lockFlag) return;
+        runningStage++;
     }
 
     virtual void WB() {
+        if (lockFlag) return;
         switch (type) {
             case JAL:
             case JALR:
                 regNum[31].s = Reg31.s;
+                registerLock[31] = false;
         }
         lockFlag = false;
+        runningStage++;
     }
 };
 
@@ -417,15 +489,21 @@ public:
     _WORD tmp, _Rsrc;
 
     virtual void ID() {
+        if (lockFlag) return;
+        if(registerLock[Rdest] || registerLock[RSrc]) return;
         if (BLRdest) tmp.s = LRdest; else tmp.s = regNum[Rdest].s;
         _Rsrc.s = regNum[RSrc].s;
+        runningStage++;
     }
 
     virtual void EX() {
+        if (lockFlag) return;
         source = tmp.us + offset;
+        runningStage++;
     }
 
     virtual void MEM() {
+        if (lockFlag) return;
         switch (type) {
             case SB:
                 mem[source] = _Rsrc.core.u1;
@@ -441,9 +519,13 @@ public:
                 mem[source + 3] = _Rsrc.core.u4;
                 break;
         }
+        runningStage++;
     }
 
-    virtual void WB() {}
+    virtual void WB() {
+        if (lockFlag) return;
+        runningStage++;
+    }
 };
 
 
@@ -452,21 +534,30 @@ public:
     int labelAddress, source;
     int _Rdest;
     _WORD _RSrc;
+
     virtual void ID() {
-        switch (type){
+        if (lockFlag) return;
+        switch (type) {
             case LA:
-                _Rdest = regNum[Rdest].s;
+                if(!BLRdest && registerLock[Rdest])
+                    return;
+                _Rdest = BLRdest ? LRdest : regNum[Rdest].s;
                 break;
             case LB:
             case LH:
             case LW:
-                _Rdest = regNum[Rdest].s;
+                if(!BLRdest && registerLock[Rdest])
+                    return;
+                _Rdest = BLRdest ? LRdest : regNum[Rdest].s;
                 break;
         }
+        runningStage++;
+        registerLock[RSrc] = true;
     }
 
     virtual void EX() {
-        switch (type){
+        if (lockFlag) return;
+        switch (type) {
             case LA:
                 labelAddress = (BLRdest ? LRdest : _Rdest);
                 break;
@@ -476,11 +567,13 @@ public:
                 source = (BLRdest ? LRdest : _Rdest) + offset;
                 break;
         }
-
+        runningStage++;
     }
 
     virtual void MEM() {
-        switch (type){
+        if (lockFlag) return;
+
+        switch (type) {
             case LB:
                 _RSrc = _WORD(int(mem[source]));
                 break;
@@ -491,10 +584,12 @@ public:
                 _RSrc = _WORD(mem[source], mem[source + 1], mem[source + 2], mem[source + 3]);
                 break;
         }
+        runningStage++;
     }
 
     virtual void WB() {
-        switch (type){
+        if (lockFlag) return;
+        switch (type) {
             case LB:
             case LH:
             case LW:
@@ -503,6 +598,8 @@ public:
             case LA:
                 regNum[RSrc] = labelAddress;
         }
+        registerLock[RSrc] = false;
+        runningStage++;
     }
 };
 
@@ -513,28 +610,39 @@ public:
     int i;
     int t;
     string str;
+
     virtual void ID() {
+        if (lockFlag) return;
+        if(registerLock[2]) return;
         opt = regNum[2].s;
-        if(type == SYSCALL){
-            switch (opt){
+        if (type == SYSCALL) {
+            switch (opt) {
                 case 8:
+                    if(registerLock[5]) return;
                     a1 = regNum[5].us;
                 case 1:
                 case 4:
                 case 9:
+                    if(registerLock[4]) return;
                     a0 = regNum[4].s;
+                    registerLock[2] = true;
                     break;
             }
+            if(opt == 5) registerLock[2] = true;
         }
+
+        runningStage++;
     }
 
     virtual void EX() {
-
+        if (lockFlag) return;
+        runningStage++;
     }
 
     virtual void MEM() {
-        if(type == SYSCALL){
-            switch(opt){
+        if (lockFlag) return;
+        if (type == SYSCALL) {
+            switch (opt) {
                 case 1:
                     cout << a0;
                     break;
@@ -551,7 +659,7 @@ public:
                     break;
                 case 8:
                     cin >> str;
-                    for (i = 0; i < str.length() && i < a1 - 1; ++i){
+                    for (i = 0; i < str.length() && i < a1 - 1; ++i) {
                         mem[a0 + i] = (unsigned char) str[i];
                     }
                     mem[a0 + str.length()] = 0;
@@ -565,17 +673,21 @@ public:
                     break;
             }
         }
+        runningStage++;
     }
 
     virtual void WB() {
-        if(type == SYSCALL){
-            switch(opt){
+        if (lockFlag) return;
+        if (type == SYSCALL) {
+            switch (opt) {
 
                 case 5:
                     regNum[2].s = t;
+                    registerLock[2] = false;
                     break;
                 case 9:
                     regNum[2].s = v0;
+                    registerLock[2] = false;
                     break;
                 case 10:
                     exit(0);
@@ -583,6 +695,7 @@ public:
                     exit(a0);
             }
         }
+        runningStage++;
     }
 };
 
@@ -591,25 +704,40 @@ public:
     int tmp;
 
     virtual void ID() {
+        if (lockFlag) return;
         switch (type) {
             case MOVE:
+                if(registerLock[Rdest]) return;
                 tmp = regNum[Rdest].s;
                 break;
             case MFHI:
+                if(registerLock[HIREGISTER]) return;
                 tmp = regNum[HIREGISTER].s;
                 break;
             case MFLO:
+                if(registerLock[LOREGISTER]) return;
                 tmp = regNum[LOREGISTER].s;
                 break;
         }
+        registerLock[RSrc] = true;
+        runningStage++;
     }
 
-    virtual void EX() {}
+    virtual void EX() {
+        if (lockFlag) return;
+        runningStage++;
+    }
 
-    virtual void MEM() {}
+    virtual void MEM() {
+        if (lockFlag) return;
+        runningStage++;
+    }
 
     virtual void WB() {
+        if (lockFlag) return;
         regNum[RSrc].s = tmp;
+        registerLock[RSrc] = false;
+        runningStage++;
     }
 };
 
