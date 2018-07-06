@@ -19,7 +19,11 @@ static int reg3 = 0;
 static int reg4 = 0;
 static int reg5 = 0;
 static int reg6 = 0;
-
+static int nextLine = 0;
+static bool haveJump = false;
+#define DADDR unsigned char
+_WORD regNum[regNUMMAX];
+DADDR mem[memoryMAX];
 unsigned short sizeT(Base &t) {
     return t.getSize();
 }

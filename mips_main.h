@@ -11,7 +11,6 @@
 #include "parser.h"
 #include "executedInstruction.h"
 
-#define DADDR unsigned char
 using namespace std;
 
 static int arga1 = 0;
@@ -22,9 +21,6 @@ private:
     int memHead, stackTop = memoryMAX - 1;
 
     int mainEntryPoint; //the Main Entry Point
-
-    _WORD regNum[regNUMMAX];
-    DADDR mem[memoryMAX];
 
     string coreData;
 
@@ -62,27 +58,6 @@ public:
         for (int i = 0; i < memoryMAX; i++) mem[i] = 0;
         memHead = 0;
         programSentenceNew.reserve(10000);
-    }
-
-    void instructionFetch() {
-        if (controlDebug) debugMess("Instruction Fetch(IF) Started.", "General - IF");
-
-    }
-
-    void instructionDecode() {
-
-    }
-
-    void execution() {
-
-    }
-
-    void memoryAccess() {
-
-    }
-
-    void writeBack() {
-
     }
 
     void setInstructionNew(const string &rhs) {
@@ -450,6 +425,9 @@ public:
                 programSentenceNew[i].BLRSrc = (Addr == -1 ? false : true);
             }
 
+            if(programSentenceNew[i].argv[0][0] == '$') programSentenceNew[i].f[0] = true;
+            else programSentenceNew[i].f[0] = false;
+
             if (programSentenceNew[i].argc == 1) continue;
             if (programSentenceNew[i].argv[1] != "") {
                 int Addr = checkLabel(programSentenceNew[i].argv[1]);
@@ -461,6 +439,8 @@ public:
                 programSentenceNew[i].LRdest = (Addr == -1 ? 0x3f3f3f3f : Addr);
                 programSentenceNew[i].BLRdest = (Addr == -1 ? false : true);
             }
+            if(programSentenceNew[i].argv[1][0] == '$') programSentenceNew[i].f[1] = true;
+            else programSentenceNew[i].f[1] = false;
 
             if (programSentenceNew[i].argc == 2) continue;
             if (programSentenceNew[i].argv[2] != "") {
@@ -473,6 +453,8 @@ public:
                 programSentenceNew[i].LSrc = (Addr == -1 ? 0x3f3f3f3f : Addr);
                 programSentenceNew[i].BLSrc = (Addr == -1 ? false : true);
             }
+            if(programSentenceNew[i].argv[2][0] == '$') programSentenceNew[i].f[2] = true;
+            else programSentenceNew[i].f[2] = false;
         }
 
         //cout << "Parser \n";
@@ -491,6 +473,7 @@ public:
         regNum[29] = stackTop;
         while (current < programSentenceNew.size()) {
             executionInstructionNew &tmp = programSentenceNew[current];
+            printf("Register 2[%d], currentLine[%d]\n", regNum[2], current);
             if (controlDebug) cout << current << "Running:";
             //设置跳转表示符号
             bool jumpFlag = false;
@@ -519,11 +502,11 @@ public:
                     if (controlDebug) cout << __LINE__ << ": Stage: ADD" << endl;
                     break;
                 case ADDU:
-                    regNum[tmp.RSrc].us = (f[2] ? regNum[tmp.Src].us : (unsigned int) tmp.Src) + regNum[tmp.Rdest].us;
+                    regNum[tmp.RSrc].us = (tmp.f[2] ? regNum[tmp.Src].us : (unsigned int) tmp.Src) + regNum[tmp.Rdest].us;
                     if (controlDebug) cout << __LINE__ << ": Stage: ADDU" << endl;
                     break;
                 case ADDIU:
-                    regNum[a[0]].us = (f[2] ? regNum[tmp.Src].us : (unsigned int) tmp.Src) + regNum[tmp.Rdest].us;
+                    regNum[a[0]].us = (tmp.f[2] ? regNum[tmp.Src].us : (unsigned int) tmp.Src) + regNum[tmp.Rdest].us;
                     if (controlDebug) cout << __LINE__ << ": Stage: ADDIU" << endl;
                     break;
                 case SUB:
@@ -920,12 +903,13 @@ public:
                             cout << regNum[4].s;
                             break;
                         case 4:
+                            cout << "\n[Output: ";
                             start = regNum[4].s;
                             for (i = start;; ++i) {
                                 if (mem[i] == 0) break;
                                 cout << (char) mem[i];
                             }
-                            cout << "\0";
+                            cout << "\0]\n";
                             cout << flush;
                             break;
                         case 5:
@@ -962,12 +946,6 @@ public:
 
 
     void run() {
-//        instructionFetch();
-//        instructionDecode();
-//        execution();
-//        memoryAccess();
-//        writeBack();
-//        directlyRun_DR();
         directlyRun_DR_New();
     }
 
