@@ -64,6 +64,7 @@ public:
     int LRSrc, LRdest, LSrc;
     bool BLRSrc = false, BLRdest = false, BLSrc = false;
     bool f[3] = {false};
+    int runningStage = 0;
 
     executionInstructionNewPipeLine() : index(0), argc(0), RSrc(0x3f3f3f3f), Rdest(0x3f3f3f3f), Src(0x3f3f3f3f),
                                         offset(0),
@@ -266,6 +267,7 @@ public:
     _WORD Reg31;
 
     virtual void ID() {
+        lockFlag = true;
         switch (type) {
             case BEQ:
             case BNE:
@@ -404,6 +406,7 @@ public:
             case JALR:
                 regNum[31].s = Reg31.s;
         }
+        lockFlag = false;
     }
 };
 

@@ -26,6 +26,8 @@ private:
 
     vector<executionInstructionNew> programSentenceNew;
 
+    vector<executionInstructionNewPipeLine *> programSentenceNewPR;
+
     void debugDataPrint() {
         cout << "=================================================================\n";
         cout << "Debug Data\n";
@@ -58,6 +60,7 @@ public:
         for (int i = 0; i < memoryMAX; i++) mem[i] = 0;
         memHead = 0;
         programSentenceNew.reserve(10000);
+        programSentenceNewPR.reserve(10000);
     }
 
     void setInstructionNew(const string &rhs) {
@@ -425,7 +428,7 @@ public:
                 programSentenceNew[i].BLRSrc = (Addr == -1 ? false : true);
             }
 
-            if(programSentenceNew[i].argv[0][0] == '$') programSentenceNew[i].f[0] = true;
+            if (programSentenceNew[i].argv[0][0] == '$') programSentenceNew[i].f[0] = true;
             else programSentenceNew[i].f[0] = false;
 
             if (programSentenceNew[i].argc == 1) continue;
@@ -439,7 +442,7 @@ public:
                 programSentenceNew[i].LRdest = (Addr == -1 ? 0x3f3f3f3f : Addr);
                 programSentenceNew[i].BLRdest = (Addr == -1 ? false : true);
             }
-            if(programSentenceNew[i].argv[1][0] == '$') programSentenceNew[i].f[1] = true;
+            if (programSentenceNew[i].argv[1][0] == '$') programSentenceNew[i].f[1] = true;
             else programSentenceNew[i].f[1] = false;
 
             if (programSentenceNew[i].argc == 2) continue;
@@ -453,7 +456,7 @@ public:
                 programSentenceNew[i].LSrc = (Addr == -1 ? 0x3f3f3f3f : Addr);
                 programSentenceNew[i].BLSrc = (Addr == -1 ? false : true);
             }
-            if(programSentenceNew[i].argv[2][0] == '$') programSentenceNew[i].f[2] = true;
+            if (programSentenceNew[i].argv[2][0] == '$') programSentenceNew[i].f[2] = true;
             else programSentenceNew[i].f[2] = false;
         }
 
@@ -502,7 +505,8 @@ public:
                     if (controlDebug) cout << __LINE__ << ": Stage: ADD" << endl;
                     break;
                 case ADDU:
-                    regNum[tmp.RSrc].us = (tmp.f[2] ? regNum[tmp.Src].us : (unsigned int) tmp.Src) + regNum[tmp.Rdest].us;
+                    regNum[tmp.RSrc].us =
+                            (tmp.f[2] ? regNum[tmp.Src].us : (unsigned int) tmp.Src) + regNum[tmp.Rdest].us;
                     if (controlDebug) cout << __LINE__ << ": Stage: ADDU" << endl;
                     break;
                 case ADDIU:
@@ -791,7 +795,7 @@ public:
 //                    cout << "a[1] " << a[1] << " " << Parser.registerMap[right] << endl;
                         source = (haveAlpha(s[1]) ? Parser.labelMap[s[1]] : a[1]) + offset;
                     } else {*/
-                        source = (tmp.BLRdest ? tmp.LRdest : regNum[a[1]].s) + tmp.offset;
+                    source = (tmp.BLRdest ? tmp.LRdest : regNum[a[1]].s) + tmp.offset;
                     //}
                     regNum[a[0]] = _WORD(mem[source], mem[source + 1], mem[source + 2], mem[source + 3]);
                     if (controlDebug) cout << __LINE__ << ": Stage: LW" << endl;
@@ -811,7 +815,7 @@ public:
 //                    cout << "a[1] " << a[1] << " " << Parser.registerMap[right] << endl;
                         source = (haveAlpha(s[1]) ? Parser.labelMap[s[1]] : a[1]) + offset;
                     } else {*/
-                        source = (tmp.BLRdest ? tmp.LRdest : regNum[a[1]].s) + tmp.offset;
+                    source = (tmp.BLRdest ? tmp.LRdest : regNum[a[1]].s) + tmp.offset;
                     //}
                     mem[source] = regNum[a[0]].core.u1;
                     if (controlDebug)
@@ -833,7 +837,7 @@ public:
 //                    cout << "a[1] " << a[1] << " " << Parser.registerMap[right] << endl;
                         source = (haveAlpha(s[1]) ? Parser.labelMap[s[1]] : a[1]) + offset;
                     } else {*/
-                        source = (tmp.BLRdest ? tmp.LRdest : regNum[a[1]].s) + tmp.offset;
+                    source = (tmp.BLRdest ? tmp.LRdest : regNum[a[1]].s) + tmp.offset;
                     //}
                     mem[source] = regNum[a[0]].core.u1;
                     mem[source + 1] = regNum[a[0]].core.u2;
@@ -860,7 +864,7 @@ public:
 //                    cout << "a[1] " << a[1] << " " << Parser.registerMap[right] << endl;
                         source = (haveAlpha(s[1]) ? Parser.labelMap[s[1]] : a[1]) + offset;
                     } else {*/
-                        source = (tmp.BLRdest ? tmp.LRdest : regNum[a[1]].s) + tmp.offset;
+                    source = (tmp.BLRdest ? tmp.LRdest : regNum[a[1]].s) + tmp.offset;
                     //}
                     mem[source] = regNum[a[0]].core.u1;
                     mem[source + 1] = regNum[a[0]].core.u2;
@@ -944,6 +948,689 @@ public:
         }
     }
 
+    void setInstructionPR(const string &rhs) {
+        coreData = rhs;
+        stringstream ss;
+        ss << rhs;
+        string token;
+        bool dataField = false;
+        bool textField = false;
+        string lastLabel = "";
+        string NextToken = "";
+        bool haveLabel = false;
+        int currentSentence = 0;
+        while (haveLabel || ss >> token) {
+            if (haveLabel) { token = NextToken; }
+            if (token == ".data") {
+                dataField = true;
+                textField = false;
+                if (controlDebug) debugMess("In Section: Data Started.", "Parser");
+                haveLabel = false;
+                continue;
+            }
+            if (token == ".text") {
+                dataField = false;
+                textField = true;
+                if (controlDebug) debugMess("In Section: Text Started.", "Parser");
+                haveLabel = false;
+                continue;
+            }
+
+            if (dataField) {
+                Instruction result = Parser.Type(token);
+                if (controlDebug) {
+                    string str("Found Token [");
+                    str += (int) result;
+                    str += "]";
+                    debugMess(str, "Parser - Data Field");
+                }
+                string next;
+                string mess;
+                if (result == ALIGN) {
+                    int n;
+                    ss >> n;
+                    // Debug Sect
+                    int dbg = memHead;
+                    if ((memHead + 1) % n != 0) memHead = (memHead / (1 << n) + 1) * (1 << n) - 1;
+                    if (controlDebug) {
+                        debugMess("", "In Align Section");
+                        cout << flush;
+                        cout << "memHead Old:[" << dbg << "] New:[" << memHead << "]" << endl;
+                    }
+                } else if (result == ASCIIZ) {
+                    char ch;
+                    ch = ss.get();
+                    ch = ss.get();
+                    while (ch != '\n') {
+                        next += ch;
+                        ch = ss.get();
+                    }
+//                    ss >> next;
+                    deleteCertainChar(next, '\"');
+                    next = decodeSpecial(next);
+                    if (controlDebug) debugMess("In ASCIIZ", "Parser - Data Field");
+                    for (int i = 0; i < next.length(); i++) {
+                        mem[memHead] = (unsigned char) (next[i]);
+                        memHead++;
+                    }
+                    mem[memHead++] = (unsigned char) 0;
+                    if (controlDebug) debugDataPrint();
+                } else if (result == ASCII) {
+                    ss >> next;
+                    deleteCertainChar(next, '\"');
+                    next = decodeSpecial(next);
+                    if (controlDebug) debugMess("In ASCII", "Parser - Data Field");
+                    for (int i = 0; i < next.length(); i++) {
+                        mem[memHead] = (unsigned char) (next[i]);
+                        memHead++;
+                    }
+                } else if (result == BYTE) {
+                    if (controlDebug) debugMess("In BYTE", "Parser - Data Field");
+                    ss >> next;
+                    while (next[0] <= '9' && next[0] >= '0') {
+                        unsigned char final = (unsigned char) string2int(next);
+                        mem[memHead++] = final;
+                        ss >> next;
+                    }
+//                    ss << next;
+                    haveLabel = true;
+                    NextToken = next;
+                    if (controlDebug) debugDataPrint();
+                } else if (result == HALF) {
+                    if (controlDebug) debugMess("In HALF", "Parser - Data Field");
+                    ss >> next;
+                    while (next[0] <= '9' && next[0] >= '0') {
+                        _HALF u = _HALF((short) string2int(next));
+                        mem[memHead++] = u.core.u1;
+                        mem[memHead++] = u.core.u2;
+                        ss >> next;
+                    }
+//                    ss << next;
+                    haveLabel = true;
+                    NextToken = next;
+                    if (controlDebug) debugDataPrint();
+                } else if (result == WORD) {
+                    if (controlDebug) debugMess("In WORD", "Parser - Data Field");
+                    ss >> next;
+                    while (next[0] <= '9' && next[0] >= '0') {
+                        _WORD u = _WORD(string2int(next));
+                        mem[memHead++] = u.core.u1;
+                        mem[memHead++] = u.core.u2;
+                        mem[memHead++] = u.core.u3;
+                        mem[memHead++] = u.core.u4;
+                        ss >> next;
+                    }
+                    //if(controlDebug) cout << "Debug:[" << ss.str() << "]" << endl;
+//                    ss << next;
+                    haveLabel = true;
+                    NextToken = next;
+                } else if (result == SPACE) {
+                    if (controlDebug) debugMess("In SPACE", "Parser - Data Field");
+                    int n1;
+                    ss >> n1;
+                    memHead += n1;
+                    if (controlDebug) debugDataPrint();
+                } else if (result == LABEL) {
+                    if (controlDebug) debugMess("In LABEL", "Parser - Data Field");
+                    if (haveLabel) {
+                        next = NextToken;
+                        haveLabel = false;
+                    }// else ss >> next;
+                    else next = token;
+                    deleteCertainChar(next, ':');
+                    if (controlDebug) cout << "Variable:" << next << "|\n" << endl;
+                    Parser.labelMap[next] = memHead;
+                    haveLabel = false;
+                } else if (controlDebug) debugMess("In OTHER", "Parser - Data Field");
+            }
+            if (textField) {
+                Instruction result = Parser.Type(token);
+                if (controlDebug) {
+                    string str("Found Token [");
+                    str += (int) result;
+                    str += "]";
+                    debugMess(str, "Parser - Text Field");
+                }
+                string next;
+                string mess;
+                if (result == LABEL) {
+                    deleteCertainChar(token, ':');
+                    string labelName = token;
+                    executionMap[labelName] = programSentenceNew.size();
+                    if (labelName == "main") mainEntryPoint = programSentenceNew.size();
+                } else {
+                    if (result == ADD || result == ADDU || result == ADDIU || result == SUB ||
+                        result == SUBU || result == XOR || result == XORU || result == REM ||
+                        result == REMU) {
+                        LogAndCal *s1 = new LogAndCal();
+                        s1->type = result;
+                        string arg1, arg2, arg3;
+                        ss >> arg1 >> arg2 >> arg3;
+                        deleteCertainChar(arg1, ',');
+                        deleteCertainChar(arg2, ',');
+                        deleteCertainChar(arg3, ',');
+                        s1->argc = 3;
+
+                        s1->argv.push_back(arg1);
+                        s1->argv.push_back(arg2);
+                        s1->argv.push_back(arg3);
+                        //解析寄存器对象
+                        if (arg1[0] == '$') {
+                            s1->RSrc = Parser.registerMap[arg1];
+                        }
+                        if (arg2[0] == '$') {
+                            s1->Rdest = Parser.registerMap[arg2];
+                        } else if (haveBrackets(arg2)) {
+                            string right = arg2;
+                            string left = splitWithCertainChar(right, '(');
+                            deleteCertainChar(right, ')');
+                            int offset = string2int(left);
+                            s1->offset = offset;
+                        }
+                        if (arg3[0] == '$') {
+                            s1->Src = Parser.registerMap[arg3];
+                        } else if (allNumber(arg3)) {
+                            s1->Src = string2int(arg3);
+                        }
+
+                        programSentenceNewPR.push_back(s1);
+                    }
+
+                    if (result == SEQ || result == SGE || result == SGT ||
+                        result == SLE || result == SLT || result == SNE) {
+                        Compare *s1 = new Compare();
+                        s1->type = result;
+                        string arg1, arg2, arg3;
+                        ss >> arg1 >> arg2 >> arg3;
+                        deleteCertainChar(arg1, ',');
+                        deleteCertainChar(arg2, ',');
+                        deleteCertainChar(arg3, ',');
+                        s1->argc = 3;
+
+                        s1->argv.push_back(arg1);
+                        s1->argv.push_back(arg2);
+                        s1->argv.push_back(arg3);
+                        //解析寄存器对象
+                        if (arg1[0] == '$') {
+                            s1->RSrc = Parser.registerMap[arg1];
+                        }
+                        if (arg2[0] == '$') {
+                            s1->Rdest = Parser.registerMap[arg2];
+                        } else if (haveBrackets(arg2)) {
+                            string right = arg2;
+                            string left = splitWithCertainChar(right, '(');
+                            deleteCertainChar(right, ')');
+                            int offset = string2int(left);
+                            s1->offset = offset;
+                        }
+                        if (arg3[0] == '$') {
+                            s1->Src = Parser.registerMap[arg3];
+                        } else if (allNumber(arg3)) {
+                            s1->Src = string2int(arg3);
+                        }
+
+                        programSentenceNewPR.push_back(s1);
+                    }
+                    if (result == BEQ ||
+                        result == BNE || result == BGE || result == BLE || result == BGT ||
+                        result == BLT) {
+                        IfAndJump *s1 = new IfAndJump();
+                        s1->type = result;
+                        string arg1, arg2, arg3;
+                        ss >> arg1 >> arg2 >> arg3;
+                        deleteCertainChar(arg1, ',');
+                        deleteCertainChar(arg2, ',');
+                        deleteCertainChar(arg3, ',');
+                        s1->argc = 3;
+
+                        s1->argv.push_back(arg1);
+                        s1->argv.push_back(arg2);
+                        s1->argv.push_back(arg3);
+                        //解析寄存器对象
+                        if (arg1[0] == '$') {
+                            s1->RSrc = Parser.registerMap[arg1];
+                        }
+                        if (arg2[0] == '$') {
+                            s1->Rdest = Parser.registerMap[arg2];
+                        } else if (haveBrackets(arg2)) {
+                            string right = arg2;
+                            string left = splitWithCertainChar(right, '(');
+                            deleteCertainChar(right, ')');
+                            int offset = string2int(left);
+                            s1->offset = offset;
+                        } else if (allNumber(arg2)) {
+                            s1->Rdest = string2int(arg2);
+                        }
+                        if (arg3[0] == '$') {
+                            s1->Src = Parser.registerMap[arg3];
+                        }
+
+                        programSentenceNewPR.push_back(s1);
+
+                    }
+                    if (result == LI) {
+                        string arg1, arg2;
+                        ss >> arg1 >> arg2;
+                        deleteCertainChar(arg1, ',');
+                        deleteCertainChar(arg2, ',');
+                        Li *s1 = new Li();
+                        s1->type = result;
+                        s1->argc = 2;
+
+                        s1->argv.push_back(arg1);
+                        s1->argv.push_back(arg2);
+                        //解析寄存器对象
+                        if (arg1[0] == '$') {
+                            s1->RSrc = Parser.registerMap[arg1];
+                        }
+                        if (arg2[0] == '$') {
+                            s1->Rdest = Parser.registerMap[arg2];
+                        } else if (haveBrackets(arg2)) {
+                            string right = arg2;
+                            string left = splitWithCertainChar(right, '(');
+                            deleteCertainChar(right, ')');
+                            int offset = string2int(left);
+                            s1->offset = offset;
+                            s1->Rdest = Parser.registerMap[right];
+                        } else if (allNumber(arg2)) {
+                            s1->Rdest = string2int(arg2);
+                        }
+
+                        programSentenceNewPR.push_back(s1);
+                    }
+                    if (result == BEQZ || result == BNEZ || result == BLEZ || result == BGEZ ||
+                        result == BGTZ || result == BLTZ) {
+                        string arg1, arg2;
+                        ss >> arg1 >> arg2;
+                        deleteCertainChar(arg1, ',');
+                        deleteCertainChar(arg2, ',');
+                        IfAndJump *s1 = new IfAndJump();
+                        s1->argc = 2;
+                        s1->type = result;
+
+                        s1->argv.push_back(arg1);
+                        s1->argv.push_back(arg2);
+                        //解析寄存器对象
+                        if (arg1[0] == '$') {
+                            s1->RSrc = Parser.registerMap[arg1];
+                        }
+                        if (arg2[0] == '$') {
+                            s1->Rdest = Parser.registerMap[arg2];
+                        } else if (haveBrackets(arg2)) {
+                            string right = arg2;
+                            string left = splitWithCertainChar(right, '(');
+                            deleteCertainChar(right, ')');
+                            int offset = string2int(left);
+                            s1->offset = offset;
+                            s1->Rdest = Parser.registerMap[right];
+                        } else if (allNumber(arg2)) {
+                            s1->Rdest = string2int(arg2);
+                        }
+
+                        programSentenceNewPR.push_back(s1);
+                    }
+                    if (result == LA || result == LB || result == LH || result == LW) {
+                        string arg1, arg2;
+                        ss >> arg1 >> arg2;
+                        deleteCertainChar(arg1, ',');
+                        deleteCertainChar(arg2, ',');
+                        LoadData *s1 = new LoadData();
+                        s1->argc = 2;
+                        s1->type = result;
+                        s1->argv.push_back(arg1);
+                        s1->argv.push_back(arg2);
+                        //解析寄存器对象
+                        if (arg1[0] == '$') {
+                            s1->RSrc = Parser.registerMap[arg1];
+                        }
+                        if (arg2[0] == '$') {
+                            s1->Rdest = Parser.registerMap[arg2];
+                        } else if (haveBrackets(arg2)) {
+                            string right = arg2;
+                            string left = splitWithCertainChar(right, '(');
+                            deleteCertainChar(right, ')');
+                            int offset = string2int(left);
+                            s1->offset = offset;
+                            s1->Rdest = Parser.registerMap[right];
+                        } else if (allNumber(arg2)) {
+                            s1->Rdest = string2int(arg2);
+                        }
+
+                        programSentenceNewPR.push_back(s1);
+                    }
+
+                    if (result == SB || result == SH || result == SW) {
+                        string arg1, arg2;
+                        ss >> arg1 >> arg2;
+                        deleteCertainChar(arg1, ',');
+                        deleteCertainChar(arg2, ',');
+                        StoreData *s1 = new StoreData();
+                        s1->argc = 2;
+                        s1->type = result;
+                        s1->argv.push_back(arg1);
+                        s1->argv.push_back(arg2);
+                        //解析寄存器对象
+                        if (arg1[0] == '$') {
+                            s1->RSrc = Parser.registerMap[arg1];
+                        }
+                        if (arg2[0] == '$') {
+                            s1->Rdest = Parser.registerMap[arg2];
+                        } else if (haveBrackets(arg2)) {
+                            string right = arg2;
+                            string left = splitWithCertainChar(right, '(');
+                            deleteCertainChar(right, ')');
+                            int offset = string2int(left);
+                            s1->offset = offset;
+                            s1->Rdest = Parser.registerMap[right];
+                        } else if (allNumber(arg2)) {
+                            s1->Rdest = string2int(arg2);
+                        }
+
+                        programSentenceNewPR.push_back(s1);
+                    }
+                    if (result == MOVE) {
+                        string arg1, arg2;
+                        ss >> arg1 >> arg2;
+                        deleteCertainChar(arg1, ',');
+                        deleteCertainChar(arg2, ',');
+                        MoveData *s1 = new MoveData();
+                        s1->argc = 2;
+                        s1->type = result;
+                        s1->argv.push_back(arg1);
+                        s1->argv.push_back(arg2);
+                        //解析寄存器对象
+                        if (arg1[0] == '$') {
+                            s1->RSrc = Parser.registerMap[arg1];
+                        }
+                        if (arg2[0] == '$') {
+                            s1->Rdest = Parser.registerMap[arg2];
+                        } else if (haveBrackets(arg2)) {
+                            string right = arg2;
+                            string left = splitWithCertainChar(right, '(');
+                            deleteCertainChar(right, ')');
+                            int offset = string2int(left);
+                            s1->offset = offset;
+                            s1->Rdest = Parser.registerMap[right];
+                        } else if (allNumber(arg2)) {
+                            s1->Rdest = string2int(arg2);
+                        }
+
+                        programSentenceNewPR.push_back(s1);
+                    }
+
+
+                    if (result == NEG || result == NEGU) {
+                        string arg1, arg2;
+                        ss >> arg1 >> arg2;
+                        deleteCertainChar(arg1, ',');
+                        deleteCertainChar(arg2, ',');
+                        LogAndCal *s1 = new LogAndCal();
+                        s1->argc = 2;
+                        s1->type = result;
+                        s1->argv.push_back(arg1);
+                        s1->argv.push_back(arg2);
+                        //解析寄存器对象
+                        if (arg1[0] == '$') {
+                            s1->RSrc = Parser.registerMap[arg1];
+                        }
+                        if (arg2[0] == '$') {
+                            s1->Rdest = Parser.registerMap[arg2];
+                        } else if (haveBrackets(arg2)) {
+                            string right = arg2;
+                            string left = splitWithCertainChar(right, '(');
+                            deleteCertainChar(right, ')');
+                            int offset = string2int(left);
+                            s1->offset = offset;
+                            s1->Rdest = Parser.registerMap[right];
+                        } else if (allNumber(arg2)) {
+                            s1->Rdest = string2int(arg2);
+                        }
+
+                        programSentenceNewPR.push_back(s1);
+                    }
+
+                    if (result == MFHI || result == MFLO) {
+                        string arg1;
+                        ss >> arg1;
+                        deleteCertainChar(arg1, ',');
+                        MoveData *s1 = new MoveData();
+                        s1->argc = 1;
+
+                        s1->argv.push_back(arg1);
+                        //解析寄存器对象
+                        if (arg1[0] == '$') {
+                            s1->RSrc = Parser.registerMap[arg1];
+                        }
+                        programSentenceNewPR.push_back(s1);
+                    }
+                    if (result == B || result == J || result == JR || result == JAL || result == JALR) {
+                        string arg1;
+                        ss >> arg1;
+                        deleteCertainChar(arg1, ',');
+                        IfAndJump *s1 = new IfAndJump();
+                        s1->argc = 1;
+
+                        s1->argv.push_back(arg1);
+                        //解析寄存器对象
+                        if (arg1[0] == '$') {
+                            s1->RSrc = Parser.registerMap[arg1];
+                        }
+                        programSentenceNewPR.push_back(s1);
+                    }
+                    if (result == NOP) {
+                        Special *s1 = new Special();
+                        s1->type = NOP;
+                        programSentenceNewPR.push_back(s1);
+                    }
+                    if (result == SYSCALL) {
+                        Special *s1 = new Special();
+                        s1->type = SYSCALL;
+                        programSentenceNewPR.push_back(s1);
+                    }
+                    if (result == MUL || result == MULU || result == DIV || result == DIVU) {
+                        string arg1, arg2;
+                        ss >> arg1 >> arg2;
+                        deleteCertainChar(arg1, ',');
+                        deleteCertainChar(arg2, ',');
+                        LogAndCal* s1 = new LogAndCal();
+                        int argc = 2;
+                        s1->type = result;
+                        s1->argv.push_back(arg1);
+                        s1->argv.push_back(arg2);
+                        streampos save = ss.tellg();
+                        string ss3, arg3;
+                        ss >> ss3;
+                        short code = -1;
+                        for (int i = 0; i < ss3.length(); ++i) {
+                            if (ss3[i] == '\n') {
+                                code = 10;
+                                break;
+                            }
+                            if (ss3[i] <= '9' && ss3[i] >= '0') {
+                                code = 52;
+                                break;
+                            }
+                        }
+                        ss.seekg(save);
+                        if (code == 52) {
+                            string s3;
+                            ss >> s3;
+                            deleteCertainChar(s3, ',');
+                            s1->argv.push_back(s3);
+                            arg3 = s3;
+                            argc = 3;
+                        }
+
+                        if (argc == 2) {
+                            //解析寄存器对象
+                            if (arg1[0] == '$') {
+                                s1->RSrc = Parser.registerMap[arg1];
+                            }
+                            if (arg2[0] == '$') {
+                                s1->Rdest = Parser.registerMap[arg2];
+                            } else if (haveBrackets(arg2)) {
+                                string right = arg2;
+                                string left = splitWithCertainChar(right, '(');
+                                deleteCertainChar(right, ')');
+                                int offset = string2int(left);
+                                s1->offset = offset;
+                                s1->Rdest = Parser.registerMap[right];
+                            }
+                        } else {
+                            if (arg1[0] == '$') {
+                                s1->RSrc = Parser.registerMap[arg1];
+                            }
+                            if (arg2[0] == '$') {
+                                s1->Rdest = Parser.registerMap[arg2];
+                            } else if (haveBrackets(arg2)) {
+                                string right = arg2;
+                                string left = splitWithCertainChar(right, '(');
+                                deleteCertainChar(right, ')');
+                                int offset = string2int(left);
+                                s1->offset = offset;
+                                s1->Rdest = Parser.registerMap[right];
+                            }
+                            if (arg3[0] == '$') {
+                                s1->Src = Parser.registerMap[arg3];
+                            } else if (allNumber(arg3)) {
+                                s1->Src = string2int(arg3);
+                            }
+                        }
+                        s1->argc = argc;
+                        programSentenceNewPR.push_back(s1);
+                    }
+                }
+
+            }
+        }
+        int sizeT = (int) programSentenceNewPR.size();
+        for (int i = 0; i < sizeT; ++i) {
+            executionInstructionNewPipeLine* newPipeLine = programSentenceNewPR[i];
+            if (newPipeLine->argc == 0) continue;
+            if (newPipeLine->argv[0] != "") {
+                int Addr = checkLabel(newPipeLine->argv[0]);
+//                if(Addr == -1) throw 1; // Error: Not found the label;
+                newPipeLine->ARSrc = (Addr == -1 ? 0x3f3f3f3f : Addr);
+            }
+            if (newPipeLine->argv[0] != "") {
+                int Addr = Parser.LabelAddr(newPipeLine->argv[0]);
+                newPipeLine->LRSrc = (Addr == -1 ? 0x3f3f3f3f : Addr);
+                newPipeLine->BLRSrc = (Addr == -1 ? false : true);
+            }
+
+            if (newPipeLine->argv[0][0] == '$') newPipeLine->f[0] = true;
+            else programSentenceNew[i].f[0] = false;
+
+            if (newPipeLine->argc == 1) continue;
+            if (newPipeLine->argv[1] != "") {
+                int Addr = checkLabel(newPipeLine->argv[1]);
+//                if(Addr == -1) throw 1; // Error: Not found the label;
+                newPipeLine->ARdest = (Addr == -1 ? 0x3f3f3f3f : Addr);
+            }
+            if (newPipeLine->argv[1] != "") {
+                int Addr = Parser.LabelAddr(newPipeLine->argv[1]);
+                newPipeLine->LRdest = (Addr == -1 ? 0x3f3f3f3f : Addr);
+                newPipeLine->BLRdest = (Addr == -1 ? false : true);
+            }
+            if (newPipeLine->argv[1][0] == '$') newPipeLine->f[1] = true;
+            else newPipeLine->f[1] = false;
+
+            if (newPipeLine->argc == 2) continue;
+            if (newPipeLine->argv[2] != "") {
+                int Addr = checkLabel(newPipeLine->argv[2]);
+//                if(Addr == -1) throw 1; // Error: Not found the label;
+                programSentenceNew[i].ASrc = (Addr == -1 ? 0x3f3f3f3f : Addr);
+            }
+            if (newPipeLine->argv[2] != "") {
+                int Addr = Parser.LabelAddr(newPipeLine->argv[2]);
+                newPipeLine->LSrc = (Addr == -1 ? 0x3f3f3f3f : Addr);
+                newPipeLine->BLSrc = (Addr == -1 ? false : true);
+            }
+            if (newPipeLine->argv[2][0] == '$') newPipeLine->f[2] = true;
+            else newPipeLine->f[2] = false;
+        }
+
+        //cout << "Parser \n";
+    }
+
+    inline executionInstructionNewPipeLine* getNextSentence(){
+        return nullptr;
+    }
+
+    void pipelineRun_PR() {
+        if (controlDebug) {
+            map<string, int>::iterator ite;
+            cout << "Label Table" << endl;
+            for (ite = executionMap.begin(); ite != executionMap.end(); ite++) {
+                cout << "Label:" << ite->first << "  Line:" << ite->second << endl;
+            }
+        }
+
+        currentLine = mainEntryPoint;
+        regNum[29] = stackTop;
+        nextLine = currentLine + 1;
+        haveJump = false;
+        int limitSize = (int) programSentenceNewPR.size();
+        int RunningStage = 1;
+        executionInstructionNewPipeLine *idx[5] = {nullptr};
+        lockFlag = false;//lock when meeting the jump sentence
+        while (currentLine < limitSize){
+            if(idx[0] == nullptr) idx[0] = programSentenceNewPR[currentLine];
+            switch (idx[0]->runningStage){
+                case 1: idx[0]->ID(); break;
+                case 2: idx[0]->EX(); break;
+                case 3: idx[0]->MEM(); break;
+                case 4: idx[0]->WB(); break;
+                case 5: idx[0] = getNextSentence(); idx[0]->runningStage = 1; break;
+                default: break;
+            }
+            if(RunningStage == 1){ RunningStage++; continue; }
+
+            if(idx[1] == nullptr) idx[1] = programSentenceNewPR[currentLine];
+            switch (idx[1]->runningStage){
+                case 1: idx[1]->ID(); break;
+                case 2: idx[1]->EX(); break;
+                case 3: idx[1]->MEM(); break;
+                case 4: idx[1]->WB(); break;
+                case 5: idx[1] = getNextSentence(); idx[1]->runningStage = 1; break;
+                default: break;
+            }
+            if(RunningStage == 2){ RunningStage++; continue; }
+
+            if(idx[2] == nullptr) idx[2] = programSentenceNewPR[currentLine];
+            switch (idx[2]->runningStage){
+                case 1: idx[2]->ID(); break;
+                case 2: idx[2]->EX(); break;
+                case 3: idx[2]->MEM(); break;
+                case 4: idx[2]->WB(); break;
+                case 5: idx[2] = getNextSentence(); idx[2]->runningStage = 1; break;
+                default: break;
+            }
+            if(RunningStage == 3){ RunningStage++; continue; }
+
+            if(idx[3] == nullptr) idx[3] = programSentenceNewPR[currentLine];
+            switch (idx[3]->runningStage){
+                case 1: idx[3]->ID(); break;
+                case 2: idx[3]->EX(); break;
+                case 3: idx[3]->MEM(); break;
+                case 4: idx[3]->WB(); break;
+                case 5: idx[3] = getNextSentence(); idx[3]->runningStage = 1; break;
+                default: break;
+            }
+            if(RunningStage == 4) { RunningStage++; continue; }
+
+            if(idx[4] == nullptr) idx[4] = programSentenceNewPR[currentLine];
+            switch (idx[4]->runningStage){
+                case 1: idx[4]->ID(); break;
+                case 2: idx[4]->EX(); break;
+                case 3: idx[4]->MEM(); break;
+                case 4: idx[4]->WB(); break;
+                case 5: idx[4] = getNextSentence(); idx[4]->runningStage = 1; break;
+                default: break;
+            }
+        }
+
+    }
 
     void run() {
         directlyRun_DR_New();

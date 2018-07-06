@@ -22,9 +22,12 @@ static int reg6 = 0;
 static int nextLine = 0;
 static bool haveJump = false;
 static int memHead = 0;
+static int currentLine = 0;
 #define DADDR unsigned char
 _WORD regNum[regNUMMAX];
 DADDR mem[memoryMAX];
+static bool registerLock[regNUMMAX] = {false};
+static bool lockFlag = false;//全局锁
 unsigned short sizeT(Base &t) {
     return t.getSize();
 }
