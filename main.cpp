@@ -5,13 +5,16 @@
 #include "stdc++.h"
 #include "mips_main.h"
 #include "utilities.h"
-
+#define FILE_DEBUG
 
 using namespace std;
 extern bool controlDebug;
 extern mips Kernel;
 
 int main(int argc, char *argv[]) {
+#ifdef FILE_DEBUG
+    freopen("test.log", "w", stdout);
+#endif
     ios::sync_with_stdio(false);
     cin.tie(0);
     cout.tie(0);
@@ -38,9 +41,14 @@ int main(int argc, char *argv[]) {
     buf << File.rdbuf();
     string data = buf.str();
     if (controlDebug) debugMess(data, "Receive Message From File", 1);
-    Kernel.setInstructionNew(data);
-    Kernel.run();
+//    Kernel.setInstructionNew(data);
+    Kernel.setInstructionPR(data);
+//    Kernel.run();
+    Kernel.runPR();
     if (controlDebug) debugMess("Execute Finish.", "General");
     printf("\n[%d][%d][%d][%d][%d][%d]\n", reg1, reg2, reg3, reg4, reg5, reg6);
     printf("SW Stage[%d] LW Stage[%d]\n", arga1, arga2);
+#ifdef FILE_DEBUG
+    fclose(stdout);
+#endif
 }

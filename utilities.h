@@ -29,7 +29,15 @@ _WORD regNum[regNUMMAX];
 DADDR mem[memoryMAX];
 static bool registerLock[regNUMMAX] = {false};
 static bool lockFlag = false;//全局锁
-
+static bool lockNewSentence = false;
+static int stageLock = -1;
+static int currentStage = -1;
+static int nextClockIF = 1;
+static int nextIFThread = 0;
+static int currentClock = 0;
+static bool failToDo = false;
+static int __Instruction_Index[5] = {0, -1, -2, -3, -4};
+static unsigned long long clockT = 0;
 template<class T>
 T atoi(const string &rhs) {
     T ret;
@@ -158,4 +166,113 @@ inline bool allNumber(const string &rhs) {
     return true;
 }
 
+
+inline string type2String(const Instruction& type){
+    switch (type){
+        case ADD:
+            return "ADD";
+        case ADDU:
+            return "ADDU";
+        case ADDIU:
+            return "ADDIU";
+        case SUB:
+            return "SUB";
+        case SUBU:
+            return "SUBU";
+        case MUL:
+            return "MUL";
+        case MULU:
+            return "MULU";
+        case DIV:
+            return "DIV";
+        case DIVU:
+            return "DIVU";
+        case XOR:
+            return "XOR";
+        case XORU:
+            return "XORU";
+        case NEG:
+            return "NEG";
+        case NEGU:
+            return "NEGU";
+        case REM:
+            return "REM";
+        case REMU:
+            return "REMU";
+        case LI:
+            return "LI";
+        case SEQ:
+            return "SEQ";
+        case SGE:
+            return "SGE";
+        case SGT:
+            return "SGT";
+        case SLE:
+            return "SLE";
+        case SLT:
+            return "SLT";
+        case SNE:
+            return "SNE";
+        case B:
+            return "B";
+        case BEQ:
+            return "BEQ";
+        case BNE:
+            return "BNE";
+        case BGE:
+            return "BGE";
+        case BLE:
+            return "BLE";
+        case BGT:
+            return "BGT";
+        case BLT:
+            return "BLT";
+        case BEQZ:
+            return "BEQZ";
+        case BNEZ:
+            return "BNEZ";
+        case BGEZ:
+            return "BGEZ";
+        case BLEZ:
+            return "BLEZ";
+        case BGTZ:
+            return "BGTZ";
+        case BLTZ:
+            return "BLTZ";
+        case J:
+            return "J";
+        case JR:
+            return "JR";
+        case JAL:
+            return "JAL";
+        case JALR:
+            return "JALR";
+        case SW:
+            return "SW";
+        case SH:
+            return "SH";
+        case SB:
+            return "SB";
+        case MOVE:
+            return "MOVE";
+        case MFHI:
+            return "MFHI";
+        case MFLO:
+            return "MFLO";
+        case NOP:
+            return "NOP";
+        case SYSCALL:
+            return "SYSCALL";
+        case LW:
+            return "LW";
+        case LH:
+            return "LH";
+        case LA:
+            return "LA";
+        case LB:
+            return "LB";
+        default:
+            return "Undefined.";
+    }
+}
 #endif //MIPS_UTILITIES_H

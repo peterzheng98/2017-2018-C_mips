@@ -28,6 +28,7 @@ private:
 
     vector<executionInstructionNewPipeLine *> programSentenceNewPR;
 
+    executionInstructionNewPipeLine* running[5] = {nullptr};
     void debugDataPrint() {
         cout << "=================================================================\n";
         cout << "Debug Data\n";
@@ -474,10 +475,15 @@ public:
 
         int current = mainEntryPoint;
         regNum[29] = stackTop;
+        controlDebug = true;
         while (current < programSentenceNew.size()) {
+            //if (controlDebug) {
+            //    printf("Debug: ClockTime:%lld\n", clockT);
+            //}
+            
             executionInstructionNew &tmp = programSentenceNew[current];
             //printf("Register 2[%d], currentLine[%d]\n", regNum[2], current);
-            if (controlDebug) cout << current << "Running:";
+            //if (controlDebug) cout << current << "Running:";
             //设置跳转表示符号
             bool jumpFlag = false;
             bool f[3] = {false};
@@ -502,24 +508,24 @@ public:
             switch (tmp.type) {
                 case ADD:
                     regNum[tmp.RSrc].s = (tmp.argv[2][0] == '$' ? regNum[tmp.Src].s : tmp.Src) + regNum[tmp.Rdest].s;
-                    if (controlDebug) cout << __LINE__ << ": Stage: ADD" << endl;
+                    //if (controlDebug) cout << __LINE__ <<": Stage: ADD" << endl;
                     break;
                 case ADDU:
                     regNum[tmp.RSrc].us =
                             (tmp.f[2] ? regNum[tmp.Src].us : (unsigned int) tmp.Src) + regNum[tmp.Rdest].us;
-                    if (controlDebug) cout << __LINE__ << ": Stage: ADDU" << endl;
+                    //if (controlDebug) cout << __LINE__ <<": Stage: ADDU" << endl;
                     break;
                 case ADDIU:
                     regNum[a[0]].us = (tmp.f[2] ? regNum[tmp.Src].us : (unsigned int) tmp.Src) + regNum[tmp.Rdest].us;
-                    if (controlDebug) cout << __LINE__ << ": Stage: ADDIU" << endl;
+                    //if (controlDebug) cout << __LINE__ <<": Stage: ADDIU" << endl;
                     break;
                 case SUB:
                     regNum[a[0]].s = regNum[tmp.Rdest].s - (f[2] ? regNum[tmp.Src].s : tmp.Src);
-                    if (controlDebug) cout << __LINE__ << ": Stage: SUB" << endl;
+                    //if (controlDebug) cout << __LINE__ <<": Stage: SUB" << endl;
                     break;
                 case SUBU:
                     regNum[a[0]].us = regNum[tmp.Rdest].us - (f[2] ? regNum[tmp.Src].us : (unsigned int) tmp.Src);
-                    if (controlDebug) cout << __LINE__ << ": Stage: SUBU" << endl;
+                    //if (controlDebug) cout << __LINE__ <<": Stage: SUBU" << endl;
 
                     break;
                 case MUL:
@@ -528,7 +534,7 @@ public:
                         regNum[HIREGISTER] = _WORD(tmp2.core.u1, tmp2.core.u2, tmp2.core.u3, tmp2.core.u4);
                         regNum[LOREGISTER] = _WORD(tmp2.core.u5, tmp2.core.u6, tmp2.core.u7, tmp2.core.u8);
                     } else regNum[a[0]].s = (tmp.argv[2][0] == '$' ? regNum[tmp.Src].s : tmp.Src) * regNum[tmp.Rdest].s;
-                    if (controlDebug) cout << __LINE__ << ": Stage: MUL" << endl;
+                    //if (controlDebug) cout << __LINE__ <<": Stage: MUL" << endl;
 
                     break;
                 case MULU:
@@ -538,7 +544,7 @@ public:
                         regNum[HIREGISTER] = _WORD(tmp2.core.u1, tmp2.core.u2, tmp2.core.u3, tmp2.core.u4);
                         regNum[LOREGISTER] = _WORD(tmp2.core.u5, tmp2.core.u6, tmp2.core.u7, tmp2.core.u8);
                     } else regNum[a[0]].us = (f[2] ? regNum[tmp.Src].us : a[2]) * regNum[tmp.Rdest].us;
-                    if (controlDebug) cout << __LINE__ << ": Stage: MULU" << endl;
+                    //if (controlDebug) cout << __LINE__ <<": Stage: MULU" << endl;
 
                     break;
                 case DIVU:
@@ -546,7 +552,7 @@ public:
                         regNum[HIREGISTER] = _WORD(regNum[a[0]].us % (f[1] ? regNum[tmp.Rdest].us : a[1]));
                         regNum[LOREGISTER] = _WORD(regNum[a[0]].us / (f[1] ? regNum[tmp.Rdest].us : a[1]));
                     } else regNum[a[0]].us = regNum[tmp.Rdest].us / (f[2] ? regNum[tmp.Src].us : a[2]);
-                    if (controlDebug) cout << __LINE__ << ": Stage: DIVU" << endl;
+                    //if (controlDebug) cout << __LINE__ <<": Stage: DIVU" << endl;
 
                     break;
                 case DIV:
@@ -554,72 +560,72 @@ public:
                         regNum[HIREGISTER] = _WORD(regNum[a[0]].s % (f[1] ? regNum[tmp.Rdest].s : a[1]));
                         regNum[LOREGISTER] = _WORD(regNum[a[0]].s / (f[1] ? regNum[tmp.Rdest].s : a[1]));
                     } else regNum[a[0]].us = regNum[tmp.Rdest].us / (f[2] ? regNum[tmp.Src].us : a[2]);
-                    if (controlDebug) cout << __LINE__ << ": Stage: DIV" << endl;
+                    //if (controlDebug) cout << __LINE__ <<": Stage: DIV" << endl;
 
                     break;
                 case XOR:
                     regNum[a[0]].s = regNum[tmp.Rdest].s ^ (f[2] ? regNum[tmp.Src].s : a[2]);
-                    if (controlDebug) cout << __LINE__ << ": Stage: XOR" << endl;
+                    //if (controlDebug) cout << __LINE__ <<": Stage: XOR" << endl;
 
                     break;
                 case XORU:
                     regNum[a[0]].us = regNum[tmp.Rdest].us ^ (f[2] ? regNum[tmp.Src].us : a[2]);
-                    if (controlDebug) cout << __LINE__ << ": Stage: XORU" << endl;
+                    //if (controlDebug) cout << __LINE__ <<": Stage: XORU" << endl;
 
                     break;
                 case NEG:
                     regNum[a[0]].s = -regNum[tmp.Rdest].s;
-                    if (controlDebug) cout << __LINE__ << ": Stage: NEG" << endl;
+                    //if (controlDebug) cout << __LINE__ <<": Stage: NEG" << endl;
 
                     break;
                 case NEGU:
                     regNum[a[0]].us = ~regNum[tmp.Rdest].us;
-                    if (controlDebug) cout << __LINE__ << ": Stage: NEGU" << endl;
+                    //if (controlDebug) cout << __LINE__ <<": Stage: NEGU" << endl;
 
                     break;
                 case REM:
                     regNum[a[0]].s = regNum[tmp.Rdest].s % (f[2] ? regNum[tmp.Src].s : a[2]);
-                    if (controlDebug) cout << __LINE__ << ": Stage: REM" << endl;
+                    //if (controlDebug) cout << __LINE__ <<": Stage: REM" << endl;
 
                     break;
                 case REMU:
                     regNum[a[0]].us = regNum[tmp.Rdest].us % (f[2] ? regNum[tmp.Src].us : a[2]);
-                    if (controlDebug) cout << __LINE__ << ": Stage: REMU" << endl;
+                    //if (controlDebug) cout << __LINE__ <<": Stage: REMU" << endl;
 
                     break;
                 case LI:
                     regNum[a[0]] = _WORD(a[1]);
-                    if (controlDebug) cout << __LINE__ << ": Stage: LI" << endl;
+                    //if (controlDebug) cout << __LINE__ <<": Stage: LI" << endl;
 
                     break;
                 case SEQ:
                     regNum[a[0]].s = (regNum[tmp.Rdest].s == (f[2] ? regNum[tmp.Src].s : a[2]));
-                    if (controlDebug) cout << __LINE__ << ": Stage: SEQ" << endl;
+                    //if (controlDebug) cout << __LINE__ <<": Stage: SEQ" << endl;
 
                     break;
                 case SGE:
                     regNum[a[0]].s = (regNum[tmp.Rdest].s >= (f[2] ? regNum[tmp.Src].s : a[2]));
-                    if (controlDebug) cout << __LINE__ << ": Stage: SGE" << endl;
+                    //if (controlDebug) cout << __LINE__ <<": Stage: SGE" << endl;
 
                     break;
                 case SGT:
                     regNum[a[0]].s = (regNum[tmp.Rdest].s > (f[2] ? regNum[tmp.Src].s : a[2]));
-                    if (controlDebug) cout << __LINE__ << ": Stage: SGT" << endl;
+                    //if (controlDebug) cout << __LINE__ <<": Stage: SGT" << endl;
 
                     break;
                 case SLE:
                     regNum[a[0]].s = (regNum[tmp.Rdest].s <= (f[2] ? regNum[tmp.Src].s : a[2]));
-                    if (controlDebug) cout << __LINE__ << ": Stage: SLE" << endl;
+                    //if (controlDebug) cout << __LINE__ <<": Stage: SLE" << endl;
 
                     break;
                 case SLT:
                     regNum[a[0]].s = (regNum[tmp.Rdest].s < (f[2] ? regNum[tmp.Src].s : a[2]));
-                    if (controlDebug) cout << __LINE__ << ": Stage: SLT" << endl;
+                    //if (controlDebug) cout << __LINE__ <<": Stage: SLT" << endl;
 
                     break;
                 case SNE:
                     regNum[a[0]].s = (regNum[tmp.Rdest].s != (f[2] ? regNum[tmp.Src].s : a[2]));
-                    if (controlDebug) cout << __LINE__ << ": Stage: SNE" << endl;
+                    //if (controlDebug) cout << __LINE__ <<": Stage: SNE" << endl;
 
                     break;
                 case J:
@@ -627,7 +633,7 @@ public:
                     nextExe = tmp.ARSrc;
                     current = nextExe;
                     jumpFlag = true;
-                    if (controlDebug) cout << __LINE__ << ": Stage: J/B" << endl;
+                    //if (controlDebug) cout << __LINE__ <<": Stage: J/B" << endl;
                     break;
                 case BEQ:
                     if (regNum[a[0]].s == (f[1] ? regNum[tmp.Rdest].s : a[1])) {
@@ -635,7 +641,7 @@ public:
                         current = nextExe;
                         jumpFlag = true;
                     }
-                    if (controlDebug) cout << __LINE__ << ": Stage: BEQ" << endl;
+                    //if (controlDebug) cout << __LINE__ <<": Stage: BEQ" << endl;
 
                     break;
                 case BNE:
@@ -644,7 +650,7 @@ public:
                         current = nextExe;
                         jumpFlag = true;
                     }
-                    if (controlDebug) cout << __LINE__ << ": Stage: BNE" << endl;
+                    //if (controlDebug) cout << __LINE__ <<": Stage: BNE" << endl;
 
                     break;
                 case BGE:
@@ -653,7 +659,7 @@ public:
                         current = nextExe;
                         jumpFlag = true;
                     }
-                    if (controlDebug) cout << __LINE__ << ": Stage: BGE" << endl;
+                    //if (controlDebug) cout << __LINE__ <<": Stage: BGE" << endl;
 
                     break;
                 case BLE:
@@ -662,7 +668,7 @@ public:
                         current = nextExe;
                         jumpFlag = true;
                     }
-                    if (controlDebug) cout << __LINE__ << ": Stage: BLE" << endl;
+                    //if (controlDebug) cout << __LINE__ <<": Stage: BLE" << endl;
 
                     break;
                 case BGT:
@@ -671,7 +677,7 @@ public:
                         current = nextExe;
                         jumpFlag = true;
                     }
-                    if (controlDebug) cout << __LINE__ << ": Stage: BGT" << endl;
+                    //if (controlDebug) cout << __LINE__ <<": Stage: BGT" << endl;
 
                     break;
                 case BLT:
@@ -680,7 +686,7 @@ public:
                         current = nextExe;
                         jumpFlag = true;
                     }
-                    if (controlDebug) cout << __LINE__ << ": Stage: BLT" << endl;
+                    //if (controlDebug) cout << __LINE__ <<": Stage: BLT" << endl;
 
                     break;
                 case BEQZ:
@@ -689,7 +695,7 @@ public:
                         current = nextExe;
                         jumpFlag = true;
                     }
-                    if (controlDebug) cout << __LINE__ << ": Stage: BEQZ" << endl;
+                    //if (controlDebug) cout << __LINE__ <<": Stage: BEQZ" << endl;
 
                     break;
                 case BNEZ:
@@ -698,7 +704,7 @@ public:
                         current = nextExe;
                         jumpFlag = true;
                     }
-                    if (controlDebug) cout << __LINE__ << ": Stage: BNEZ" << endl;
+                    //if (controlDebug) cout << __LINE__ <<": Stage: BNEZ" << endl;
 
                     break;
                 case BLEZ:
@@ -707,7 +713,7 @@ public:
                         current = nextExe;
                         jumpFlag = true;
                     }
-                    if (controlDebug) cout << __LINE__ << ": Stage: BLEZ" << endl;
+                    //if (controlDebug) cout << __LINE__ <<": Stage: BLEZ" << endl;
 
                     break;
                 case BGEZ:
@@ -716,7 +722,7 @@ public:
                         current = nextExe;
                         jumpFlag = true;
                     }
-                    if (controlDebug) cout << __LINE__ << ": Stage: BGEZ" << endl;
+                    //if (controlDebug) cout << __LINE__ <<": Stage: BGEZ" << endl;
 
                     break;
                 case BGTZ:
@@ -725,7 +731,7 @@ public:
                         current = nextExe;
                         jumpFlag = true;
                     }
-                    if (controlDebug) cout << __LINE__ << ": Stage: BGTZ" << endl;
+                    //if (controlDebug) cout << __LINE__ <<": Stage: BGTZ" << endl;
 
                     break;
                 case BLTZ:
@@ -734,13 +740,13 @@ public:
                         current = nextExe;
                         jumpFlag = true;
                     }
-                    if (controlDebug) cout << __LINE__ << ": Stage: BLTZ" << endl;
+                    //if (controlDebug) cout << __LINE__ <<": Stage: BLTZ" << endl;
 
                     break;
                 case JR:
                     current = regNum[a[0]].s;
                     jumpFlag = true;
-                    if (controlDebug) cout << __LINE__ << ": Stage: JR" << endl;
+                    //if (controlDebug) cout << __LINE__ <<": Stage: JR" << endl;
 
                     break;
                 case JAL:
@@ -749,7 +755,7 @@ public:
                     jumpFlag = true;
                     regNum[31] = current + 1;
                     current = nextExe;
-                    if (controlDebug) cout << __LINE__ << ": Stage: JAL" << endl;
+                    //if (controlDebug) cout << __LINE__ <<": Stage: JAL" << endl;
 
                     break;
                 case JALR:
@@ -757,25 +763,25 @@ public:
                     jumpFlag = true;
                     regNum[31] = current + 1;
                     current = regNum[a[0]].s;
-                    if (controlDebug) cout << __LINE__ << ": Stage: JALR" << endl;
+                    //if (controlDebug) cout << __LINE__ <<": Stage: JALR" << endl;
 
                     break;
                 case LA:
                     labelAddress = (tmp.BLRdest ? tmp.LRdest : regNum[a[1]].s);
                     regNum[a[0]] = labelAddress;
-                    if (controlDebug) cout << __LINE__ << ": Stage: LA" << endl;
+                    //if (controlDebug) cout << __LINE__ <<": Stage: LA" << endl;
 
                     break;
                 case LB:
                     source = (tmp.BLRdest ? tmp.LRdest : regNum[a[1]].s) + tmp.offset;
                     regNum[a[0]] = _WORD(int(mem[source]));
-                    if (controlDebug) cout << __LINE__ << ": Stage: LB" << endl;
+                    //if (controlDebug) cout << __LINE__ <<": Stage: LB" << endl;
 
                     break;
                 case LH:
                     source = (tmp.BLRdest ? tmp.LRdest : regNum[a[1]].s) + tmp.offset;
                     regNum[a[0]] = _WORD((int) (_HALF(mem[source], mem[source + 1]).s));
-                    if (controlDebug) cout << __LINE__ << ": Stage: LH" << endl;
+                    //if (controlDebug) cout << __LINE__ <<": Stage: LH" << endl;
 
                     break;
                 case LW:
@@ -798,7 +804,7 @@ public:
                     source = (tmp.BLRdest ? tmp.LRdest : regNum[a[1]].s) + tmp.offset;
                     //}
                     regNum[a[0]] = _WORD(mem[source], mem[source + 1], mem[source + 2], mem[source + 3]);
-                    if (controlDebug) cout << __LINE__ << ": Stage: LW" << endl;
+                    //if (controlDebug) cout << __LINE__ <<": Stage: LW" << endl;
 
                     break;
                 case SB:
@@ -820,7 +826,7 @@ public:
                     mem[source] = regNum[a[0]].core.u1;
                     if (controlDebug)
                         cout << endl << "Stage SB: " << source << " |In Memory: " << (int) mem[source] << endl;
-                    if (controlDebug) cout << __LINE__ << ": Stage: SB" << endl;
+                    //if (controlDebug) cout << __LINE__ <<": Stage: SB" << endl;
 
                     break;
                 case SH:
@@ -843,7 +849,7 @@ public:
                     mem[source + 1] = regNum[a[0]].core.u2;
                     if (controlDebug)
                         cout << endl << "Stage SH: " << source << " |In Memory: " << (int) mem[source] << endl;
-                    if (controlDebug) cout << __LINE__ << ": Stage: SH" << endl;
+                    //if (controlDebug) cout << __LINE__ <<": Stage: SH" << endl;
 
                     break;
                 case SW:
@@ -872,7 +878,7 @@ public:
                     mem[source + 3] = regNum[a[0]].core.u4;
                     if (controlDebug)
                         cout << endl << "Stage SW: " << source << " |In Memory: " << (int) mem[source] << endl;
-                    if (controlDebug) cout << __LINE__ << ": Stage: SW" << endl;
+                    //if (controlDebug) cout << __LINE__ <<": Stage: SW" << endl;
 
                     break;
                 case MOVE:
@@ -883,16 +889,16 @@ public:
                     break;
                 case MFHI:
                     regNum[a[0]].s = regNum[HIREGISTER].s;
-                    if (controlDebug) cout << __LINE__ << ": Stage: MHFI" << endl;
+                    //if (controlDebug) cout << __LINE__ <<": Stage: MHFI" << endl;
 
                     break;
                 case MFLO:
                     regNum[a[0]].s = regNum[LOREGISTER].s;
-                    if (controlDebug) cout << __LINE__ << ": Stage: MFLO" << endl;
+                    //if (controlDebug) cout << __LINE__ <<": Stage: MFLO" << endl;
 
                     break;
                 case NOP:
-                    if (controlDebug) cout << __LINE__ << ": Stage: NOP" << endl;
+                    //if (controlDebug) cout << __LINE__ <<": Stage: NOP" << endl;
 
                     break;
                 case SYSCALL:
@@ -941,10 +947,20 @@ public:
                             exit(regNum[4].s);
 //                            return;
                     }
-                    if (controlDebug) cout << __LINE__ << ": Stage: SYSCALL" << endl;
+                    //if (controlDebug) cout << __LINE__ <<": Stage: SYSCALL" << endl;
                     break;
             }
             if (!jumpFlag) current++;
+            clockT++;
+            if(controlDebug){
+                for (int i = 0; i < 35; ++i) {
+                    printf("register[%d] : %d       ", i, regNum[i].s);
+                    if((i + 1) % 5 == 0) printf("\n");
+                }
+                printf("Mem:276[%d]\n", *((int*) (&mem[276])));
+                printf("Mem:276[%d]  277[%d] 278[%d] 279[%d]\n", mem[276], mem[277], mem[278], mem[279]);
+                printf("\n\n");
+            }
         }
     }
 
@@ -1096,13 +1112,14 @@ public:
                 if (result == LABEL) {
                     deleteCertainChar(token, ':');
                     string labelName = token;
-                    executionMap[labelName] = programSentenceNew.size();
-                    if (labelName == "main") mainEntryPoint = programSentenceNew.size();
+                    executionMap[labelName] = programSentenceNewPR.size();
+                    if (labelName == "main") mainEntryPoint = programSentenceNewPR.size();
                 } else {
                     if (result == ADD || result == ADDU || result == ADDIU || result == SUB ||
                         result == SUBU || result == XOR || result == XORU || result == REM ||
                         result == REMU) {
                         LogAndCal *s1 = new LogAndCal();
+                        s1->typeName = type2String(result);
                         s1->type = result;
                         string arg1, arg2, arg3;
                         ss >> arg1 >> arg2 >> arg3;
@@ -1116,10 +1133,10 @@ public:
                         s1->argv.push_back(arg3);
                         //解析寄存器对象
                         if (arg1[0] == '$') {
-                            s1->RSrc = Parser.registerMap[arg1];
+                            s1->Rdest = Parser.registerMap[arg1];
                         }
                         if (arg2[0] == '$') {
-                            s1->Rdest = Parser.registerMap[arg2];
+                            s1->RSrc = Parser.registerMap[arg2];
                         } else if (haveBrackets(arg2)) {
                             string right = arg2;
                             string left = splitWithCertainChar(right, '(');
@@ -1139,6 +1156,8 @@ public:
                     if (result == SEQ || result == SGE || result == SGT ||
                         result == SLE || result == SLT || result == SNE) {
                         Compare *s1 = new Compare();
+                        s1->typeName = type2String(result);
+
                         s1->type = result;
                         string arg1, arg2, arg3;
                         ss >> arg1 >> arg2 >> arg3;
@@ -1176,6 +1195,8 @@ public:
                         result == BLT) {
                         IfAndJump *s1 = new IfAndJump();
                         s1->type = result;
+                        s1->typeName = type2String(result);
+
                         string arg1, arg2, arg3;
                         ss >> arg1 >> arg2 >> arg3;
                         deleteCertainChar(arg1, ',');
@@ -1216,6 +1237,7 @@ public:
                         Li *s1 = new Li();
                         s1->type = result;
                         s1->argc = 2;
+                        s1->typeName = type2String(result);
 
                         s1->argv.push_back(arg1);
                         s1->argv.push_back(arg2);
@@ -1247,6 +1269,7 @@ public:
                         IfAndJump *s1 = new IfAndJump();
                         s1->argc = 2;
                         s1->type = result;
+                        s1->typeName = type2String(result);
 
                         s1->argv.push_back(arg1);
                         s1->argv.push_back(arg2);
@@ -1278,6 +1301,8 @@ public:
                         s1->argc = 2;
                         s1->type = result;
                         s1->argv.push_back(arg1);
+                        s1->typeName = type2String(result);
+
                         s1->argv.push_back(arg2);
                         //解析寄存器对象
                         if (arg1[0] == '$') {
@@ -1307,6 +1332,8 @@ public:
                         StoreData *s1 = new StoreData();
                         s1->argc = 2;
                         s1->type = result;
+                        s1->typeName = type2String(result);
+
                         s1->argv.push_back(arg1);
                         s1->argv.push_back(arg2);
                         //解析寄存器对象
@@ -1336,6 +1363,8 @@ public:
                         MoveData *s1 = new MoveData();
                         s1->argc = 2;
                         s1->type = result;
+                        s1->typeName = type2String(result);
+
                         s1->argv.push_back(arg1);
                         s1->argv.push_back(arg2);
                         //解析寄存器对象
@@ -1368,6 +1397,8 @@ public:
                         s1->argc = 2;
                         s1->type = result;
                         s1->argv.push_back(arg1);
+                        s1->typeName = type2String(result);
+
                         s1->argv.push_back(arg2);
                         //解析寄存器对象
                         if (arg1[0] == '$') {
@@ -1395,7 +1426,8 @@ public:
                         deleteCertainChar(arg1, ',');
                         MoveData *s1 = new MoveData();
                         s1->argc = 1;
-
+                        s1->typeName = type2String(result);
+                        s1->type = result;
                         s1->argv.push_back(arg1);
                         //解析寄存器对象
                         if (arg1[0] == '$') {
@@ -1409,7 +1441,8 @@ public:
                         deleteCertainChar(arg1, ',');
                         IfAndJump *s1 = new IfAndJump();
                         s1->argc = 1;
-
+                        s1->typeName = type2String(result);
+                        s1->type = result;
                         s1->argv.push_back(arg1);
                         //解析寄存器对象
                         if (arg1[0] == '$') {
@@ -1419,11 +1452,15 @@ public:
                     }
                     if (result == NOP) {
                         Special *s1 = new Special();
+                        s1->typeName = type2String(result);
+
                         s1->type = NOP;
                         programSentenceNewPR.push_back(s1);
                     }
                     if (result == SYSCALL) {
                         Special *s1 = new Special();
+                        s1->typeName = type2String(result);
+
                         s1->type = SYSCALL;
                         programSentenceNewPR.push_back(s1);
                     }
@@ -1432,10 +1469,12 @@ public:
                         ss >> arg1 >> arg2;
                         deleteCertainChar(arg1, ',');
                         deleteCertainChar(arg2, ',');
-                        LogAndCal* s1 = new LogAndCal();
+                        LogAndCal *s1 = new LogAndCal();
                         int argc = 2;
                         s1->type = result;
                         s1->argv.push_back(arg1);
+                        s1->typeName = type2String(result);
+
                         s1->argv.push_back(arg2);
                         streampos save = ss.tellg();
                         string ss3, arg3;
@@ -1505,7 +1544,8 @@ public:
         }
         int sizeT = (int) programSentenceNewPR.size();
         for (int i = 0; i < sizeT; ++i) {
-            executionInstructionNewPipeLine* newPipeLine = programSentenceNewPR[i];
+            executionInstructionNewPipeLine *newPipeLine = programSentenceNewPR[i];
+            newPipeLine->index = i;
             if (newPipeLine->argc == 0) continue;
             if (newPipeLine->argv[0] != "") {
                 int Addr = checkLabel(newPipeLine->argv[0]);
@@ -1515,11 +1555,10 @@ public:
             if (newPipeLine->argv[0] != "") {
                 int Addr = Parser.LabelAddr(newPipeLine->argv[0]);
                 newPipeLine->LRSrc = (Addr == -1 ? 0x3f3f3f3f : Addr);
-                newPipeLine->BLRSrc = (Addr == -1 ? false : true);
+                newPipeLine->BLRSrc = Addr != -1;
             }
 
-            if (newPipeLine->argv[0][0] == '$') newPipeLine->f[0] = true;
-            else programSentenceNew[i].f[0] = false;
+            newPipeLine->f[0] = newPipeLine->argv[0][0] == '$';
 
             if (newPipeLine->argc == 1) continue;
             if (newPipeLine->argv[1] != "") {
@@ -1530,31 +1569,185 @@ public:
             if (newPipeLine->argv[1] != "") {
                 int Addr = Parser.LabelAddr(newPipeLine->argv[1]);
                 newPipeLine->LRdest = (Addr == -1 ? 0x3f3f3f3f : Addr);
-                newPipeLine->BLRdest = (Addr == -1 ? false : true);
+                newPipeLine->BLRdest = Addr != -1;
             }
-            if (newPipeLine->argv[1][0] == '$') newPipeLine->f[1] = true;
-            else newPipeLine->f[1] = false;
+            newPipeLine->f[1] = newPipeLine->argv[1][0] == '$';
 
             if (newPipeLine->argc == 2) continue;
             if (newPipeLine->argv[2] != "") {
                 int Addr = checkLabel(newPipeLine->argv[2]);
 //                if(Addr == -1) throw 1; // Error: Not found the label;
-                programSentenceNew[i].ASrc = (Addr == -1 ? 0x3f3f3f3f : Addr);
+                newPipeLine->ASrc = (Addr == -1 ? 0x3f3f3f3f : Addr);
             }
             if (newPipeLine->argv[2] != "") {
                 int Addr = Parser.LabelAddr(newPipeLine->argv[2]);
                 newPipeLine->LSrc = (Addr == -1 ? 0x3f3f3f3f : Addr);
-                newPipeLine->BLSrc = (Addr == -1 ? false : true);
+                newPipeLine->BLSrc = Addr != -1;
             }
-            if (newPipeLine->argv[2][0] == '$') newPipeLine->f[2] = true;
-            else newPipeLine->f[2] = false;
+            newPipeLine->f[2] = newPipeLine->argv[2][0] == '$';
         }
 
         //cout << "Parser \n";
     }
 
-    inline executionInstructionNewPipeLine* getNextSentence(){
-        return nullptr;
+    inline executionInstructionNewPipeLine *getNextSentence() {
+//        if (lockFlag) { return nullptr; }
+        if (haveJump) {
+            currentLine = nextLine;
+            if(currentLine == 0x3f3f3f3f) {
+                cout << "Fuck!";
+            }
+            haveJump = false;
+        } else currentLine++;
+        return programSentenceNewPR[currentLine];
+    }
+
+    void __IF__(){
+        if(running[0] != nullptr || lockFlag) return;
+        running[0] = getNextSentence();
+    }
+
+    void __ID__(){
+        if(running[1] != nullptr || running[0] == nullptr) return;
+        bool result = running[0]->ID();
+        if(!result) return;
+        running[1] = running[0];
+        running[0] = nullptr;
+    }
+
+    void __EX__(){
+        if(running[2] != nullptr || running[1] == nullptr) return;
+        bool result = running[1]->EX();
+        if(!result) return;
+        running[2] = running[1];
+        running[1] = nullptr;
+    }
+
+    void __MA__(){
+        if(running[3] != nullptr || running[2] == nullptr) return;
+        bool result = running[2]->MEM();
+        if(!result) return;
+        running[3] = running[2];
+        running[2] = nullptr;
+
+    }
+
+    void __WB__(){
+        if(running[3] == nullptr) return;
+        bool result = running[3]->WB();
+        if(!result) return;
+        running[3] = nullptr;
+        if(controlDebug){
+            for (int i = 0; i < 35; ++i) {
+                printf("register[%d] : %d       ", i, regNum[i].s);
+                if((i + 1) % 5 == 0) printf("\n");
+            }
+            printf("Mem:276[%d]\n", *((int*) (&mem[276])));
+            printf("Mem:276[%d]  277[%d] 278[%d] 279[%d]\n", mem[276], mem[277], mem[278], mem[279]);
+            printf("\n\n");
+        }
+    }
+
+    void pipelineRun_PR_Flow(){
+        if (controlDebug) {
+            map<string, int>::iterator ite;
+            cout << "Label Table" << endl;
+            for (ite = executionMap.begin(); ite != executionMap.end(); ite++) {
+                cout << "Label:" << ite->first << "  Line:" << ite->second << endl;
+            }
+        }
+        if(controlDebug){
+            int sizeT = programSentenceNewPR.size();
+            cout << flush;
+            cout << endl;
+            for(int i = 0;i < sizeT; ++i){
+                programSentenceNewPR[i]->printP();
+            }
+            cout << endl;
+        }
+
+        currentLine = mainEntryPoint - 1;
+        regNum[29] = stackTop;
+        int limitSize = (int) programSentenceNewPR.size();
+        while(currentLine < limitSize) {
+           //if (controlDebug) {
+                /*printf("Debug: ClockTime:%lld\n", clockT);
+                for (int i = 0; i < 5; ++i) {
+                    if(running[i] == nullptr) continue;
+                    printf("Idx:%d ", i);
+                    running[i]->printDebug();
+                }
+                //printf("\n\n");*/
+            //}
+
+            __WB__();
+            __MA__();
+            __EX__();
+            __ID__();
+            __IF__();
+            clockT++;
+        }
+    }
+
+    void pipelineRun_PR_New() {
+        currentLine = mainEntryPoint;
+        regNum[29] = stackTop;
+        nextLine = currentLine + 1;
+        haveJump = false;
+        int limitSize = (int) programSentenceNewPR.size();
+        int RunningStage = 1;
+        executionInstructionNewPipeLine *idx[5] = {nullptr};
+
+        lockFlag = false; //Hazard
+        while (currentLine < limitSize) {
+            currentClock++;
+            //Debug Start
+            if (controlDebug) {
+                printf("Debug:\n");
+                for (int i = 0; i < 5 && idx[i] != nullptr; ++i) {
+                    printf("Idx:%d ", i);
+                    idx[i]->printDebug();
+                }
+                printf("\n\n");
+            }
+            //Debug Ended
+            for (int index = 0; index < 5; ++index) {
+                if (!lockFlag && nextIFThread == index && currentClock == nextClockIF) {
+                    // Do IF
+                    idx[index] = getNextSentence();
+                    idx[index]->runningStage = 1;
+                    nextClockIF++;
+                    nextIFThread = (nextIFThread + 1) % 5;
+                } else if (idx[index] == nullptr) continue;
+                else if (idx[index]->runningStage > stageLock) {
+                    switch (idx[index]->runningStage) {
+                        case 1:
+                            idx[index]->ID();
+                            break;
+                        case 2:
+                            idx[index]->EX();
+                            break;
+                        case 3:
+                            idx[index]->MEM();
+                            break;
+                        case 4:
+                            idx[index]->WB();
+                            break;
+                        case 5:
+                            if (!lockFlag && nextIFThread == index && currentClock == nextClockIF) {
+                                idx[index] = getNextSentence();
+                                idx[index]->runningStage = 1;
+                                nextClockIF++;
+                                nextIFThread = (nextIFThread + 1) % 5;
+                                break;
+                            }
+                        default:
+                            break;
+                    }
+                }
+            }
+            //currentClock++;
+        }
     }
 
     void pipelineRun_PR() {
@@ -1574,66 +1767,202 @@ public:
         int RunningStage = 1;
         executionInstructionNewPipeLine *idx[5] = {nullptr};
         lockFlag = false;//lock when meeting the jump sentence
-        while (currentLine < limitSize){
-            if(idx[0] == nullptr) idx[0] = programSentenceNewPR[currentLine];
-            switch (idx[0]->runningStage){
-                case 1: idx[0]->ID(); break;
-                case 2: idx[0]->EX(); break;
-                case 3: idx[0]->MEM(); break;
-                case 4: idx[0]->WB(); break;
-                case 5: idx[0] = getNextSentence(); idx[0]->runningStage = 1; break;
-                default: break;
+        while (currentLine < limitSize) {
+            if (controlDebug) {
+                printf("Debug:\n");
+                for (int i = 0; i < 5 && idx[i] != nullptr; ++i) {
+                    printf("Idx:%d ", i);
+                    idx[i]->printDebug();
+                }
+                printf("\n\n");
             }
-            if(RunningStage == 1){ RunningStage++; continue; }
+            if (idx[0] == nullptr) {
+                idx[0] = programSentenceNewPR[currentLine];
+                nextLine = ++currentLine;
+            }
+            if (currentStage != idx[0]->runningStage && (idx[0]->runningStage == 0 || idx[0]->runningStage > stageLock))
+                switch (idx[0]->runningStage) {
+                    case 0:
+                        idx[0]->runningStage = 1;
+                        break;
+                    case 1:
+                        idx[0]->ID();
+                        break;
+                    case 2:
+                        idx[0]->EX();
+                        break;
+                    case 3:
+                        idx[0]->MEM();
+                        break;
+                    case 4:
+                        idx[0]->WB();
+                        break;
+                    case 5:
+                        if (!lockFlag) {
+                            idx[0] = getNextSentence();
+                            idx[0]->runningStage = 1;
+                            break;
+                        }
+                    default:
+                        break;
+                }
+            if (stageLock != -1) currentStage = idx[0]->runningStage - 1;
+            if (RunningStage == 1) {
+                RunningStage++;
+                continue;
+            }
 
-            if(idx[1] == nullptr) idx[1] = programSentenceNewPR[currentLine];
-            switch (idx[1]->runningStage){
-                case 1: idx[1]->ID(); break;
-                case 2: idx[1]->EX(); break;
-                case 3: idx[1]->MEM(); break;
-                case 4: idx[1]->WB(); break;
-                case 5: idx[1] = getNextSentence(); idx[1]->runningStage = 1; break;
-                default: break;
+            if (idx[1] == nullptr) {
+                idx[1] = programSentenceNewPR[currentLine];
+                nextLine = ++currentLine;
             }
-            if(RunningStage == 2){ RunningStage++; continue; }
 
-            if(idx[2] == nullptr) idx[2] = programSentenceNewPR[currentLine];
-            switch (idx[2]->runningStage){
-                case 1: idx[2]->ID(); break;
-                case 2: idx[2]->EX(); break;
-                case 3: idx[2]->MEM(); break;
-                case 4: idx[2]->WB(); break;
-                case 5: idx[2] = getNextSentence(); idx[2]->runningStage = 1; break;
-                default: break;
+            if (currentStage != idx[1]->runningStage && (idx[1]->runningStage == 0 || idx[1]->runningStage > stageLock))
+                switch (idx[1]->runningStage) {
+                    case 0:
+                        idx[1]->runningStage = 1;
+                        break;
+                    case 1:
+                        idx[1]->ID();
+                        break;
+                    case 2:
+                        idx[1]->EX();
+                        break;
+                    case 3:
+                        idx[1]->MEM();
+                        break;
+                    case 4:
+                        idx[1]->WB();
+                        break;
+                    case 5:
+                        if (!lockFlag) {
+                            idx[1] = getNextSentence();
+                            idx[1]->runningStage = 1;
+                            break;
+                        }
+                    default:
+                        break;
+                }
+            if (stageLock != -1) currentStage = idx[1]->runningStage - 1;
+            if (RunningStage == 2) {
+                RunningStage++;
+                continue;
             }
-            if(RunningStage == 3){ RunningStage++; continue; }
 
-            if(idx[3] == nullptr) idx[3] = programSentenceNewPR[currentLine];
-            switch (idx[3]->runningStage){
-                case 1: idx[3]->ID(); break;
-                case 2: idx[3]->EX(); break;
-                case 3: idx[3]->MEM(); break;
-                case 4: idx[3]->WB(); break;
-                case 5: idx[3] = getNextSentence(); idx[3]->runningStage = 1; break;
-                default: break;
+            if (idx[2] == nullptr) {
+                idx[2] = programSentenceNewPR[currentLine];
+                nextLine = ++currentLine;
             }
-            if(RunningStage == 4) { RunningStage++; continue; }
+            if (currentStage != idx[2]->runningStage && (idx[2]->runningStage == 0 || idx[2]->runningStage > stageLock))
+                switch (idx[2]->runningStage) {
+                    case 0:
+                        idx[2]->runningStage = 1;
+                        break;
+                    case 1:
+                        idx[2]->ID();
+                        break;
+                    case 2:
+                        idx[2]->EX();
+                        break;
+                    case 3:
+                        idx[2]->MEM();
+                        break;
+                    case 4:
+                        idx[2]->WB();
+                        break;
+                    case 5:
+                        if (!lockFlag) {
+                            idx[2] = getNextSentence();
+                            idx[2]->runningStage = 1;
+                            break;
+                        }
+                    default:
+                        break;
+                }
+            if (stageLock != -1) currentStage = idx[2]->runningStage - 1;
+            if (RunningStage == 3) {
+                RunningStage++;
+                continue;
+            }
 
-            if(idx[4] == nullptr) idx[4] = programSentenceNewPR[currentLine];
-            switch (idx[4]->runningStage){
-                case 1: idx[4]->ID(); break;
-                case 2: idx[4]->EX(); break;
-                case 3: idx[4]->MEM(); break;
-                case 4: idx[4]->WB(); break;
-                case 5: idx[4] = getNextSentence(); idx[4]->runningStage = 1; break;
-                default: break;
+            if (idx[3] == nullptr) {
+                idx[3] = programSentenceNewPR[currentLine];
+                nextLine = ++currentLine;
             }
+            if (currentStage != idx[3]->runningStage && (idx[3]->runningStage == 0 || idx[3]->runningStage > stageLock))
+                switch (idx[3]->runningStage) {
+                    case 0:
+                        idx[3]->runningStage = 1;
+                        break;
+                    case 1:
+                        idx[3]->ID();
+                        break;
+                    case 2:
+                        idx[3]->EX();
+                        break;
+                    case 3:
+                        idx[3]->MEM();
+                        break;
+                    case 4:
+                        idx[3]->WB();
+                        break;
+                    case 5:
+                        if (!lockFlag) {
+                            idx[3] = getNextSentence();
+                            idx[3]->runningStage = 1;
+                            break;
+                        }
+                    default:
+                        break;
+                }
+
+            if (RunningStage == 4) {
+                RunningStage++;
+                continue;
+            }
+            if (stageLock != -1) currentStage = idx[3]->runningStage - 1;
+            if (idx[4] == nullptr) {
+                idx[4] = programSentenceNewPR[currentLine];
+                nextLine = ++currentLine;
+            }
+            if (currentStage != idx[4]->runningStage && (idx[4]->runningStage == 0 || idx[4]->runningStage > stageLock))
+                switch (idx[4]->runningStage) {
+                    case 0:
+                        idx[4]->runningStage = 1;
+                        break;
+                    case 1:
+                        idx[4]->ID();
+                        break;
+                    case 2:
+                        idx[4]->EX();
+                        break;
+                    case 3:
+                        idx[4]->MEM();
+                        break;
+                    case 4:
+                        idx[4]->WB();
+                        break;
+                    case 5:
+                        if (!lockFlag) {
+                            idx[4] = getNextSentence();
+                            idx[4]->runningStage = 1;
+                            break;
+                        }
+                    default:
+                        break;
+                }
+            if (stageLock != -1) currentStage = idx[4]->runningStage - 1;
         }
 
     }
 
     void run() {
         directlyRun_DR_New();
+    }
+
+    void runPR() {
+//        pipelineRun_PR_New();
+        pipelineRun_PR_Flow();
     }
 
 

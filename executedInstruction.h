@@ -73,13 +73,26 @@ public:
         argv.reserve(5);
     }
 
-    virtual void ID() = 0;
+    virtual bool ID() = 0;
 
-    virtual void EX() = 0;
+    virtual bool EX() = 0;
 
-    virtual void MEM() = 0;
+    virtual bool MEM() = 0;
 
-    virtual void WB() = 0;
+    virtual bool WB() = 0;
+
+    void printDebug() {
+        printf("Execution Stage: InsideIdx[%d] InsideStage[%d] [%s] argv:[%s] [%s] [%s]\n", index, runningStage,
+               typeName.c_str(), (argc >= 1 ? argv[0].c_str() : ""),
+               (argc >= 2 ? argv[1].c_str() : ""), (argc >= 3 ? argv[2].c_str() : ""));
+    }
+
+    void printP() {
+        printf("Debug Stage: InIdx[%d]  [%s] argv:[%s] [%s] [%s] RSrc[%d] Rdest[%d] Src[%d] offset[%d] ARSrc[%d] ARdest[%d] ASrc[%d] LRSrc[%d] LRdest[%d] LSrc[%d] BLRSrc[%d] BLRdest[%d] BLSrc[%d]\n",
+               index, typeName.c_str(), (argc >= 1 ? argv[0].c_str() : ""),
+               (argc >= 2 ? argv[1].c_str() : ""), (argc >= 3 ? argv[2].c_str() : ""),
+               RSrc, Rdest, Src, offset, ARSrc, ARdest, ASrc, LRSrc, LRdest, LSrc, BLRSrc, BLRdest, LSrc);
+    }
 };
 
 class LogAndCal : public executionInstructionNewPipeLine {
@@ -88,17 +101,26 @@ public:
     _DWORD ansDword;
     _WORD ansWord, ansWord2;
 
-    virtual void ID() {
-        if (lockFlag) return;
+    virtual bool ID() {
+        /*if (lockFlag) return;*/
         switch (type) {
             case ADDU:
             case ADDIU:
             case SUBU:
             case XORU:
             case REMU:
-                if (registerLock[RSrc]) return;
-                if (registerLock[Rdest]) return;
-                if (f[2] && registerLock[Src]) return;
+                if (registerLock[RSrc]) {
+                    stageLock = 1;
+                    return false;
+                }
+                if (registerLock[Rdest]) {
+                    stageLock = 1;
+                    return false;
+                }
+                if (f[2] && registerLock[Src]) {
+                    stageLock = 1;
+                    return false;
+                }
                 _RSrc = regNum[RSrc].us;
                 _Rdest = regNum[Rdest].us;
                 _Src = f[2] ? regNum[Src].us : (unsigned int) Src;
@@ -108,9 +130,18 @@ public:
             case XOR:
             case NEG:
             case REM:
-                if (registerLock[RSrc]) return;
-                if (registerLock[Rdest]) return;
-                if (f[2] && registerLock[Src]) return;
+                if (registerLock[RSrc]) {
+                    stageLock = 1;
+                    return false;
+                }
+                if (registerLock[Rdest]) {
+                    stageLock = 1;
+                    return false;
+                }
+                if (f[2] && registerLock[Src]) {
+                    stageLock = 1;
+                    return false;
+                }
                 _RSrc = regNum[RSrc].s;
                 _Rdest = regNum[Rdest].s;
                 _Src = f[2] ? regNum[Src].s : (int) Src;
@@ -118,14 +149,29 @@ public:
             case MUL:
             case DIV:
                 if (argv.size() == 2) {
-                    if (registerLock[RSrc]) return;
-                    if (f[1] && registerLock[Rdest]) return;
+                    if (registerLock[RSrc]) {
+                        stageLock = 1;
+                        return false;
+                    }
+                    if (f[1] && registerLock[Rdest]) {
+                        stageLock = 1;
+                        return false;
+                    }
                     _Rdest = regNum[RSrc].s;
                     _Src = f[1] ? regNum[Rdest].s : Rdest;
                 } else {
-                    if (registerLock[RSrc]) return;
-                    if (registerLock[Rdest]) return;
-                    if (f[2] && registerLock[Src]) return;
+                    if (registerLock[RSrc]) {
+                        stageLock = 1;
+                        return false;
+                    }
+                    if (registerLock[Rdest]) {
+                        stageLock = 1;
+                        return false;
+                    }
+                    if (f[2] && registerLock[Src]) {
+                        stageLock = 1;
+                        return false;
+                    }
                     _RSrc = regNum[RSrc].s;
                     _Rdest = regNum[Rdest].s;
                     _Src = f[2] ? regNum[Src].s : (int) Src;
@@ -134,41 +180,77 @@ public:
             case MULU:
             case DIVU:
                 if (argv.size() == 2) {
-                    if (registerLock[RSrc]) return;
-                    if (f[1] && registerLock[Rdest]) return;
+                    if (registerLock[RSrc]) {
+                        stageLock = 1;
+                        return false;
+                    }
+                    if (f[1] && registerLock[Rdest]) {
+                        stageLock = 1;
+                        return false;
+                    }
                     _Rdest = regNum[RSrc].us;
                     _Src = f[1] ? regNum[Rdest].us : Rdest;
                 } else {
-                    if (registerLock[RSrc]) return;
-                    if (registerLock[Rdest]) return;
-                    if (f[2] && registerLock[Src]) return;
+                    if (registerLock[RSrc]) {
+                        stageLock = 1;
+                        return false;
+                    }
+                    if (registerLock[Rdest]) {
+                        stageLock = 1;
+                        return false;
+                    }
+                    if (f[2] && registerLock[Src]) {
+                        stageLock = 1;
+                        return false;
+                    }
                     _RSrc = regNum[RSrc].us;
                     _Rdest = regNum[Rdest].us;
                     _Src = f[2] ? regNum[Src].us : (int) Src;
                 }
         }
 
-        if (argv.size() == 2) registerLock[HIREGISTER] = registerLock[LOREGISTER] = true;
+        if (argv.size() == 2 && (type == MULU || type == MUL || type == DIV || type == DIVU))
+            registerLock[HIREGISTER] = registerLock[LOREGISTER] = true;
         else registerLock[Rdest] = true;
+        failToDo = false;
         runningStage++;
+        return true;
     }
 
-    virtual void EX() {
-        if (lockFlag) return;
+    virtual bool EX() {
+        stageLock = 2;
+        /*if (lockFlag) return;*/
         switch (type) {
             case ADDU:
             case ADDIU:
-            case SUBU:
-            case XORU:
-            case REMU:
                 ansWord = _WORD(_RSrc.us + _Src.us);
                 break;
+            case SUBU:
+                ansWord = _WORD(_RSrc.us - _Src.us);
+                break;
+            case XORU:
+                ansWord = _WORD(_RSrc.us ^ _Src.us);
+                break;
+            case NEGU:
+                ansWord = _WORD(~_RSrc.us);
+                break;
+            case REMU:
+                ansWord = _WORD(_RSrc.us % _Src.us);
+                break;
             case ADD:
-            case SUB:
-            case XOR:
-            case NEG:
-            case REM:
                 ansWord = _WORD(_RSrc.s + _Src.s);
+                break;
+            case SUB:
+                ansWord = _WORD(_RSrc.s - _Src.s);
+                break;
+            case XOR:
+                ansWord = _WORD(_RSrc.s ^ _Src.s);
+                break;
+            case NEG:
+                ansWord = _WORD(-_RSrc.s);
+                break;
+            case REM:
+                ansWord = _WORD(_RSrc.s % _Src.s);
                 break;
             case MUL:
                 if (argv.size() == 2) {
@@ -198,15 +280,18 @@ public:
                 break;
         }
         runningStage++;
+        return true;
     }
 
-    virtual void MEM() {
-        if (lockFlag) return;
+    virtual bool MEM() {
+        /*if (lockFlag) return;*/
         runningStage++;
+        return true;
     }
 
-    virtual void WB() {
-        if (lockFlag) return;
+    virtual bool WB() {
+        /*if (lockFlag) return;*/
+        stageLock = -1;
         switch (type) {
             case ADDU:
             case ADDIU:
@@ -218,7 +303,7 @@ public:
             case XOR:
             case NEG:
             case REM:
-                regNum[Rdest] = ansWord;
+                regNum[Rdest] = ansWord, registerLock[Rdest] = false;
                 break;
             case MUL:
             case DIV:
@@ -232,6 +317,7 @@ public:
                 break;
         }
         runningStage++;
+        return true;
     }
 };
 
@@ -239,28 +325,35 @@ class Li : public executionInstructionNewPipeLine {
 public:
     _WORD Imm;
 
-    virtual void ID() {
-        if (lockFlag) return;
+    virtual bool ID() {
+        /*if (lockFlag) return;*/
+        failToDo = false;
         Imm.s = _WORD(Rdest).s;
         registerLock[RSrc] = true;
         runningStage++;
+        return true;
     }
 
-    virtual void EX() {
-        if (lockFlag) return;
+    virtual bool EX() {
+        stageLock = 2;
+        /*if (lockFlag) return;*/
         runningStage++;
+        return true;
     }
 
-    virtual void MEM() {
-        if (lockFlag) return;
+    virtual bool MEM() {
+        /*if (lockFlag) return;*/
         runningStage++;
+        return true;
     }
 
-    virtual void WB() {
-        if (lockFlag) return;
+    virtual bool WB() {
+        stageLock = -1;
+        /*if (lockFlag) return;*/
         regNum[RSrc].s = Imm.s;
         registerLock[RSrc] = false;
         runningStage++;
+        return true;
     }
 };
 
@@ -269,18 +362,24 @@ public:
     _WORD _Rsrc1, _src2;
     bool result;
 
-    virtual void ID() {
-        if (lockFlag) return;
-        if (registerLock[Rdest] || registerLock[Src])
-            return;
+    virtual bool ID() {
+        /*if (lockFlag) return;*/
+        if ((Rdest != 0x3f3f3f3f && registerLock[Rdest]) ||
+            (RSrc != 0x3f3f3f3f && registerLock[RSrc])) {
+            stageLock = 1;
+            return false;
+        }
         _Rsrc1.s = regNum[Rdest].s;
-        _src2.s = regNum[Src].s;
+        _src2.s = (Src != 0x3f3f3f3f ? regNum[Src].s : Src);
         registerLock[RSrc] = true;
+        failToDo = false;
+
         runningStage++;
+        return true;
     }
 
-    virtual void EX() {
-        if (lockFlag) return;
+    virtual bool EX() {
+        /*if (lockFlag) return;*/
         switch (type) {
             case SEQ:
                 result = _Rsrc1.s == _src2.s;
@@ -302,18 +401,22 @@ public:
                 break;
         }
         runningStage++;
+        return true;
     }
 
-    virtual void MEM() {
-        if (lockFlag) return;
+    virtual bool MEM() {
+        /*if (lockFlag) return;*/
         runningStage++;
+        return true;
     }
 
-    virtual void WB() {
-        if (lockFlag) return;
+    virtual bool WB() {
+        stageLock = -1;
+        /*if (lockFlag) return;*/
         regNum[RSrc].s = result;
         registerLock[RSrc] = false;
         runningStage++;
+        return true;
     }
 };
 
@@ -324,9 +427,12 @@ public:
     bool result;
     _WORD Reg31;
 
-    virtual void ID() {
-        if (lockFlag) return;
+    virtual bool ID() {
+        //if (lockFlag) return false;
         lockFlag = true;
+        if (argv[2] == "_begin_parse_int") {
+            cout << "Here!!" << endl;
+        }
         switch (type) {
             case BEQ:
             case BNE:
@@ -334,8 +440,11 @@ public:
             case BLE:
             case BGT:
             case BLT:
-                if(registerLock[RSrc] || registerLock[Rdest])
-                    return;
+                if ((Rdest != 0x3f3f3f3f && registerLock[Rdest]) ||
+                    (RSrc != 0x3f3f3f3f && registerLock[RSrc])) {
+                    stageLock = 1;
+                    return false;
+                }
                 _Rsrc1.s = regNum[RSrc].s;
                 _src2.s = regNum[Rdest].s;
                 nextExeLine = ASrc;
@@ -346,28 +455,38 @@ public:
             case BGEZ:
             case BGTZ:
             case BLTZ:
-                if(registerLock[RSrc])
-                    return;
+                if (RSrc != 0x3f3f3f3f && registerLock[RSrc]) {
+                    stageLock = 1;
+                    return false;
+                }
                 _Rsrc1.s = regNum[RSrc].s;
                 nextExeLine = ARdest;
                 break;
-            case J:
             case B:
+            case J:
             case JAL:
                 nextExeLine = ARSrc;
                 break;
             case JR:
             case JALR:
-                if(registerLock[Rdest]) return;
-                _Rsrc1.s = regNum[Rdest].s;
+                if (registerLock[RSrc]) {
+                    stageLock = 1;
+                    return false;
+                }
+                _Rsrc1.s = regNum[RSrc].s;
                 break;
         }
-        if(type == JAL ||type == JALR) registerLock[31] = true;
+        if (type == JAL || type == JALR) registerLock[31] = true;
+        failToDo = false;
+
         runningStage++;
+        lockFlag = true;
+        nextClockIF += 4;
+        return true;
     }
 
-    virtual void EX() {
-        if (lockFlag) return;
+    virtual bool EX() {
+        /*if (lockFlag) return;*/
         switch (type) {
             case BEQ:
                 if (_Rsrc1.us == _src2.us) {
@@ -451,26 +570,29 @@ public:
                 haveJump = true;
                 break;
             case JAL:
-                Reg31 = nextLine + 1;
+                Reg31 = currentLine + 1;
                 nextLine = nextExeLine;
                 haveJump = true;
                 break;
             case JALR:
-                Reg31 = nextLine + 1;
+                Reg31 = currentLine + 1;
                 nextLine = _Rsrc1.s;
                 haveJump = true;
                 break;
         }
         runningStage++;
+        return true;
     }
 
-    virtual void MEM() {
-        if (lockFlag) return;
+    virtual bool MEM() {
+        /*if (lockFlag) return;*/
         runningStage++;
+        return true;
     }
 
-    virtual void WB() {
-        if (lockFlag) return;
+    virtual bool WB() {
+        stageLock = -1;
+        /*if (lockFlag) return;*/
         switch (type) {
             case JAL:
             case JALR:
@@ -479,6 +601,7 @@ public:
         }
         lockFlag = false;
         runningStage++;
+        return true;
     }
 };
 
@@ -488,22 +611,32 @@ public:
     int source;
     _WORD tmp, _Rsrc;
 
-    virtual void ID() {
-        if (lockFlag) return;
-        if(registerLock[Rdest] || registerLock[RSrc]) return;
-        if (BLRdest) tmp.s = LRdest; else tmp.s = regNum[Rdest].s;
+    virtual bool ID() {
+        /*if (lockFlag) return;*/
+        if ((Rdest != 0x3f3f3f3f && registerLock[Rdest]) ||
+            (RSrc != 0x3f3f3f3f && registerLock[RSrc])) {
+            stageLock = 1;
+            return false;
+        }
+        failToDo = false;
+        if (LRdest != 0x3f3f3f3f) tmp.us = LRdest; else tmp.us = regNum[Rdest].s;
         _Rsrc.s = regNum[RSrc].s;
         runningStage++;
+        return true;
     }
 
-    virtual void EX() {
-        if (lockFlag) return;
+    virtual bool EX() {
+        /*if (lockFlag) return;*/
+        if(index == 509){
+            cout << "Here!";
+        }
         source = tmp.us + offset;
         runningStage++;
+        return true;
     }
 
-    virtual void MEM() {
-        if (lockFlag) return;
+    virtual bool MEM() {
+        /*if (lockFlag) return;*/
         switch (type) {
             case SB:
                 mem[source] = _Rsrc.core.u1;
@@ -520,11 +653,14 @@ public:
                 break;
         }
         runningStage++;
+        return true;
     }
 
-    virtual void WB() {
-        if (lockFlag) return;
+    virtual bool WB() {
+        stageLock = -1;
+        /*if (lockFlag) return;*/
         runningStage++;
+        return true;
     }
 };
 
@@ -535,28 +671,35 @@ public:
     int _Rdest;
     _WORD _RSrc;
 
-    virtual void ID() {
-        if (lockFlag) return;
+    virtual bool ID() {
+        /*if (lockFlag) return;*/
         switch (type) {
             case LA:
-                if(!BLRdest && registerLock[Rdest])
-                    return;
+                if (!BLRdest && registerLock[Rdest]) {
+                    stageLock = 1;
+                    return false;
+                }
                 _Rdest = BLRdest ? LRdest : regNum[Rdest].s;
                 break;
             case LB:
             case LH:
             case LW:
-                if(!BLRdest && registerLock[Rdest])
-                    return;
+                if (!BLRdest && registerLock[Rdest]) {
+                    stageLock = 1;
+                    return false;
+                }
                 _Rdest = BLRdest ? LRdest : regNum[Rdest].s;
                 break;
         }
+        failToDo = false;
+
         runningStage++;
         registerLock[RSrc] = true;
+        return true;
     }
 
-    virtual void EX() {
-        if (lockFlag) return;
+    virtual bool EX() {
+        /*if (lockFlag) return;*/
         switch (type) {
             case LA:
                 labelAddress = (BLRdest ? LRdest : _Rdest);
@@ -568,11 +711,11 @@ public:
                 break;
         }
         runningStage++;
+        return true;
     }
 
-    virtual void MEM() {
-        if (lockFlag) return;
-
+    virtual bool MEM() {
+        /*if (lockFlag) return;*/
         switch (type) {
             case LB:
                 _RSrc = _WORD(int(mem[source]));
@@ -585,10 +728,12 @@ public:
                 break;
         }
         runningStage++;
+        return true;
     }
 
-    virtual void WB() {
-        if (lockFlag) return;
+    virtual bool WB() {
+        stageLock = -1;
+        /*if (lockFlag) return;*/
         switch (type) {
             case LB:
             case LH:
@@ -600,6 +745,7 @@ public:
         }
         registerLock[RSrc] = false;
         runningStage++;
+        return true;
     }
 };
 
@@ -611,36 +757,48 @@ public:
     int t;
     string str;
 
-    virtual void ID() {
-        if (lockFlag) return;
-        if(registerLock[2]) return;
+    virtual bool ID() {
+        /*if (lockFlag) return;*/
+        if (registerLock[2]) {
+            stageLock = 1;
+            return false;
+        }
         opt = regNum[2].s;
         if (type == SYSCALL) {
             switch (opt) {
                 case 8:
-                    if(registerLock[5]) return;
+                    if (registerLock[5]) {
+                        stageLock = 1;
+                        return false;
+                    }
                     a1 = regNum[5].us;
                 case 1:
                 case 4:
                 case 9:
-                    if(registerLock[4]) return;
+                    if (registerLock[4]) {
+                        stageLock = 1;
+                        return false;
+                    }
                     a0 = regNum[4].s;
                     registerLock[2] = true;
                     break;
             }
-            if(opt == 5) registerLock[2] = true;
+            if (opt == 5) registerLock[2] = true;
         }
+        failToDo = false;
 
         runningStage++;
+        return true;
     }
 
-    virtual void EX() {
-        if (lockFlag) return;
+    virtual bool EX() {
+        /*if (lockFlag) return;*/
         runningStage++;
+        return true;
     }
 
-    virtual void MEM() {
-        if (lockFlag) return;
+    virtual bool MEM() {
+        /*if (lockFlag) return;*/
         if (type == SYSCALL) {
             switch (opt) {
                 case 1:
@@ -674,10 +832,12 @@ public:
             }
         }
         runningStage++;
+        return true;
     }
 
-    virtual void WB() {
-        if (lockFlag) return;
+    virtual bool WB() {
+        stageLock = -1;
+        /*if (lockFlag) return;*/
         if (type == SYSCALL) {
             switch (opt) {
 
@@ -696,6 +856,7 @@ public:
             }
         }
         runningStage++;
+        return true;
     }
 };
 
@@ -703,41 +864,57 @@ class MoveData : public executionInstructionNewPipeLine {
 public:
     int tmp;
 
-    virtual void ID() {
-        if (lockFlag) return;
+    virtual bool ID() {
+        /*if (lockFlag) return;*/
         switch (type) {
             case MOVE:
-                if(registerLock[Rdest]) return;
+                if (registerLock[Rdest]) {
+                    stageLock = 1;
+                    return false;
+                }
                 tmp = regNum[Rdest].s;
                 break;
             case MFHI:
-                if(registerLock[HIREGISTER]) return;
+                if (registerLock[HIREGISTER]) {
+                    stageLock = 1;
+                    return false;
+                }
                 tmp = regNum[HIREGISTER].s;
                 break;
             case MFLO:
-                if(registerLock[LOREGISTER]) return;
+                if (registerLock[LOREGISTER]) {
+                    stageLock = 1;
+                    return false;
+                }
                 tmp = regNum[LOREGISTER].s;
                 break;
         }
         registerLock[RSrc] = true;
+        failToDo = false;
         runningStage++;
+        return true;
     }
 
-    virtual void EX() {
-        if (lockFlag) return;
+    virtual bool EX() {
+        /*if (lockFlag) return;*/
+
         runningStage++;
+        return true;
     }
 
-    virtual void MEM() {
-        if (lockFlag) return;
+    virtual bool MEM() {
+        /*if (lockFlag) return;*/
         runningStage++;
+        return true;
     }
 
-    virtual void WB() {
-        if (lockFlag) return;
+    virtual bool WB() {
+        stageLock = -1;
+        /*if (lockFlag) return;*/
         regNum[RSrc].s = tmp;
         registerLock[RSrc] = false;
         runningStage++;
+        return true;
     }
 };
 
