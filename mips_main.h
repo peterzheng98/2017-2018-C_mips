@@ -956,15 +956,13 @@ public:
             }
             if (!jumpFlag) current++;
             clockT++;
-            if (controlDebug) {
-                FILE *fp = fopen("compareTest.log", "a+");
-                for (int i = 0; i < 34; ++i) {
-                    fprintf(fp, "Register[%d]:%d\t", i, regNum[i]);
-                    if ((i + 1) % 5 == 0) fprintf(fp, "\n");
-                }
-                fprintf(fp, "CurrentLine:%d\n", current);
-                fclose(fp);
+            FILE* fp = fopen("resultDR.log", "a+");
+            for (int i = 0; i < 35; ++i) {
+                fprintf(fp, "register[%d] : %d ", i, regNum[i].s);
+                if ((i + 1) % 5 == 0) fprintf(fp, "\n");
             }
+            fprintf(fp ,"InlineLine:%d\n\n", current);
+            fclose(fp);
         }
     }
 
@@ -1670,6 +1668,7 @@ public:
                     }
                     case BYTE: {
                         char ch;
+                        ch = ss.get();
                         while (ch != '\n') {
                             next += ch;
                             ch = ss.get();
@@ -1679,9 +1678,11 @@ public:
                         stringstream byteNumber(next);
                         string str;
                         while (byteNumber >> str) mem[memHead++] = (unsigned char) string2int(str);
+                        break;
                     }
                     case HALF:{
                         char ch;
+                        ch = ss.get();
                         while (ch != '\n') {
                             next += ch;
                             ch = ss.get();
@@ -1695,9 +1696,11 @@ public:
                             mem[memHead++] = u.core.u1;
                             mem[memHead++] = u.core.u2;
                         }
+                        break;
                     }
                     case WORD:{
                         char ch;
+                        ch = ss.get();
                         while (ch != '\n') {
                             next += ch;
                             ch = ss.get();
@@ -1713,15 +1716,18 @@ public:
                             mem[memHead++] = u.core.u3;
                             mem[memHead++] = u.core.u4;
                         }
+                        break;
                     }
                     case SPACE:{
                         int n1;
                         ss >> n1;
                         memHead += n1;
+                        break;
                     }
                     case LABEL:{
                         deleteCertainChar(token, ':');
                         Parser.labelMap[token] = memHead;
+                        break;
                     }
                 }
             // 开始指令集
@@ -1733,6 +1739,7 @@ public:
                         string labelName = token;
                         executionMap[labelName] = programSentenceNewPR_2.size();
                         if(labelName == "main") mainEntryPoint = programSentenceNewPR_2.size();
+                        break;
                     }
                     case ADD:
                     case ADDU:
@@ -1935,7 +1942,7 @@ public:
                     case BGEZ:
                     case BGTZ:
                     case BLTZ:{
-                        LiOpt* s1 = new LiOpt();
+                        IfAndJumpOpt* s1 = new IfAndJumpOpt();
                         s1->type = result;
                         s1->typeName = type2String(result);
                         string arg[2];
@@ -1973,6 +1980,7 @@ public:
                             deleteCertainChar(right, ')');
                             int offset = string2int(left);
                             s1->offset = offset;
+                            deleteCertainChar(s1->argv[1], ')');
                             s1->para[1].setData(REGISTER, Parser.registerMap[s1->argv[1]]);
                         } else {
                             s1->para[1].setData(ADDRESS_LABEL, -1);
@@ -1999,7 +2007,7 @@ public:
                         if(haveBrackets(s1->argv[1])){
                             string right = s1->argv[1];
                             string left = splitWithCertainChar(s1->argv[1], '(');
-                            deleteCertainChar(right, ')');
+                            deleteCertainChar(s1->argv[1], ')');
                             int offset = string2int(left);
                             s1->offset = offset;
                             s1->para[1].setData(REGISTER, Parser.registerMap[s1->argv[1]]);
@@ -2148,22 +2156,45 @@ public:
             printf("Mem:276[%d]\n", *((int *) (&mem[276])));
             printf("Mem:276[%d]  277[%d] 278[%d] 279[%d]\n", mem[276], mem[277], mem[278], mem[279]);
             printf("\n\n");
+
+            FILE* fp = fopen("resultPipe.log", "a+");
+            for (int i = 0; i < 35; ++i) {
+                fprintf(fp, "register[%d] : %d ", i, regNum[i].s);
+                if ((i + 1) % 5 == 0) fprintf(fp,"\n");
+            }
+            fprintf(fp ,"InlineLine:%d\n\n", currentLine);
+            /*if(running[3] != nullptr)
+            fprintf(fp, "Idx:[%d] Command:[%s] argv:[%s] [%s] [%s]\n", runningNew[3]->index, runningNew[3]->typeName.c_str(), (runningNew[3]->argc >= 1 ? runningNew[3]->argv[0].c_str() : ""),
+                    (runningNew[3]->argc >= 2 ? runningNew[3]->argv[1].c_str() : ""), (runningNew[3]->argc >= 3 ? runningNew[3]->argv[2].c_str() : ""));
+            else fprintf(fp, "\n");*/
+            fclose(fp);
         }
     }
 
     void pipelineRun_PR_Flow() {
-        if (controlDebug) {
-            map<string, int>::iterator ite;
-            cout << "Label Table" << endl;
-            for (ite = executionMap.begin(); ite != executionMap.end(); ite++) {
-                cout << "Label:" << ite->first << "  Line:" << ite->second << endl;
-            }
+        //if (controlDebug) {
+        //    map<string, int>::iterator ite;
+        //    cout << "Label Table" << endl;
+        //    for (ite = executionMap.begin(); ite != executionMap.end(); ite++) {
+        //        cout << "Label:" << ite->first << "  Line:" << ite->second << endl;
+        //    }
+        //}
+        //cout << "Debug:\n" << flush;
+        if(controlDebug) {
+            for(int i = 0; i < 4; ++i)
+                if(runningNew[i] == nullptr) continue;
+            else runningNew[i]->printP();
         }
-
         currentLine = mainEntryPoint - 1;
         regNum[29] = stackTop;
         int limitSize = (int) programSentenceNewPR_2.size();
         while (currentLine < limitSize) {
+            if(controlDebug) {cout << "Debug:\n" << flush;
+                for(int i = 0; i < 4; ++i)
+                    if(runningNew[i] == nullptr) continue;
+                    else runningNew[i]->printP();
+            }
+
             __WB__();
             __MA__();
             __EX__();

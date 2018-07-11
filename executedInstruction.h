@@ -61,6 +61,7 @@ public:
     struct parametre {
         ParaType type;
         int arg;
+        parametre() : type(REGISTER), arg(0){}
 
         parametre(ParaType ty, int arr) : type(ty), arg(arr) {}
 
@@ -69,10 +70,15 @@ public:
             arg = arr;
         }
     };
-
     int offset;
     parametre para[5];
     string typeName = "";
+    executionInstructionNewPipeLine2_0() : index(0), argc(0), offset(0){ }
+
+    void printP(){
+        printf("Idx:[%d] Command:[%s] argv:[%s] [%s] [%s]\n", index, typeName.c_str(), (argc >= 1 ? argv[0].c_str() : ""),
+               (argc >= 2 ? argv[1].c_str() : ""), (argc >= 3 ? argv[2].c_str() : ""));
+    }
 
     virtual bool ID() = 0;
 
@@ -81,6 +87,8 @@ public:
     virtual bool MEM() = 0;
 
     virtual bool WB() = 0;
+
+    ~executionInstructionNewPipeLine2_0(){}
 };
 
 class LogicalAndCalculate : public executionInstructionNewPipeLine2_0 {
@@ -90,6 +98,7 @@ public:
     _WORD Rdest, RSrc, Src;
     _WORD ansWord, ansWord2;
     _DWORD ansDword;
+    LogicalAndCalculate() = default;
 
     virtual bool ID() override {
         if (argc == 3) {
@@ -159,6 +168,7 @@ public:
                 break;
             }
         }
+        return true;
     }
 
     virtual bool EX() override {
@@ -207,9 +217,9 @@ public:
                 break;
             case DIV:
                 if (argv.size() == 2) {
-                    ansWord = _WORD(RSrc.s % Src.s);
-                    ansWord2 = _WORD(RSrc.s / Src.s);
-                } else ansWord = _WORD(RSrc.s * Src.s);
+                    ansWord = _WORD(Rdest.s % Src.s);
+                    ansWord2 = _WORD(Rdest.s / Src.s);
+                } else ansWord = _WORD(RSrc.s / Src.s);
                 break;
             case MULU:
                 if (argv.size() == 2) {
@@ -220,9 +230,9 @@ public:
                 break;
             case DIVU:
                 if (argv.size() == 2) {
-                    ansWord = _WORD(RSrc.us % Src.us);
-                    ansWord2 = _WORD(RSrc.us / Src.us);
-                } else ansWord = _WORD(RSrc.us * Src.us);
+                    ansWord = _WORD(Rdest.us % Src.us);
+                    ansWord2 = _WORD(Rdest.us / Src.us);
+                } else ansWord = _WORD(RSrc.us / Src.us);
                 break;
         }
         return true;
@@ -266,12 +276,14 @@ public:
         }
         return true;
     }
+
+    ~LogicalAndCalculate(){}
 };
 
 class LiOpt : public executionInstructionNewPipeLine2_0 {
 public:
     _WORD Imm;
-
+    LiOpt() = default;
     virtual bool ID() override {
         Imm.s = para[1].arg;
         registerLock[para[0].arg] = true;
@@ -300,7 +312,7 @@ public:
     bool result, ImmData = false;
     _WORD Rsrc, Src;
     int _Rdest, _RSrc, _Src;
-
+    CompareOpt() = default;
     virtual bool ID() override {
         if (para[2].type == IMM) {
             ImmData = true;
@@ -358,6 +370,7 @@ public:
 
 class NopOpt : public executionInstructionNewPipeLine2_0 {
 public:
+    NopOpt() = default;
     virtual bool ID() override {
         return true;
     }
@@ -383,7 +396,7 @@ public:
     bool result;
     int functionAddress;
     int Reg31;
-
+    IfAndJumpOpt() = default;
     virtual bool ID() override {
         switch (type) {
             case BEQ:
@@ -443,79 +456,80 @@ public:
             }
         }
         lockFlag = true;
+        return true;
     }
 
     virtual bool EX() override {
         if (type == JAL || type == JALR) registerLock[31] = true;
         switch (type) {
             case BEQ:
-                if (RSrc.us == Src.us) {
+                if (RSrc.s == Src.s) {
                     nextLine = nextExeLine;
                     haveJump = true;
                 }
                 break;
             case BNE:
-                if (RSrc.us != Src.us) {
+                if (RSrc.s != Src.s) {
                     nextLine = nextExeLine;
                     haveJump = true;
                 }
                 break;
             case BGE:
-                if (RSrc.us >= Src.us) {
+                if (RSrc.s >= Src.s) {
                     nextLine = nextExeLine;
                     haveJump = true;
                 }
                 break;
             case BLE:
-                if (RSrc.us <= Src.us) {
+                if (RSrc.s <= Src.s) {
                     nextLine = nextExeLine;
                     haveJump = true;
                 }
                 break;
             case BGT:
-                if (RSrc.us > Src.us) {
+                if (RSrc.s > Src.s) {
                     nextLine = nextExeLine;
                     haveJump = true;
                 }
                 break;
             case BLT:
-                if (RSrc.us < Src.us) {
+                if (RSrc.s < Src.s) {
                     nextLine = nextExeLine;
                     haveJump = true;
                 }
                 break;
             case BEQZ:
-                if (RSrc.us == 0) {
+                if (RSrc.s == 0) {
                     nextLine = nextExeLine;
                     haveJump = true;
                 }
                 break;
             case BNEZ:
-                if (RSrc.us != 0) {
+                if (RSrc.s != 0) {
                     nextLine = nextExeLine;
                     haveJump = true;
                 }
                 break;
             case BLEZ:
-                if (RSrc.us <= 0) {
+                if (RSrc.s <= 0) {
                     nextLine = nextExeLine;
                     haveJump = true;
                 }
                 break;
             case BGEZ:
-                if (RSrc.us >= 0) {
+                if (RSrc.s >= 0) {
                     nextLine = nextExeLine;
                     haveJump = true;
                 }
                 break;
             case BGTZ:
-                if (RSrc.us > 0) {
+                if (RSrc.s > 0) {
                     nextLine = nextExeLine;
                     haveJump = true;
                 }
                 break;
             case BLTZ:
-                if (RSrc.us < 0) {
+                if (RSrc.s < 0) {
                     nextLine = nextExeLine;
                     haveJump = true;
                 }
@@ -560,7 +574,7 @@ public:
     _WORD RSrc;
     int memoryAddress;
     int _RSrc;
-
+    StoreDataOpt() = default;
     virtual bool ID() override {
         _RSrc = para[0].arg;
 
@@ -574,6 +588,7 @@ public:
 
     virtual bool EX() override {
         memoryAddress += offset;
+        return true;
     }
 
     virtual bool MEM() override {
@@ -605,7 +620,7 @@ public:
     int memoryAddress;
     int _Rdest;
     _WORD Rdest;
-
+    LoadDataOpt() = default;
     virtual bool ID() override {
         _Rdest = para[0].arg;
         switch (type) {
@@ -632,6 +647,7 @@ public:
                 memoryAddress += offset;
                 break;
         }
+        return true;
     }
 
     virtual bool MEM() override {
@@ -674,6 +690,7 @@ public:
     string str;
     int i;
     int t;
+    SpecialOpt() = default;
     virtual bool ID() override {
         if (registerLock[2]) return false;
         optIdx = regNum[2].s;
@@ -751,6 +768,7 @@ public:
             case 17:
                 exit(a0.s);
         }
+        registerLock[2] = registerLock[4] = false;
         return true;
     }
 };
@@ -759,7 +777,7 @@ class MoveDataOpt : public executionInstructionNewPipeLine2_0 {
 public:
     _WORD Rsrc;
     int tmp, _RSrc, _Rdest;
-
+    MoveDataOpt() = default;
     virtual bool ID() override {
         _Rdest = para[0].arg;
         switch (type) {
@@ -839,7 +857,8 @@ public:
     }
 
     void printP() {
-        printf("Debug Stage: InIdx[%d]  [%s] argv:[%s] [%s] [%s] RSrc[%d] Rdest[%d] Src[%d] offset[%d] ARSrc[%d] ARdest[%d] ASrc[%d] LRSrc[%d] LRdest[%d] LSrc[%d] BLRSrc[%d] BLRdest[%d] BLSrc[%d]\n",
+        printf("Debug Stage: InIdx[%d]  [%s] argv:[%s] [%s] [%s] RSrc[%d] Rdest[%d] Src[%d] offset[%d] ARSrc[%d] "
+               "ARdest[%d] ASrc[%d] LRSrc[%d] LRdest[%d] LSrc[%d] BLRSrc[%d] BLRdest[%d] BLSrc[%d]\n",
                index, typeName.c_str(), (argc >= 1 ? argv[0].c_str() : ""),
                (argc >= 2 ? argv[1].c_str() : ""), (argc >= 3 ? argv[2].c_str() : ""),
                RSrc, Rdest, Src, offset, ARSrc, ARdest, ASrc, LRSrc, LRdest, LSrc, BLRSrc, BLRdest, LSrc);

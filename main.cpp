@@ -42,7 +42,8 @@ int main(int argc, char *argv[]) {
     string data = buf.str();
     if (controlDebug) debugMess(data, "Receive Message From File", 1);
 //    Kernel.setInstructionNew(data);
-    Kernel.setInstructionPR(data);
+//    Kernel.setInstructionPR(data);
+    Kernel.setInstructionPR_New(data);
 //    Kernel.run();
     Kernel.runPR();
     if (controlDebug) debugMess("Execute Finish.", "General");
