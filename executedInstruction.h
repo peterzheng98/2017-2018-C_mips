@@ -673,6 +673,7 @@ public:
             case LB:
             case LH:
             case LW:
+                regNum[_Rdest].s = 0;
                 regNum[_Rdest].s = Rdest.s;
                 break;
             case LA:
@@ -698,6 +699,7 @@ public:
             case 8: {
                 if (registerLock[5]) return false;
                 a1.us = regNum[5].us;
+                a0.us = regNum[4].us;
                 break;
             }
             case 1:

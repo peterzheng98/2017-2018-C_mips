@@ -1636,7 +1636,7 @@ public:
                     case ALIGN: {
                         int n;
                         ss >> n;
-                        if ((memHead + 1) % n != 0) memHead = (memHead / (1 << n) + 1) * (1 << n) - 1;
+                        if ((memHead + 1) % (1 << n) != 0) memHead = (memHead / (1 << n) + 1) * (1 << n) - 1;
                         break;
                     }
                     case ASCIIZ: {
@@ -2172,13 +2172,13 @@ public:
     }
 
     void pipelineRun_PR_Flow() {
-        //if (controlDebug) {
-        //    map<string, int>::iterator ite;
-        //    cout << "Label Table" << endl;
-        //    for (ite = executionMap.begin(); ite != executionMap.end(); ite++) {
-        //        cout << "Label:" << ite->first << "  Line:" << ite->second << endl;
-        //    }
-        //}
+        if (controlDebug) {
+            map<string, int>::iterator ite;
+            cout << "Label Table" << endl;
+            for (ite = executionMap.begin(); ite != executionMap.end(); ite++) {
+                cout << "Label:" << ite->first << "  Line:" << ite->second << endl;
+            }
+        }
         //cout << "Debug:\n" << flush;
         if(controlDebug) {
             for(int i = 0; i < 4; ++i)
