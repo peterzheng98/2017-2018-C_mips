@@ -28,7 +28,11 @@ private:
 
     vector<executionInstructionNewPipeLine *> programSentenceNewPR;
 
-    executionInstructionNewPipeLine* running[5] = {nullptr};
+    vector<executionInstructionNewPipeLine2_0 *> programSentenceNewPR_2;
+
+    executionInstructionNewPipeLine *running[5] = {nullptr};
+
+    executionInstructionNewPipeLine2_0 *runningNew[4] = {nullptr};
     void debugDataPrint() {
         cout << "=================================================================\n";
         cout << "Debug Data\n";
@@ -480,7 +484,7 @@ public:
             //if (controlDebug) {
             //    printf("Debug: ClockTime:%lld\n", clockT);
             //}
-            
+
             executionInstructionNew &tmp = programSentenceNew[current];
             //printf("Register 2[%d], currentLine[%d]\n", regNum[2], current);
             //if (controlDebug) cout << current << "Running:";
@@ -952,14 +956,14 @@ public:
             }
             if (!jumpFlag) current++;
             clockT++;
-            if(controlDebug){
-                for (int i = 0; i < 35; ++i) {
-                    printf("register[%d] : %d       ", i, regNum[i].s);
-                    if((i + 1) % 5 == 0) printf("\n");
+            if (controlDebug) {
+                FILE *fp = fopen("compareTest.log", "a+");
+                for (int i = 0; i < 34; ++i) {
+                    fprintf(fp, "Register[%d]:%d\t", i, regNum[i]);
+                    if ((i + 1) % 5 == 0) fprintf(fp, "\n");
                 }
-                printf("Mem:276[%d]\n", *((int*) (&mem[276])));
-                printf("Mem:276[%d]  277[%d] 278[%d] 279[%d]\n", mem[276], mem[277], mem[278], mem[279]);
-                printf("\n\n");
+                fprintf(fp, "CurrentLine:%d\n", current);
+                fclose(fp);
             }
         }
     }
@@ -1590,65 +1594,564 @@ public:
         //cout << "Parser \n";
     }
 
+    void setInstructionPR_New(const string &rhs) {
+        coreData = rhs;
+        stringstream ss(rhs);
+
+        string token;
+        bool dataField = false;
+        bool textField = false;
+
+        string lastLabel = "";
+        string nextToken = "";
+        bool haveLabel = false;
+        int currentSentence = 0;
+
+        while (haveLabel || ss >> token) {
+            if (haveLabel) token = nextToken;
+            if (token == ".data") {
+                dataField = true;
+                textField = false;
+                haveLabel = false;
+                continue;
+            }
+            if (token == ".text") {
+                dataField = false;
+                textField = true;
+                haveLabel = false;
+                continue;
+            }
+
+            // 数据处理
+            if (dataField) {
+                Instruction result = Parser.Type(token);
+                if (controlDebug) {
+                    string str("Found Token [");
+                    str += (int) result;
+                    str += "]";
+                    debugMess(str, "Parser - Data Field");
+                }
+
+                string next, messageDebug;
+
+                switch (result) {
+                    case ALIGN: {
+                        int n;
+                        ss >> n;
+                        if ((memHead + 1) % n != 0) memHead = (memHead / (1 << n) + 1) * (1 << n) - 1;
+                        break;
+                    }
+                    case ASCIIZ: {
+                        char ch;
+                        ch = ss.get();
+                        ch = ss.get();
+                        while (ch != '\n') {
+                            next += ch;
+                            ch = ss.get();
+                        }
+                        deleteCertainChar(next, '\"');
+                        next = decodeSpecial(next);
+                        for (int i = 0; i < next.length(); ++i) mem[memHead++] = (unsigned char) next[i];
+                        mem[memHead++] = 0;
+                        break;
+                    }
+                    case ASCII: {
+                        char ch;
+                        ch = ss.get();
+                        ch = ss.get();
+                        while (ch != '\n') {
+                            next += ch;
+                            ch = ss.get();
+                        }
+                        deleteCertainChar(next, '\"');
+                        next = decodeSpecial(next);
+                        for (int i = 0; i < next.length(); ++i) mem[memHead++] = (unsigned char) next[i];
+                        break;
+                    }
+                    case BYTE: {
+                        char ch;
+                        while (ch != '\n') {
+                            next += ch;
+                            ch = ss.get();
+                        }
+                        deleteCertainChar(next, '\"');
+                        deleteCertainChar(next, ',');
+                        stringstream byteNumber(next);
+                        string str;
+                        while (byteNumber >> str) mem[memHead++] = (unsigned char) string2int(str);
+                    }
+                    case HALF:{
+                        char ch;
+                        while (ch != '\n') {
+                            next += ch;
+                            ch = ss.get();
+                        }
+                        deleteCertainChar(next, '\"');
+                        deleteCertainChar(next, ',');
+                        stringstream byteNumber(next);
+                        string str;
+                        while (byteNumber >> str) {
+                            _HALF u = _HALF((short) string2int(str));
+                            mem[memHead++] = u.core.u1;
+                            mem[memHead++] = u.core.u2;
+                        }
+                    }
+                    case WORD:{
+                        char ch;
+                        while (ch != '\n') {
+                            next += ch;
+                            ch = ss.get();
+                        }
+                        deleteCertainChar(next, '\"');
+                        deleteCertainChar(next, ',');
+                        stringstream byteNumber(next);
+                        string str;
+                        while (byteNumber >> str) {
+                            _WORD u = _WORD((short) string2int(str));
+                            mem[memHead++] = u.core.u1;
+                            mem[memHead++] = u.core.u2;
+                            mem[memHead++] = u.core.u3;
+                            mem[memHead++] = u.core.u4;
+                        }
+                    }
+                    case SPACE:{
+                        int n1;
+                        ss >> n1;
+                        memHead += n1;
+                    }
+                    case LABEL:{
+                        deleteCertainChar(token, ':');
+                        Parser.labelMap[token] = memHead;
+                    }
+                }
+            // 开始指令集
+            } else {
+                Instruction result = Parser.Type(token);
+                switch (result){
+                    case LABEL:{
+                        deleteCertainChar(token, ':');
+                        string labelName = token;
+                        executionMap[labelName] = programSentenceNewPR_2.size();
+                        if(labelName == "main") mainEntryPoint = programSentenceNewPR_2.size();
+                    }
+                    case ADD:
+                    case ADDU:
+                    case ADDIU:
+                    case SUB:
+                    case SUBU:
+                    case XOR:
+                    case XORU:
+                    case REM:
+                    case REMU:{
+                        LogicalAndCalculate* s1 = new LogicalAndCalculate();
+                        s1->type = result;
+                        s1->typeName = type2String(result);
+                        string arg[3];
+                        for(int i = 0; i < 3; ++i) {
+                            ss >> arg[i];
+                            deleteCertainChar(arg[i], ',');
+                            s1->argv.push_back(arg[i]);
+                        }
+                        s1->argc = 3;
+
+                        s1->para[0].setData(REGISTER, Parser.registerMap[s1->argv[0]]);
+                        s1->para[1].setData(REGISTER, Parser.registerMap[s1->argv[1]]);
+                        if(s1->argv[2][0] == '$') s1->para[2].setData(REGISTER, Parser.registerMap[s1->argv[2]]);
+                        else s1->para[2].setData(IMM, string2int(s1->argv[2]));
+
+                        programSentenceNewPR_2.push_back(s1);
+                        break;
+                    }
+                    case MUL:
+                    case MULU:
+                    case DIV:
+                    case DIVU:{
+                        string tmp = "";
+                        char ch;
+                        int comma = 0;
+                        ch = ss.get();
+                        while(ch != '\n'){
+                            tmp += ch;
+                            ch = ss.get();
+                            if(ch == ',') comma++;
+                        }
+
+                        LogicalAndCalculate* s1 = new LogicalAndCalculate();
+                        s1->type = result;
+                        s1->typeName = type2String(result);
+                        s1->argc = comma + 1;
+#ifdef ALL_DEBUG
+                        cout << "Parser : Comma(In Mul, Mulu, Div, Divu Stage):" << comma;
+#endif
+                        string arg[s1->argc];
+                        if(comma == 1){
+                            stringstream ss(tmp);
+                            for(int i = 0; i < 2; ++i) {
+                                ss >> arg[i];
+                                deleteCertainChar(arg[i], ',');
+                                s1->argv.push_back(arg[i]);
+                            }
+                            s1->para[0].setData(REGISTER, Parser.registerMap[s1->argv[0]]);
+                            if(s1->argv[1][0] == '$') s1->para[1].setData(REGISTER, Parser.registerMap[s1->argv[1]]);
+                            else s1->para[1].setData(IMM, string2int(s1->argv[1]));
+                        } else {
+                            stringstream ss(tmp);
+                            for(int i = 0; i < 3; ++i) {
+                                ss >> arg[i];
+                                deleteCertainChar(arg[i], ',');
+                                s1->argv.push_back(arg[i]);
+                            }
+                            s1->para[0].setData(REGISTER, Parser.registerMap[s1->argv[0]]);
+                            s1->para[1].setData(REGISTER, Parser.registerMap[s1->argv[1]]);
+                            if(s1->argv[2][0] == '$') s1->para[2].setData(REGISTER, Parser.registerMap[s1->argv[2]]);
+                            else s1->para[2].setData(IMM, string2int(s1->argv[2]));
+
+                        }
+                        programSentenceNewPR_2.push_back(s1);
+                        break;
+                    }
+                    case NEG:
+                    case NEGU:{
+                        LogicalAndCalculate* s1 = new LogicalAndCalculate();
+                        s1->type = result;
+                        s1->typeName = type2String(result);
+                        string arg[2];
+                        for(int i = 0; i < 2; ++i) {
+                            ss >> arg[i];
+                            deleteCertainChar(arg[i], ',');
+                            s1->argv.push_back(arg[i]);
+                        }
+                        s1->argc = 2;
+
+                        s1->para[0].setData(REGISTER, Parser.registerMap[s1->argv[0]]);
+                        s1->para[1].setData(REGISTER, Parser.registerMap[s1->argv[1]]);
+
+                        programSentenceNewPR_2.push_back(s1);
+                        break;
+                    }
+                    case LI:{
+                        LiOpt* s1 = new LiOpt();
+                        s1->type = result;
+                        s1->typeName = type2String(result);
+                        string arg[2];
+                        for(int i = 0; i < 2; ++i) {
+                            ss >> arg[i];
+                            deleteCertainChar(arg[i], ',');
+                            s1->argv.push_back(arg[i]);
+                        }
+                        s1->argc = 2;
+
+                        s1->para[0].setData(REGISTER, Parser.registerMap[s1->argv[0]]);
+                        s1->para[1].setData(IMM, string2int(s1->argv[1]));
+                        programSentenceNewPR_2.push_back(s1);
+                        break;
+                    }
+                    case SEQ:
+                    case SGE:
+                    case SGT:
+                    case SLE:
+                    case SLT:
+                    case SNE:{
+                        CompareOpt* s1 = new CompareOpt();
+                        s1->type = result;
+                        s1->typeName = type2String(result);
+                        string arg[3];
+                        for(int i = 0; i < 3; ++i) {
+                            ss >> arg[i];
+                            deleteCertainChar(arg[i], ',');
+                            s1->argv.push_back(arg[i]);
+                        }
+                        s1->argc = 3;
+
+                        s1->para[0].setData(REGISTER, Parser.registerMap[s1->argv[0]]);
+                        s1->para[1].setData(REGISTER, Parser.registerMap[s1->argv[1]]);
+                        if(s1->argv[2][0] == '$') s1->para[2].setData(REGISTER, Parser.registerMap[s1->argv[2]]);
+                        else s1->para[2].setData(IMM, string2int(s1->argv[2]));
+
+                        programSentenceNewPR_2.push_back(s1);
+                        break;
+                    }
+                    case JAL:
+                    case B:
+                    case J:{
+                        IfAndJumpOpt* s1 = new IfAndJumpOpt();
+                        s1->type = result;
+                        s1->typeName = type2String(result);
+                        string s;
+                        ss >> s;
+                        deleteCertainChar(s, ',');
+                        s1->argv.push_back(s);
+                        s1->argc = 1;
+
+                        s1->para[0].setData(ADDRESS_FUNCTION, -1);
+
+                        programSentenceNewPR_2.push_back(s1);
+                        break;
+                    }
+                    case JR:
+                    case JALR:{
+                        IfAndJumpOpt* s1 = new IfAndJumpOpt();
+                        s1->type = result;
+                        s1->typeName = type2String(result);
+                        string s;
+                        ss >> s;
+                        deleteCertainChar(s, ',');
+                        s1->argv.push_back(s);
+                        s1->argc = 1;
+
+                        s1->para[0].setData(REGISTER, Parser.registerMap[s]);
+
+                        programSentenceNewPR_2.push_back(s1);
+                        break;
+                    }
+                    case BEQ:
+                    case BNE:
+                    case BGE:
+                    case BLE:
+                    case BGT:
+                    case BLT:{
+                        IfAndJumpOpt* s1 = new IfAndJumpOpt();
+                        s1->type = result;
+                        s1->typeName = type2String(result);
+                        string arg[3];
+                        for(int i = 0; i < 3; ++i) {
+                            ss >> arg[i];
+                            deleteCertainChar(arg[i], ',');
+                            s1->argv.push_back(arg[i]);
+                        }
+                        s1->argc = 3;
+
+                        s1->para[0].setData(REGISTER, Parser.registerMap[s1->argv[0]]);
+                        if(s1->argv[1][0] == '$') s1->para[1].setData(REGISTER, Parser.registerMap[s1->argv[1]]);
+                        else s1->para[1].setData(IMM, string2int(s1->argv[1]));
+                        s1->para[2].setData(ADDRESS_FUNCTION, -1);
+
+                        programSentenceNewPR_2.push_back(s1);
+                        break;
+                    }
+                    case BEQZ:
+                    case BNEZ:
+                    case BLEZ:
+                    case BGEZ:
+                    case BGTZ:
+                    case BLTZ:{
+                        LiOpt* s1 = new LiOpt();
+                        s1->type = result;
+                        s1->typeName = type2String(result);
+                        string arg[2];
+                        for(int i = 0; i < 2; ++i) {
+                            ss >> arg[i];
+                            deleteCertainChar(arg[i], ',');
+                            s1->argv.push_back(arg[i]);
+                        }
+                        s1->argc = 2;
+
+                        s1->para[0].setData(REGISTER, Parser.registerMap[s1->argv[0]]);
+                        s1->para[1].setData(ADDRESS_FUNCTION, -0x3f3f3f3f);
+                        programSentenceNewPR_2.push_back(s1);
+                        break;
+                    }
+                    case LA:
+                    case LB:
+                    case LH:
+                    case LW:{
+                        LoadDataOpt* s1 = new LoadDataOpt();
+                        s1->type = result;
+                        s1->typeName = type2String(result);
+                        string arg[2];
+                        for(int i = 0; i < 2; ++i) {
+                            ss >> arg[i];
+                            deleteCertainChar(arg[i], ',');
+                            s1->argv.push_back(arg[i]);
+                        }
+                        s1->argc = 2;
+
+                        s1->para[0].setData(REGISTER, Parser.registerMap[s1->argv[0]]);
+                        if(haveBrackets(s1->argv[1])){
+                            string right = s1->argv[1];
+                            string left = splitWithCertainChar(s1->argv[1], '(');
+                            deleteCertainChar(right, ')');
+                            int offset = string2int(left);
+                            s1->offset = offset;
+                            s1->para[1].setData(REGISTER, Parser.registerMap[s1->argv[1]]);
+                        } else {
+                            s1->para[1].setData(ADDRESS_LABEL, -1);
+                        }
+                        
+                        programSentenceNewPR_2.push_back(s1);
+                        break;
+                    }
+                    case SB:
+                    case SW:
+                    case SH:{
+                        StoreDataOpt* s1 = new StoreDataOpt();
+                        s1->type = result;
+                        s1->typeName = type2String(result);
+                        string arg[2];
+                        for(int i = 0; i < 2; ++i) {
+                            ss >> arg[i];
+                            deleteCertainChar(arg[i], ',');
+                            s1->argv.push_back(arg[i]);
+                        }
+                        s1->argc = 2;
+
+                        s1->para[0].setData(REGISTER, Parser.registerMap[s1->argv[0]]);
+                        if(haveBrackets(s1->argv[1])){
+                            string right = s1->argv[1];
+                            string left = splitWithCertainChar(s1->argv[1], '(');
+                            deleteCertainChar(right, ')');
+                            int offset = string2int(left);
+                            s1->offset = offset;
+                            s1->para[1].setData(REGISTER, Parser.registerMap[s1->argv[1]]);
+                        } else {
+                            s1->para[1].setData(ADDRESS_LABEL, -1);
+                        }
+
+                        programSentenceNewPR_2.push_back(s1);
+                        break;
+                    }
+                    case MOVE:{
+                        MoveDataOpt* s1 = new MoveDataOpt();
+                        
+                        s1->type = result;
+                        s1->typeName = type2String(result);
+
+                        string arg[2];
+                        for(int i = 0; i < 2; ++i) {
+                            ss >> arg[i];
+                            deleteCertainChar(arg[i], ',');
+                            s1->argv.push_back(arg[i]);
+                        }
+                        s1->argc = 2;
+
+                        s1->para[0].setData(REGISTER, Parser.registerMap[s1->argv[0]]);
+                        s1->para[1].setData(REGISTER, Parser.registerMap[s1->argv[1]]);
+
+                        programSentenceNewPR_2.push_back(s1);
+                        break;
+                    }
+                    case MFLO:
+                    case MFHI:{
+                        MoveDataOpt* s1 = new MoveDataOpt();
+
+                        s1->type = result;
+                        s1->typeName = type2String(result);
+
+                        string arg[1];
+                        for(int i = 0; i < 1; ++i) {
+                            ss >> arg[i];
+                            deleteCertainChar(arg[i], ',');
+                            s1->argv.push_back(arg[i]);
+                        }
+                        s1->argc = 1;
+
+                        s1->para[0].setData(REGISTER, Parser.registerMap[s1->argv[0]]);
+
+                        programSentenceNewPR_2.push_back(s1);
+                        break;
+                    }
+                    case NOP:{
+                        NopOpt* s1 = new NopOpt();
+                        s1->type = result;
+                        s1->typeName = type2String(result);
+                        
+                        programSentenceNewPR_2.push_back(s1);
+                        break;
+                    }
+                    case SYSCALL:{
+                        SpecialOpt *s1 = new SpecialOpt();
+                        s1->type = result;
+                        s1->typeName = type2String(result);
+                        
+                        programSentenceNewPR_2.push_back(s1);
+                        break;
+                    }
+                }
+            }
+        }
+
+        int sizeT = programSentenceNewPR_2.size();
+        for(int i = 0; i < sizeT; ++i){
+            executionInstructionNewPipeLine2_0* tmp = programSentenceNewPR_2[i];
+            tmp->index = i;
+            if(tmp->argc == 0) continue;
+            if(tmp->para[0].type == ADDRESS_LABEL) tmp->para[0].arg = Parser.labelMap[tmp->argv[0]];
+            if(tmp->para[0].type == ADDRESS_FUNCTION) tmp->para[0].arg = executionMap[tmp->argv[0]];
+
+            if(tmp->argc == 1) continue;
+            if(tmp->para[1].type == ADDRESS_LABEL) tmp->para[1].arg = Parser.labelMap[tmp->argv[1]];
+            if(tmp->para[1].type == ADDRESS_FUNCTION) tmp->para[1].arg = executionMap[tmp->argv[1]];
+
+            if(tmp->argc == 2) continue;
+            if(tmp->para[2].type == ADDRESS_LABEL) tmp->para[2].arg = Parser.labelMap[tmp->argv[2]];
+            if(tmp->para[2].type == ADDRESS_FUNCTION) tmp->para[2].arg = executionMap[tmp->argv[2]];
+        }
+    }
+
     inline executionInstructionNewPipeLine *getNextSentence() {
 //        if (lockFlag) { return nullptr; }
         if (haveJump) {
             currentLine = nextLine;
-            if(currentLine == 0x3f3f3f3f) {
-                cout << "Fuck!";
-            }
             haveJump = false;
         } else currentLine++;
         return programSentenceNewPR[currentLine];
     }
 
-    void __IF__(){
-        if(running[0] != nullptr || lockFlag) return;
-        running[0] = getNextSentence();
+    inline executionInstructionNewPipeLine2_0* getNextSentence2(){
+        if (haveJump) {
+            currentLine = nextLine;
+            haveJump = false;
+        } else currentLine++;
+        return programSentenceNewPR_2[currentLine];
     }
 
-    void __ID__(){
-        if(running[1] != nullptr || running[0] == nullptr) return;
-        bool result = running[0]->ID();
-        if(!result) return;
-        running[1] = running[0];
-        running[0] = nullptr;
+    void __IF__() {
+        if (runningNew[0] != nullptr || lockFlag) return;
+        runningNew[0] = getNextSentence2();
     }
 
-    void __EX__(){
-        if(running[2] != nullptr || running[1] == nullptr) return;
-        bool result = running[1]->EX();
-        if(!result) return;
-        running[2] = running[1];
-        running[1] = nullptr;
+    void __ID__() {
+        if (runningNew[1] != nullptr || runningNew[0] == nullptr) return;
+        bool result = runningNew[0]->ID();
+        if (!result) return;
+        runningNew[1] = runningNew[0];
+        runningNew[0] = nullptr;
     }
 
-    void __MA__(){
-        if(running[3] != nullptr || running[2] == nullptr) return;
-        bool result = running[2]->MEM();
-        if(!result) return;
-        running[3] = running[2];
-        running[2] = nullptr;
+    void __EX__() {
+        if (runningNew[2] != nullptr || runningNew[1] == nullptr) return;
+        bool result = runningNew[1]->EX();
+        if (!result) return;
+        runningNew[2] = runningNew[1];
+        runningNew[1] = nullptr;
+    }
+
+    void __MA__() {
+        if (runningNew[3] != nullptr || runningNew[2] == nullptr) return;
+        bool result = runningNew[2]->MEM();
+        if (!result) return;
+        runningNew[3] = runningNew[2];
+        runningNew[2] = nullptr;
 
     }
 
-    void __WB__(){
-        if(running[3] == nullptr) return;
-        bool result = running[3]->WB();
-        if(!result) return;
-        running[3] = nullptr;
-        if(controlDebug){
+    void __WB__() {
+        if (runningNew[3] == nullptr) return;
+        bool result = runningNew[3]->WB();
+        if (!result) return;
+        runningNew[3] = nullptr;
+        if (controlDebug) {
             for (int i = 0; i < 35; ++i) {
                 printf("register[%d] : %d       ", i, regNum[i].s);
-                if((i + 1) % 5 == 0) printf("\n");
+                if ((i + 1) % 5 == 0) printf("\n");
             }
-            printf("Mem:276[%d]\n", *((int*) (&mem[276])));
+            printf("Mem:276[%d]\n", *((int *) (&mem[276])));
             printf("Mem:276[%d]  277[%d] 278[%d] 279[%d]\n", mem[276], mem[277], mem[278], mem[279]);
             printf("\n\n");
         }
     }
 
-    void pipelineRun_PR_Flow(){
+    void pipelineRun_PR_Flow() {
         if (controlDebug) {
             map<string, int>::iterator ite;
             cout << "Label Table" << endl;
@@ -1656,30 +2159,11 @@ public:
                 cout << "Label:" << ite->first << "  Line:" << ite->second << endl;
             }
         }
-        if(controlDebug){
-            int sizeT = programSentenceNewPR.size();
-            cout << flush;
-            cout << endl;
-            for(int i = 0;i < sizeT; ++i){
-                programSentenceNewPR[i]->printP();
-            }
-            cout << endl;
-        }
 
         currentLine = mainEntryPoint - 1;
         regNum[29] = stackTop;
-        int limitSize = (int) programSentenceNewPR.size();
-        while(currentLine < limitSize) {
-           //if (controlDebug) {
-                /*printf("Debug: ClockTime:%lld\n", clockT);
-                for (int i = 0; i < 5; ++i) {
-                    if(running[i] == nullptr) continue;
-                    printf("Idx:%d ", i);
-                    running[i]->printDebug();
-                }
-                //printf("\n\n");*/
-            //}
-
+        int limitSize = (int) programSentenceNewPR_2.size();
+        while (currentLine < limitSize) {
             __WB__();
             __MA__();
             __EX__();

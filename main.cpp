@@ -5,7 +5,7 @@
 #include "stdc++.h"
 #include "mips_main.h"
 #include "utilities.h"
-#define FILE_DEBUG
+//#define FILE_DEBUG
 
 using namespace std;
 extern bool controlDebug;

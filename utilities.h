@@ -38,6 +38,13 @@ static int currentClock = 0;
 static bool failToDo = false;
 static int __Instruction_Index[5] = {0, -1, -2, -3, -4};
 static unsigned long long clockT = 0;
+
+enum ParaType{
+    REGISTER = 0,ADDRESS_FUNCTION, ADDRESS_LABEL, IMM
+};
+
+
+
 template<class T>
 T atoi(const string &rhs) {
     T ret;
